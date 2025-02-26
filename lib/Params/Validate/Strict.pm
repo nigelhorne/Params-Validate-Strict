@@ -117,7 +117,7 @@ sub validate_strict
 
 	my $schema = $params->{'schema'};
 	my $args = $params->{'args'};
-	my $unknown_parameter_handler = $params->{'unknown_parameter_handler'};
+	my $unknown_parameter_handler = $params->{'unknown_parameter_handler'} || 'die';
 
 	# Check if schema and args are references to hashes
 	unless((ref($schema) eq 'HASH') && (ref($args) eq 'HASH')) {
@@ -125,12 +125,19 @@ sub validate_strict
 	}
 
 	foreach my $key (keys %{$args}) {
-		if(!defined($schema->{$key})) {
-			croak(__PACKAGE__, "::validate_strict: Unknown parameter '$key'");
+		if(!exists($schema->{$key})) {
+			if($unknown_parameter_handler eq 'die') {
+				croak(__PACKAGE__, "::validate_strict: Unknown parameter '$key'");
+			} elsif($unknown_parameter_handler eq 'warn') {
+				carp(__PACKAGE__, "::validate_strict: Unknown parameter '$key'");
+				next;
+			} elsif($unknown_parameter_handler eq 'ignore') {
+				next;
+			} else {
+				croak(__PACKAGE__, "::validate_strict: unrecognized value for unknown_parameter_handler '$unknown_parameter_handler'");
+			}
 		}
 	}
-
-	$unknown_parameter_handler ||= 'die';
 
 	my %validated_args;
 	foreach my $key (keys %{$schema}) {
@@ -143,16 +150,7 @@ sub validate_strict
 
 		# Check if the parameter is required
 		if((ref($rules) eq 'HASH') && (!exists($rules->{optional})) && (!exists($args->{$key}))) {
-			if($unknown_parameter_handler eq 'die') {
-				croak(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
-			} elsif($unknown_parameter_handler eq 'warn') {
-				carp(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
-				next;
-			} elsif($unknown_parameter_handler eq 'ignore') {
-				next;
-			} else {
-				croak(__PACKAGE__, "::validate_strict: unrecognized value for unknown_parameter_handler '$unknown_parameter_handler'");
-			}
+			croak(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
 		}
 
 		# Handle optional parameters
