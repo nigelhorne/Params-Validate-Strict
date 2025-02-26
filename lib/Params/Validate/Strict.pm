@@ -26,17 +26,17 @@ our $VERSION = '0.01';
 	age => { type => 'integer', min => 0, max => 150 },
  };
 
- my $params = {
+ my $args = {
 	username => 'john_doe',
 	age => '30',	# Will be coerced to integer
  };
 
- my $validated_params = validate_strict($schema, $params);
+ my $validated_args = validate_strict(schema => $schema, args => $args);
 
- if (defined $validated_params) {
+ if (defined $validated_args) {
 	print "Example 1: Validation successful!\n";
-	print 'Username: ', $validated_params->{username}, "\n";
-	print 'Age: ', $validated_params->{age}, "\n";	# It's an integer now
+	print 'Username: ', $validated_args->{username}, "\n";
+	print 'Age: ', $validated_args->{age}, "\n";	# It's an integer now
  } else {
 	print "Example 1: Validation failed: $@\n";
  }
@@ -55,7 +55,7 @@ This function takes two mandatory arguments:
 
 A reference to a hash that defines the validation rules for each parameter.  The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
 
-=item * C<$params>
+=item * C<$args>
 
 A reference to a hash containing the parameters to be validated.  The keys of the hash are the parameter names, and the values are the parameter values.
 
@@ -113,14 +113,18 @@ If the validation is successful, the function will return a reference to a new h
 
 sub validate_strict
 {
-	my ($schema, $params, $unknown_parameter_handler) = @_;
+	my $params = _get_params(undef, @_);
 
-	# Check if schema and params are references to hashes
-	unless((ref($schema) eq 'HASH') && (ref($params) eq 'HASH')) {
-		croak 'validate_strict: schema and params must be hash references';
+	my $schema = $params->{'schema'};
+	my $args = $params->{'args'};
+	my $unknown_parameter_handler = $params->{'unknown_parameter_handler'};
+
+	# Check if schema and args are references to hashes
+	unless((ref($schema) eq 'HASH') && (ref($args) eq 'HASH')) {
+		croak 'validate_strict: schema and args must be hash references';
 	}
 
-	foreach my $key (keys %{$params}) {
+	foreach my $key (keys %{$args}) {
 		if(!defined($schema->{$key})) {
 			croak(__PACKAGE__, "::validate_strict: Unknown parameter '$key'");
 		}
@@ -128,17 +132,17 @@ sub validate_strict
 
 	$unknown_parameter_handler ||= 'die';
 
-	my %validated_params;
+	my %validated_args;
 	foreach my $key (keys %{$schema}) {
 		my $rules = $schema->{$key};
-		my $value = $params->{$key};
+		my $value = $args->{$key};
 
 		if(!defined($rules)) {	# Allow anything
 			next;
 		}
 
 		# Check if the parameter is required
-		if((ref($rules) eq 'HASH') && (!exists($rules->{optional})) && (!exists($params->{$key}))) {
+		if((ref($rules) eq 'HASH') && (!exists($rules->{optional})) && (!exists($args->{$key}))) {
 			if($unknown_parameter_handler eq 'die') {
 				croak(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
 			} elsif($unknown_parameter_handler eq 'warn') {
@@ -238,12 +242,45 @@ sub validate_strict
 			}
 		}
 
-		$validated_params{$key} = $value;
+		$validated_args{$key} = $value;
 	}
 
-	return \%validated_params;
+	return \%validated_args;
 }
 
+# Helper routine to parse the arguments given to a function.
+# Processes arguments passed to methods and ensures they are in a usable format,
+#	allowing the caller to call the function in anyway that they want
+#	e.g. foo('bar'), foo(arg => 'bar'), foo({ arg => 'bar' }) all mean the same
+#	when called _get_params('arg', @_);
+sub _get_params
+{
+	my $default = shift;
+
+	# Directly return hash reference if the first parameter is a hash reference
+	return $_[0] if(ref($_[0]) eq 'HASH');
+
+	my %rc;
+	my $num_args = scalar(@_);
+
+	# Populate %rc based on the number and type of arguments
+	if(($num_args == 1) && defined($default)) {
+		# %rc = ($default => shift);
+		return { $default => shift };
+	} elsif($num_args == 1) {
+		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], '()');
+	} elsif(($num_args == 0) && defined($default)) {
+		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], "($default => \$val)");
+	} elsif(($num_args % 2) == 0) {
+		%rc = @_;
+	} elsif($num_args == 0) {
+		return;
+	} else {
+		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], '()');
+	}
+
+	return \%rc;
+}
 =head1 AUTHOR
 
 Nigel Horne, C<< <njh at bandsman.co.uk> >>

@@ -1,7 +1,9 @@
 Revision history for Params-Validate-Strict
 
 0.02
+	Added the "unknown_parameter_handler" argument
 	Added CI tools
+	Use named parameters rather than positional ones
 
 0.01	Wed Feb 26 11:35:19 EST 2025
         First draft

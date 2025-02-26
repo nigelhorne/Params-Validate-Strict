@@ -13,17 +13,17 @@ Version 0.01
            age => { type => 'integer', min => 0, max => 150 },
     };
 
-    my $params = {
+    my $args = {
            username => 'john_doe',
            age => '30',    # Will be coerced to integer
     };
 
-    my $validated_params = validate_strict($schema, $params);
+    my $validated_args = validate_strict(schema => $schema, args => $args);
 
-    if (defined $validated_params) {
+    if (defined $validated_args) {
            print "Example 1: Validation successful!\n";
-           print 'Username: ', $validated_params->{username}, "\n";
-           print 'Age: ', $validated_params->{age}, "\n";  # It's an integer now
+           print 'Username: ', $validated_args->{username}, "\n";
+           print 'Age: ', $validated_args->{age}, "\n";    # It's an integer now
     } else {
            print "Example 1: Validation failed: $@\n";
     }
@@ -34,15 +34,22 @@ Version 0.01
 
 Validates a set of parameters against a schema.
 
-This function takes two arguments:
+This function takes two mandatory arguments:
 
 - `$schema`
 
     A reference to a hash that defines the validation rules for each parameter.  The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
 
-- `$params`
+- `$args`
 
     A reference to a hash containing the parameters to be validated.  The keys of the hash are the parameter names, and the values are the parameter values.
+
+It takes one optional argument:
+
+- `$unknown_parameter_handler`
+
+    This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
+    It must be one of `die` (the default), `warn`, or `ignore`.
 
 The schema can define the following rules for each parameter:
 
