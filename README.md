@@ -15,15 +15,15 @@ Version 0.01
 
     my $params = {
            username => 'john_doe',
-           age => '30', # Will be coerced to integer
+           age => '30',    # Will be coerced to integer
     };
 
     my $validated_params = validate_strict($schema, $params);
 
     if (defined $validated_params) {
            print "Example 1: Validation successful!\n";
-           print 'Username: ' . $validated_params->{username} . "\n";
-           print 'Age: ' . $validated_params->{age} . "\n"; # It's an integer now!
+           print 'Username: ', $validated_params->{username}, "\n";
+           print 'Age: ', $validated_params->{age}, "\n";  # It's an integer now
     } else {
            print "Example 1: Validation failed: $@\n";
     }
@@ -76,3 +76,51 @@ validation will be skipped for that parameter.
 If the validation fails, the function will `croak` with an error message describing the validation failure.
 
 If the validation is successful, the function will return a reference to a new hash containing the validated and (where applicable) coerced parameters.  Integer and number parameters will be coerced to their respective types.
+
+# AUTHOR
+
+Nigel Horne, `<njh at bandsman.co.uk>`
+
+# BUGS
+
+# SEE ALSO
+
+- [Params::Validate](https://metacpan.org/pod/Params%3A%3AValidate)
+
+# SUPPORT
+
+This module is provided as-is without any warranty.
+
+Please report any bugs or feature requests to `bug-params-validate-strict at rt.cpan.org`,
+or through the web interface at
+[http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params-Validate-Strict](http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params-Validate-Strict).
+I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Params::Validate::Strict
+
+You can also look for information at:
+
+- MetaCPAN
+
+    [https://metacpan.org/dist/Params-Validate-Strict](https://metacpan.org/dist/Params-Validate-Strict)
+
+- RT: CPAN's request tracker
+
+    [https://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate-Strict](https://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate-Strict)
+
+- CPAN Testers' Matrix
+
+    [http://matrix.cpantesters.org/?dist=Params-Validate-Strict](http://matrix.cpantesters.org/?dist=Params-Validate-Strict)
+
+- CPAN Testers Dependencies
+
+    [http://deps.cpantesters.org/?module=Params::Validate::Strict](http://deps.cpantesters.org/?module=Params::Validate::Strict)
+
+# LICENSE AND COPYRIGHT
+
+Copyright 2025 Nigel Horne.
+
+This program is released under the following licence: GPL2

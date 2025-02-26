@@ -28,15 +28,15 @@ our $VERSION = '0.01';
 
  my $params = {
 	username => 'john_doe',
-	age => '30', # Will be coerced to integer
+	age => '30',	# Will be coerced to integer
  };
 
  my $validated_params = validate_strict($schema, $params);
 
  if (defined $validated_params) {
 	print "Example 1: Validation successful!\n";
-	print 'Username: ' . $validated_params->{username} . "\n";
-	print 'Age: ' . $validated_params->{age} . "\n"; # It's an integer now!
+	print 'Username: ', $validated_params->{username}, "\n";
+	print 'Age: ', $validated_params->{age}, "\n";	# It's an integer now
  } else {
 	print "Example 1: Validation failed: $@\n";
  }
@@ -222,4 +222,64 @@ sub validate_strict
 	return \%validated_params;
 }
 
+=head1 AUTHOR
+
+Nigel Horne, C<< <njh at bandsman.co.uk> >>
+
+=head1 BUGS
+
+=head1 SEE ALSO
+
+=over 4
+
+=item * L<Params::Validate>
+
+=back
+
+=head1 SUPPORT
+
+This module is provided as-is without any warranty.
+
+Please report any bugs or feature requests to C<bug-params-validate-strict at rt.cpan.org>,
+or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params-Validate-Strict>.
+I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Params::Validate::Strict
+
+You can also look for information at:
+
+=over 4
+
+=item * MetaCPAN
+
+L<https://metacpan.org/dist/Params-Validate-Strict>
+
+=item * RT: CPAN's request tracker
+
+L<https://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate-Strict>
+
+=item * CPAN Testers' Matrix
+
+L<http://matrix.cpantesters.org/?dist=Params-Validate-Strict>
+
+=item * CPAN Testers Dependencies
+
+L<http://deps.cpantesters.org/?module=Params::Validate::Strict>
+
+=back
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2025 Nigel Horne.
+
+This program is released under the following licence: GPL2
+
+=cut
+
 1;
+
+__END__
