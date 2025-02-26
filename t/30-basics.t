@@ -48,7 +48,7 @@ subtest "Valid Inputs" => sub {
 	is $validated_params->{name}, "John Doe", "Name should be correct";
 
 	my $params2 = {
-		username => "test_user",
+		username => 'test_user',
 		age => "30",
 		email => 'test@example.com',
 		price => "19.99",
@@ -126,11 +126,11 @@ subtest "Invalid Inputs" => sub {
 	like $@, qr/name/, 'Invalid name should fail';
 
 	my $params9 = { unknown => 'val' }; # Unknown parameter
-	my $validated_params9 = eval { validate_strict($schema, $params9) };
+	my $validated_params9 = eval { validate_strict($schema, $params9, 'die') };
 	like $@, qr/unknown/, 'Unknown parameter should fail';
 
 	my $params10 = { username => "user", age => "25", unknown => "val" }; # Unknown parameter and valid
-	my $validated_params10 = eval { validate_strict($schema, $params10) };
+	my $validated_params10 = eval { validate_strict($schema, $params10, 'die') };
 	like $@, qr/unknown/, "Unknown parameter should fail with valid data";
 
 };

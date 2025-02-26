@@ -47,7 +47,7 @@ our $VERSION = '0.01';
 
 Validates a set of parameters against a schema.
 
-This function takes two arguments:
+This function takes two mandatory arguments:
 
 =over 4
 
@@ -58,6 +58,17 @@ A reference to a hash that defines the validation rules for each parameter.  The
 =item * C<$params>
 
 A reference to a hash containing the parameters to be validated.  The keys of the hash are the parameter names, and the values are the parameter values.
+
+=back
+
+It takes one optional argument:
+
+=over 4
+
+=item * C<$unknown_parameter_handler>
+
+This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
+It must be one of C<die> (the default), C<warn>, or C<ignore>.
 
 =back
 
@@ -102,7 +113,7 @@ If the validation is successful, the function will return a reference to a new h
 
 sub validate_strict
 {
-	my ($schema, $params) = @_;
+	my ($schema, $params, $unknown_parameter_handler) = @_;
 
 	# Check if schema and params are references to hashes
 	unless((ref($schema) eq 'HASH') && (ref($params) eq 'HASH')) {
@@ -115,6 +126,8 @@ sub validate_strict
 		}
 	}
 
+	$unknown_parameter_handler ||= 'die';
+
 	my %validated_params;
 	foreach my $key (keys %{$schema}) {
 		my $rules = $schema->{$key};
@@ -126,7 +139,16 @@ sub validate_strict
 
 		# Check if the parameter is required
 		if((ref($rules) eq 'HASH') && (!exists($rules->{optional})) && (!exists($params->{$key}))) {
-			croak(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
+			if($unknown_parameter_handler eq 'die') {
+				croak(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
+			} elsif($unknown_parameter_handler eq 'warn') {
+				carp(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
+				next;
+			} elsif($unknown_parameter_handler eq 'ignore') {
+				next;
+			} else {
+				croak(__PACKAGE__, "::validate_strict: unrecognized value for unknown_parameter_handler '$unknown_parameter_handler'");
+			}
 		}
 
 		# Handle optional parameters
