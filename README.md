@@ -8,10 +8,10 @@ Version 0.01
 
 # SYNOPSIS
 
-           my $schema = {
-                   username => { type => 'string', min => 3, max => 50 },
-                   age => { type => 'integer', min => 0, max => 150 },
-           };
+    my $schema = {
+           username => { type => 'string', min => 3, max => 50 },
+           age => { type => 'integer', min => 0, max => 150 },
+    };
 
     my $params = {
            username => 'john_doe',
@@ -70,7 +70,8 @@ The schema can define the following rules for each parameter:
 
     A boolean value indicating whether the parameter is optional. If true, the parameter is not required.  If false or omitted, the parameter is required.
 
-If a parameter is optional and its value is \`undef\`, validation will be skipped for that parameter.
+If a parameter is optional and its value is `` undef` ``,
+validation will be skipped for that parameter.
 
 If the validation fails, the function will `croak` with an error message describing the validation failure.
 

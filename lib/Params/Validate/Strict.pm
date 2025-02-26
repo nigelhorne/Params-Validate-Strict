@@ -21,10 +21,10 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-	my $schema = {
-		username => { type => 'string', min => 3, max => 50 },
-		age => { type => 'integer', min => 0, max => 150 },
-	};
+ my $schema = {
+	username => { type => 'string', min => 3, max => 50 },
+	age => { type => 'integer', min => 0, max => 150 },
+ };
 
  my $params = {
 	username => 'john_doe',
@@ -91,7 +91,8 @@ A boolean value indicating whether the parameter is optional. If true, the param
 
 =back
 
-If a parameter is optional and its value is `undef`, validation will be skipped for that parameter.
+If a parameter is optional and its value is C<undef`>,
+validation will be skipped for that parameter.
 
 If the validation fails, the function will C<croak> with an error message describing the validation failure.
 
@@ -119,7 +120,7 @@ sub validate_strict
 		my $rules = $schema->{$key};
 		my $value = $params->{$key};
 
-		if(!defined($rules)) {
+		if(!defined($rules)) {	# Allow anything
 			next;
 		}
 
