@@ -1,2 +1,77 @@
-# params-validate-strict
-Validates a set of parameters against a schema
+# NAME
+
+Params::Validate::Strict - Validates a set of parameters against a schema
+
+# VERSION
+
+Version 0.01
+
+# SYNOPSIS
+
+           my $schema = {
+                   username => { type => 'string', min => 3, max => 50 },
+                   age => { type => 'integer', min => 0, max => 150 },
+           };
+
+    my $params = {
+           username => 'john_doe',
+           age => '30', # Will be coerced to integer
+    };
+
+    my $validated_params = validate_strict($schema, $params);
+
+    if (defined $validated_params) {
+           print "Example 1: Validation successful!\n";
+           print 'Username: ' . $validated_params->{username} . "\n";
+           print 'Age: ' . $validated_params->{age} . "\n"; # It's an integer now!
+    } else {
+           print "Example 1: Validation failed: $@\n";
+    }
+
+# METHODS
+
+## validate\_strict
+
+Validates a set of parameters against a schema.
+
+This function takes two arguments:
+
+- `$schema`
+
+    A reference to a hash that defines the validation rules for each parameter.  The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
+
+- `$params`
+
+    A reference to a hash containing the parameters to be validated.  The keys of the hash are the parameter names, and the values are the parameter values.
+
+The schema can define the following rules for each parameter:
+
+- `type`
+
+    The data type of the parameter.  Valid types are `string`, `integer`, and `number`.
+
+- `min`
+
+    The minimum length (for strings) or value (for numbers).
+
+- `max`
+
+    The maximum length (for strings) or value (for numbers).
+
+- `matches`
+
+    A regular expression that the parameter value must match.
+
+- `callback`
+
+    A code reference to a subroutine that performs custom validation logic. The subroutine should accept the parameter value as an argument and return true if the value is valid, false otherwise.
+
+- `optional`
+
+    A boolean value indicating whether the parameter is optional. If true, the parameter is not required.  If false or omitted, the parameter is required.
+
+If a parameter is optional and its value is \`undef\`, validation will be skipped for that parameter.
+
+If the validation fails, the function will `croak` with an error message describing the validation failure.
+
+If the validation is successful, the function will return a reference to a new hash containing the validated and (where applicable) coerced parameters.  Integer and number parameters will be coerced to their respective types.

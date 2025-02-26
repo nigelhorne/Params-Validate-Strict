@@ -1,0 +1,6 @@
+lib/Params/Validate/Strict.pm
+Makefile.PL
+MANIFEST			This list of files
+MANIFEST.SKIP
+README.md
+t/30-basics.t

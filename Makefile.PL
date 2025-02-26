@@ -21,11 +21,7 @@ WriteMakefile(
 		: ()),
 	PREREQ_PM => {
 		'ExtUtils::MakeMaker' => 6.64,	# Minimum version for TEST_REQUIRES
-		'HTTP::Tiny' => 0,
-		'JSON::MaybeXS' => 0,
 		'Carp' => 0,
-		'Log::Log4perl' => 0,
-		'Scalar::Util' => 0,
 	},
 	META_MERGE => {
 		resources => {
@@ -42,11 +38,8 @@ WriteMakefile(
 	TEST_REQUIRES => {
 		'Test::Compile' => 0,
 		'Test::DescribeMe' => 0,
-		'Test::HTML::Lint' => 0,
-		'Test::JSON' => 0,
 		'Test::Most' => 0,
 		'Test::Needs' => 0,
-		'Test::RequiresInternet' => 0,
 		'Test::Warnings' => 0
 	}, dist => $dist,
 	clean => { FILES => 'Params-Validate-Strict-*' },  # Clean up distribution files
