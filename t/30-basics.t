@@ -5,7 +5,7 @@ use warnings;
 use Test::Most;
 use Params::Validate::Strict qw(validate_strict);
 
-subtest "Valid Inputs" => sub {
+subtest 'Valid Inputs' => sub {
 	my $schema = {
 		username => { type => 'string', min => 3, max => 50 },
 		age => { type => 'integer', min => 0, max => 150 },

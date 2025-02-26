@@ -9,23 +9,23 @@ Version 0.01
 # SYNOPSIS
 
     my $schema = {
-           username => { type => 'string', min => 3, max => 50 },
-           age => { type => 'integer', min => 0, max => 150 },
+        username => { type => 'string', min => 3, max => 50 },
+        age => { type => 'integer', min => 0, max => 150 },
     };
 
     my $args = {
-           username => 'john_doe',
-           age => '30',    # Will be coerced to integer
+         username => 'john_doe',
+         age => '30',   # Will be coerced to integer
     };
 
     my $validated_args = validate_strict(schema => $schema, args => $args);
 
     if (defined $validated_args) {
-           print "Example 1: Validation successful!\n";
-           print 'Username: ', $validated_args->{username}, "\n";
-           print 'Age: ', $validated_args->{age}, "\n";    # It's an integer now
+        print "Example 1: Validation successful!\n";
+        print 'Username: ', $validated_args->{username}, "\n";
+        print 'Age: ', $validated_args->{age}, "\n";    # It's an integer now
     } else {
-           print "Example 1: Validation failed: $@\n";
+        print "Example 1: Validation failed: $@\n";
     }
 
 # METHODS
