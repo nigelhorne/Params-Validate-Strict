@@ -91,7 +91,7 @@ A boolean value indicating whether the parameter is optional. If true, the param
 
 =back
 
-If a parameter is optional and its value is C<undef`>,
+If a parameter is optional and its value is C<undef>,
 validation will be skipped for that parameter.
 
 If the validation fails, the function will C<croak> with an error message describing the validation failure.
