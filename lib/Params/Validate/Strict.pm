@@ -279,6 +279,7 @@ sub _get_params
 
 	return \%rc;
 }
+
 =head1 AUTHOR
 
 Nigel Horne, C<< <njh at bandsman.co.uk> >>
@@ -288,6 +289,8 @@ Nigel Horne, C<< <njh at bandsman.co.uk> >>
 =head1 SEE ALSO
 
 =over 4
+
+=item * L<Params::Get>
 
 =item * L<Params::Validate>
 

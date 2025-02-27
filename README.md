@@ -92,6 +92,7 @@ Nigel Horne, `<njh at bandsman.co.uk>`
 
 # SEE ALSO
 
+- [Params::Get](https://metacpan.org/pod/Params%3A%3AGet)
 - [Params::Validate](https://metacpan.org/pod/Params%3A%3AValidate)
 
 # SUPPORT
