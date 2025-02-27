@@ -221,7 +221,7 @@ sub validate_strict
 						croak(__PACKAGE__, "::validate_strict: Parameter '$key' has meaningless max value $rule_value");
 					}
 				} elsif($rule_name eq 'matches') {
-					unless ($value =~ $rule_value) {
+					unless($value =~ $rule_value) {
 						croak "validate_strict: Parameter '$key' must match '$rule_value'";
 					}
 				} elsif ($rule_name eq 'callback') {
