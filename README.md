@@ -4,7 +4,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 # VERSION
 
-Version 0.02
+Version 0.03
 
 # SYNOPSIS
 
@@ -36,17 +36,17 @@ Validates a set of parameters against a schema.
 
 This function takes two mandatory arguments:
 
-- `$schema`
+- `schema`
 
     A reference to a hash that defines the validation rules for each parameter.  The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
 
-- `$args`
+- `args`
 
     A reference to a hash containing the parameters to be validated.  The keys of the hash are the parameter names, and the values are the parameter values.
 
 It takes one optional argument:
 
-- `$unknown_parameter_handler`
+- `unknown_parameter_handler`
 
     This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
     It must be one of `die` (the default), `warn`, or `ignore`.

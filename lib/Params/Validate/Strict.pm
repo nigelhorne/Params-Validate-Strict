@@ -14,11 +14,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 SYNOPSIS
 
@@ -52,11 +52,11 @@ This function takes two mandatory arguments:
 
 =over 4
 
-=item * C<$schema>
+=item * C<schema>
 
 A reference to a hash that defines the validation rules for each parameter.  The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
 
-=item * C<$args>
+=item * C<args>
 
 A reference to a hash containing the parameters to be validated.  The keys of the hash are the parameter names, and the values are the parameter values.
 
@@ -66,7 +66,7 @@ It takes one optional argument:
 
 =over 4
 
-=item * C<$unknown_parameter_handler>
+=item * C<unknown_parameter_handler>
 
 This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
 It must be one of C<die> (the default), C<warn>, or C<ignore>.
@@ -187,7 +187,6 @@ sub validate_strict
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a number");
 						}
 						$value = eval $value; # Coerce to number (be careful with eval)
-
 					} else {
 						croak "validate_strict: Unknown type '$type'";
 					}
