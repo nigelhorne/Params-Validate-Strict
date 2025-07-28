@@ -134,10 +134,15 @@ subtest "Invalid Inputs" => sub {
 	like $@, qr/unknown/, 'Unknown parameter should fail with valid data';
 
 	# Intentionally passing a hashref with an extra key "other"
-	my $args11 = {value => 42, other => 'oops'};
+	my $args11 = { value => 42, other => 'oops' };
 
 	# Simulate passing a schema only for 'value'
 	throws_ok( sub { validate_strict(schema => { type => 'integer' }, args => $args11) }, qr/Unknown parameter/, 'extra key rejection');
+
+	my $args12 = { number => ['a'] };
+	throws_ok {
+		validate_strict(args => $args12, schema => { number => 'integer' });
+	} qr/must be an integer/, 'Fails validation for non-scalar';
 };
 
 done_testing();
