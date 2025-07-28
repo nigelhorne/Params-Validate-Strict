@@ -114,7 +114,7 @@ If the validation is successful, the function will return a reference to a new h
 
 sub validate_strict
 {
-	my $params = Params::Get::get_params(undef, @_);
+	my $params = Params::Get::get_params(undef, \@_);
 
 	my $schema = $params->{'schema'};
 	my $args = $params->{'args'};
