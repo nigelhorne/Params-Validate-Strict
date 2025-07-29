@@ -2,6 +2,7 @@ package Params::Validate::Strict;
 
 use strict;
 use warnings;
+
 use Carp;
 use Params::Get 0.11;
 
@@ -14,11 +15,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 SYNOPSIS
 
@@ -299,6 +300,8 @@ Nigel Horne, C<< <njh at bandsman.co.uk> >>
 =item * L<Params::Get>
 
 =item * L<Params::Validate>
+
+=item * L<Return::Set>
 
 =back
 
