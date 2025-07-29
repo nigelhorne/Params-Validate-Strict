@@ -3,7 +3,7 @@ package Params::Validate::Strict;
 use strict;
 use warnings;
 use Carp;
-use Params::Get;
+use Params::Get 0.11;
 
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(validate_strict);
