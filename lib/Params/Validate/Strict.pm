@@ -221,7 +221,7 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if hash is undefined
 						}
-						if(scalar(scalar(%{$value})) < $rule_value) {
+						if(scalar(keys(%{$value})) < $rule_value) {
 							croak("validate_strict: Parameter '$key' must have at least length $rule_value keys");
 						}
 					} elsif(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number')) {
@@ -250,7 +250,7 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if hash is undefined
 						}
-						if(scalar(scalar(%{$value})) > $rule_value) {
+						if(scalar(keys(%{$value})) > $rule_value) {
 							croak("validate_strict: Parameter '$key' must have no more than $rule_value keys");
 						}
 					} elsif(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number')) {
