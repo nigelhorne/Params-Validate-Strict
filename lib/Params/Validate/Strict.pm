@@ -94,6 +94,10 @@ The maximum length (for strings), value (for numbers) or number of keys (for has
 
 A regular expression that the parameter value must match.
 
+=item * C<nomatch>
+
+A regular expression that the parameter value must not match.
+
 =item * C<callback>
 
 A code reference to a subroutine that performs custom validation logic. The subroutine should accept the parameter value as an argument and return true if the value is valid, false otherwise.
@@ -263,7 +267,11 @@ sub validate_strict
 					}
 				} elsif($rule_name eq 'matches') {
 					unless($value =~ $rule_value) {
-						croak "validate_strict: Parameter '$key' must match '$rule_value'";
+						croak "validate_strict: Parameter '$key' ($value) must match '$rule_value'";
+					}
+				} elsif($rule_name eq 'nomatch') {
+					if($value =~ $rule_value) {
+						croak "validate_strict: Parameter '$key' ($value) must not match '$rule_value'";
 					}
 				} elsif ($rule_name eq 'callback') {
 					unless (defined &$rule_value) {
