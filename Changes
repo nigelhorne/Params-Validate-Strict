@@ -1,7 +1,7 @@
 Revision history for Params-Validate-Strict
 
-0.06
-	Added the 'nomatch' rule
+0.06	Wed Jul 30 14:37:31 EDT 2025
+	Added the 'nomatch' and 'memberof' rules
 
 0.05	Tue Jul 29 08:24:59 EDT 2025
 	Bump the minimum version of Params::Get

@@ -15,11 +15,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 SYNOPSIS
 
@@ -81,6 +81,10 @@ The schema can define the following rules for each parameter:
 =item * C<type>
 
 The data type of the parameter.  Valid types are C<string>, C<integer>, C<number>, C<hashref>, C<arrayref> and C<coderef>.
+
+=item * C<memberof>
+
+The value must be a member of the given arrayref.
 
 =item * C<min>
 
@@ -272,6 +276,16 @@ sub validate_strict
 				} elsif($rule_name eq 'nomatch') {
 					if($value =~ $rule_value) {
 						croak "validate_strict: Parameter '$key' ($value) must not match '$rule_value'";
+					}
+				} elsif($rule_name eq 'memberof') {
+					if(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number')) {
+						unless(List::Util::any { $_ == $value } @{$rule_value}) {
+							croak "validate_strict: Parameter '$key' ($value) is not a member of ", join(', ', @{$rule_value});
+						}
+					} else {
+						unless(List::Util::any { $_ eq $value } @{$rule_value}) {
+							croak "validate_strict: Parameter '$key' ($value) is not a member of ", join(', ', @{$rule_value});
+						}
 					}
 				} elsif ($rule_name eq 'callback') {
 					unless (defined &$rule_value) {
