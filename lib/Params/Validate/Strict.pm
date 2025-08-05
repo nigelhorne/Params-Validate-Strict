@@ -324,7 +324,7 @@ sub validate_strict
 					}
 				} elsif($rule_name eq 'can') {
 					if($rules->{'type'} eq 'object') {
-						if(!$value->can($value)) {
+						if(!$value->can($rule_value)) {
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must an object that understands the $rule_value method");
 						}
 					} else {

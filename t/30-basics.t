@@ -5,6 +5,14 @@ use warnings;
 use Test::Most;
 use Params::Validate::Strict qw(validate_strict);
 
+{
+	package MyClass;
+
+	sub new { return bless { }, shift }
+
+	sub foo { }
+}
+
 subtest 'Valid Inputs' => sub {
 	my $schema = {
 		username => { type => 'string', min => 3, max => 50, nomatch => qr/\d/ },
@@ -22,17 +30,19 @@ subtest 'Valid Inputs' => sub {
 			},
 		},
 		name => 'string', # Simple type string
+		obj => { 'type' => 'object', optional => 1, can => 'foo' }
 	};
 
 	my $args = {
 		username => 'test_user',
-		age => '30',
+		age => 30,
 		email => 'test@example.com',
 		bio => 'A test bio',
 		price => "19.99",
-		quantity => "10",
+		quantity => 10,
 		password => 'P@$$wOrd123',
-		name => "John Doe",
+		name => 'John Doe',
+		obj => new_ok('MyClass')
 	};
 
 	my $validated_params = validate_strict({ schema => $schema, args => $args });
@@ -46,6 +56,7 @@ subtest 'Valid Inputs' => sub {
 	is $validated_params->{quantity}, 10, "Quantity should be correct and coerced to number";
 	is $validated_params->{password}, 'P@$$wOrd123', "Password should be correct";
 	is $validated_params->{name}, "John Doe", "Name should be correct";
+	isa_ok($validated_params->{obj}, 'MyClass', 'Object can be passed');
 
 	my $args2 = {
 		username => 'test_user',
@@ -164,6 +175,14 @@ subtest "Invalid Inputs" => sub {
 	throws_ok {
 		validate_strict(args => $args13, schema => $schema, unknown_parameter_handler => 'die')
 	} qr/min must be <= max/, 'validate min and max in the schema';
+
+	$schema = {
+		'obj' => { 'type' => 'object', optional => 1, can => 'bar' }
+	};
+	my $args14 = { obj => new_ok('MyClass') };
+	throws_ok {
+		validate_strict(args => $args14, schema => $schema, unknown_parameter_handler => 'die')
+	} qr/must an object that understands the bar method/, 'validate min and max in the schema';
 };
 
 done_testing();
