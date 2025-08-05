@@ -55,11 +55,19 @@ The schema can define the following rules for each parameter:
 
 - `type`
 
-    The data type of the parameter.  Valid types are `string`, `integer`, `number`, `hashref`, `arrayref` and `coderef`.
+    The data type of the parameter.  Valid types are `string`, `integer`, `number`, `hashref`, `arrayref`, `object` and `coderef`.
+
+- `can`
+
+    The parameter must be an object which understands the method `can`.
+
+- `isa`
+
+    The parameter must be an object of type `isa`.
 
 - `memberof`
 
-    The value must be a member of the given arrayref.
+    The parameter must be a member of the given arrayref.
 
 - `min`
 
