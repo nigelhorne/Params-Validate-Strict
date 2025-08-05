@@ -9,8 +9,8 @@ subtest 'Valid Inputs' => sub {
 	my $schema = {
 		username => { type => 'string', min => 3, max => 50, nomatch => qr/\d/ },
 		age => { type => 'integer', min => 0, max => 150 },
-		email => { type => 'string', matches => qr/^[^@]+@[^@]+\.[^@]+$/ },
-		bio => { type => 'string', optional => 1 },
+		email => { type => 'string', matches => qr/^[^@]+@[^@]+\.[^@]+$/, min => 1 },
+		bio => { type => 'string', optional => 1, 'min' => 10, 'max' => 10 },
 		price => { type => 'number', min => 0 },
 		quantity => { type => 'number', min => 1 },
 		password => {
@@ -109,9 +109,9 @@ subtest "Invalid Inputs" => sub {
 
 	my $args3 = { age => "-1" }; # Invalid age
 	my $validated_params3 = eval { validate_strict(schema => $schema, args => $args3) };
-	like $@, qr/age/, "Invalid age should fail";
+	like $@, qr/age/, 'Invalid age should fail';
 
-	my $args4 = { email => "invalid_email" }; # Invalid email
+	my $args4 = { email => 'invalid_email' }; # Invalid email
 	my $validated_params4 = eval { validate_strict(schema => $schema, args => $args4) };
 	like $@, qr/email/, "Invalid email should fail";
 
@@ -157,6 +157,13 @@ subtest "Invalid Inputs" => sub {
 	throws_ok {
 		validate_strict(args => $args13, schema => $schema, unknown_parameter_handler => 'die')
 	} qr/is not a member of/, 'memberof detects when a number is not in the list';
+
+	$schema = {
+		'number' => { 'type' => 'integer', 'min' => 1000, 'max' => 995 }
+	};
+	throws_ok {
+		validate_strict(args => $args13, schema => $schema, unknown_parameter_handler => 'die')
+	} qr/min must be <= max/, 'validate min and max in the schema';
 };
 
 done_testing();

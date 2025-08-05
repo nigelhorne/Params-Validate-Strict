@@ -171,6 +171,12 @@ sub validate_strict
 			$rules = { type => $rules };
 		}
 
+		if((my $min = $rules->{'min'}) && (my $max = $rules->{'max'})) {
+			if($min > $max) {
+				croak(__PACKAGE__, "::validate_strict($key): min must be <= max ($min > $max)");
+			}
+		}
+
 		# Validate based on rules
 		if(ref($rules) eq 'HASH') {
 			foreach my $rule_name (keys %$rules) {
