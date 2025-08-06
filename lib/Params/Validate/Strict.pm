@@ -4,7 +4,9 @@ use strict;
 use warnings;
 
 use Carp;
-use Params::Get 0.11;
+use List::Util qw(any);	# Required for memberof validation
+use Exporter qw(import);	# Required for @EXPORT_OK
+use Params::Get 0.13;
 use Scalar::Util;
 
 our @ISA = qw(Exporter);
@@ -56,7 +58,8 @@ This function takes two mandatory arguments:
 
 =item * C<schema>
 
-A reference to a hash that defines the validation rules for each parameter.  The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
+A reference to a hash that defines the validation rules for each parameter.
+The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
 
 =item * C<args>
 
@@ -81,7 +84,8 @@ The schema can define the following rules for each parameter:
 
 =item * C<type>
 
-The data type of the parameter.  Valid types are C<string>, C<integer>, C<number>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
+The data type of the parameter.
+Valid types are C<string>, C<integer>, C<number>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
 
 =item * C<can>
 
@@ -113,11 +117,14 @@ A regular expression that the parameter value must not match.
 
 =item * C<callback>
 
-A code reference to a subroutine that performs custom validation logic. The subroutine should accept the parameter value as an argument and return true if the value is valid, false otherwise.
+A code reference to a subroutine that performs custom validation logic.
+The subroutine should accept the parameter value as an argument and return true if the value is valid, false otherwise.
 
 =item * C<optional>
 
-A boolean value indicating whether the parameter is optional. If true, the parameter is not required.  If false or omitted, the parameter is required.
+A boolean value indicating whether the parameter is optional.
+If true, the parameter is not required.
+If false or omitted, the parameter is required.
 
 =back
 

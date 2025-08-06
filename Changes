@@ -2,6 +2,7 @@ Revision history for Params-Validate-Strict
 
 0.09
 	Optimize conditional
+	Added missing dependencies
 
 0.08	Tue Aug  5 18:58:37 EDT 2025
 	Validate objects
