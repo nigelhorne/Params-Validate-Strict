@@ -167,13 +167,15 @@ sub validate_strict
 			next;
 		}
 
-		# Check if the parameter is required
-		if((ref($rules) eq 'HASH') && (!exists($rules->{optional})) && (!exists($args->{$key}))) {
-			croak(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
+		if(ref($rules) eq 'HASH') {
+			# Handle optional parameters
+			if(exists($rules->{optional})) {
+				next if !defined($value);
+			} elsif(!exists($args->{$key})) {
+				# The parameter is required
+				croak(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
+			}
 		}
-
-		# Handle optional parameters
-		next if((ref($rules) eq 'HASH') && exists($rules->{optional}) && !defined($value));
 
 		# If rules are a simple type string
 		if((ref($rules) eq '') || !defined(ref($rules))) {
@@ -289,6 +291,9 @@ sub validate_strict
 						croak(__PACKAGE__, "::validate_strict: Parameter '$key' has meaningless max value $rule_value");
 					}
 				} elsif($rule_name eq 'matches') {
+					if(!defined($value)) {
+						next;	# Skip if string is undefined
+					}
 					unless($value =~ $rule_value) {
 						croak "validate_strict: Parameter '$key' ($value) must match '$rule_value'";
 					}
