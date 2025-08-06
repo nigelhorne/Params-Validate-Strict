@@ -4,7 +4,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 # VERSION
 
-Version 0.08
+Version 0.09
 
 # SYNOPSIS
 
@@ -104,6 +104,37 @@ validation will be skipped for that parameter.
 If the validation fails, the function will `croak` with an error message describing the validation failure.
 
 If the validation is successful, the function will return a reference to a new hash containing the validated and (where applicable) coerced parameters.  Integer and number parameters will be coerced to their respective types.
+
+# MIGRATION FROM LEGACY VALIDATORS
+
+## From [Params::Validate](https://metacpan.org/pod/Params%3A%3AValidate)
+
+    # Old style
+    validate(@_, {
+        name => { type => SCALAR },
+        age  => { type => SCALAR, regex => qr/^\d+$/ }
+    });
+
+    # New style
+    validate_strict(
+        schema => {
+            name => 'string',
+            age  => { type => 'integer', min => 0 }
+        },
+        args => { @_ }
+    );
+
+## From [Type::Params](https://metacpan.org/pod/Type%3A%3AParams)
+
+    # Old style
+    my ($name, $age) = validate_positional \@_, Str, Int;
+
+    # New style - requires converting to named parameters first
+    my %args = (name => $_[0], age => $_[1]);
+    my $validated = validate_strict(
+        schema => { name => 'string', age => 'integer' },
+        args => \%args
+    );
 
 # AUTHOR
 

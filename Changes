@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.09
+0.09	Wed Aug  6 15:29:55 EDT 2025
 	Optimize conditional
 	Added missing dependencies
 	Safer numeric coercion
