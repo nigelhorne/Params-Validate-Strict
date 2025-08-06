@@ -219,7 +219,8 @@ sub validate_strict
 						if($value !~ /^-?\d+(?:\.\d+)?$/) {
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a number");
 						}
-						$value = eval $value; # Coerce to number (be careful with eval)
+						# $value = eval $value; # Coerce to number (be careful with eval)
+						$value = 0 + $value;	# Numeric coercion
 					} elsif($type eq 'arrayref') {
 						if(ref($value) ne 'ARRAY') {
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be an arrayref");
