@@ -135,6 +135,37 @@ If the validation fails, the function will C<croak> with an error message descri
 
 If the validation is successful, the function will return a reference to a new hash containing the validated and (where applicable) coerced parameters.  Integer and number parameters will be coerced to their respective types.
 
+=head1 MIGRATION FROM LEGACY VALIDATORS
+
+=head2 From L<Params::Validate>
+
+    # Old style
+    validate(@_, {
+        name => { type => SCALAR },
+        age  => { type => SCALAR, regex => qr/^\d+$/ }
+    });
+
+    # New style
+    validate_strict(
+        schema => {
+            name => 'string',
+            age  => { type => 'integer', min => 0 }
+        },
+        args => { @_ }
+    );
+
+=head2 From L<Type::Params>
+
+    # Old style
+    my ($name, $age) = validate_positional \@_, Str, Int;
+
+    # New style - requires converting to named parameters first
+    my %args = (name => $_[0], age => $_[1]);
+    my $validated = validate_strict(
+        schema => { name => 'string', age => 'integer' },
+        args => \%args
+    );
+
 =cut
 
 sub validate_strict
