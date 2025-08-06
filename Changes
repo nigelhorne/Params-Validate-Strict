@@ -4,6 +4,7 @@ Revision history for Params-Validate-Strict
 	Optimize conditional
 	Added missing dependencies
 	Safer numeric coercion
+	Use Scalar::Util::looks_like_number for number verification
 
 0.08	Tue Aug  5 18:58:37 EDT 2025
 	Validate objects

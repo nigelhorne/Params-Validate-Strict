@@ -176,8 +176,10 @@ sub validate_strict
 
 		if(ref($rules) eq 'HASH') {
 			# Handle optional parameters
-			if(exists($rules->{optional})) {
-				next if !defined($value);
+			if($rules->{optional}) {
+				if(!exists($args->{$key})) {
+					next;	# optional and missing
+				}
 			} elsif(!exists($args->{$key})) {
 				# The parameter is required
 				croak(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
@@ -211,12 +213,12 @@ sub validate_strict
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a string");
 						}
 					} elsif($type eq 'integer') {
-						if($value !~ /^-?\d+$/) {
-							croak "validate_strict: Parameter '$key' must be an integer";
+						if($value !~ /^\s*[+\-]?\d+\s*$/) {
+							croak "validate_strict: Parameter '$key' ($value) must be an integer";
 						}
 						$value = int($value); # Coerce to integer
 					} elsif($type eq 'number') {
-						if($value !~ /^-?\d+(?:\.\d+)?$/) {
+						if(!Scalar::Util::looks_like_number($value)) {
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a number");
 						}
 						# $value = eval $value; # Coerce to number (be careful with eval)
@@ -359,7 +361,52 @@ sub validate_strict
 
 =head1 AUTHOR
 
-Nigel Horne, C<< <njh at bandsman.co.uk> >>
+Nigel Horne, C<< <njh at nigelhorne.com> >>
+
+=encoding utf-8
+
+=head1 FORMAL SPECIFICATION
+
+    [PARAM_NAME, VALUE, TYPE_NAME, CONSTRAINT_VALUE]
+
+    ValidationRule ::= SimpleType | ComplexRule
+
+    SimpleType ::= string | integer | number | arrayref | hashref | coderef | object
+
+    ComplexRule == [
+        type: TYPE_NAME;
+        min: ℕ₁;
+        max: ℕ₁;
+        optional: 𝔹;
+        matches: REGEX;
+        nomatch: REGEX;
+        memberof: seq VALUE;
+        callback: FUNCTION;
+        isa: TYPE_NAME;
+        can: METHOD_NAME
+    ]
+
+    Schema == PARAM_NAME ⇸ ValidationRule
+
+    Arguments == PARAM_NAME ⇸ VALUE
+
+    ValidatedResult == PARAM_NAME ⇸ VALUE
+
+    │ ∀ rule: ComplexRule • rule.min ≤ rule.max
+    │ ∀ schema: Schema; args: Arguments •
+    │   dom(validate_strict(schema, args)) ⊆ dom(schema) ∪ dom(args)
+
+    validate_strict: Schema × Arguments → ValidatedResult
+
+    ∀ schema: Schema; args: Arguments •
+      let result == validate_strict(schema, args) •
+        (∀ name: dom(schema) ∩ dom(args) •
+          name ∈ dom(result) ⇒
+          type_matches(result(name), schema(name))) ∧
+        (∀ name: dom(schema) •
+          ¬optional(schema(name)) ⇒ name ∈ dom(args))
+
+    type_matches: VALUE × ValidationRule → 𝔹
 
 =head1 BUGS
 
