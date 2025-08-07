@@ -253,6 +253,9 @@ sub validate_strict
 						}
 						$value = int($value); # Coerce to integer
 					} elsif($type eq 'number') {
+						if(!defined($value)) {
+							next;	# Skip if string is undefined
+						}
 						if(!Scalar::Util::looks_like_number($value)) {
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a number");
 						}
@@ -300,6 +303,9 @@ sub validate_strict
 							croak("validate_strict: Parameter '$key' must contain at least $rule_value keys");
 						}
 					} elsif(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number')) {
+						if(!defined($value)) {
+							next;	# Skip if hash is undefined
+						}
 						if($value < $rule_value) {
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be at least $rule_value");
 						}
@@ -329,6 +335,9 @@ sub validate_strict
 							croak("validate_strict: Parameter '$key' must contain no more than $rule_value keys");
 						}
 					} elsif(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number')) {
+						if(!defined($value)) {
+							next;	# Skip if hash is undefined
+						}
 						if($value > $rule_value) {
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be no more than $rule_value");
 						}
