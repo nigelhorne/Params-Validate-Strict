@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.10
+0.10	Wed Aug  6 20:40:12 EDT 2025
 	Allow args to be not given, will allow if everything is optional
 	Allow { arg => undef }
 
