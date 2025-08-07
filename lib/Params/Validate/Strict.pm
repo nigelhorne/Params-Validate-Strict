@@ -180,7 +180,10 @@ sub validate_strict
 	if(ref($schema) ne 'HASH') {
 		croak 'validate_strict: schema must be a hash reference';
 	}
-	if(ref($args) ne 'HASH') {
+
+	if(exists($params->{'args'}) && (!defined($args))) {
+		$args = {};
+	} elsif(ref($args) ne 'HASH') {
 		croak 'validate_strict: args must be a hash reference';
 	}
 
