@@ -83,10 +83,12 @@ The schema can define the following rules for each parameter:
 - `matches`
 
     A regular expression that the parameter value must match.
+    Checks all members of arrayrefs.
 
 - `nomatch`
 
     A regular expression that the parameter value must not match.
+    Checks all members of arrayrefs.
 
 - `callback`
 

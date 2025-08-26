@@ -111,10 +111,12 @@ The maximum length (for strings), value (for numbers) or number of keys (for has
 =item * C<matches>
 
 A regular expression that the parameter value must match.
+Checks all members of arrayrefs.
 
 =item * C<nomatch>
 
 A regular expression that the parameter value must not match.
+Checks all members of arrayrefs.
 
 =item * C<callback>
 
@@ -350,7 +352,12 @@ sub validate_strict
 						next;	# Skip if string is undefined
 					}
 					eval {
-						unless($value =~ $rule_value) {
+						if($rules->{'type'} eq 'arrayref') {
+							my @matches = grep { /$rule_value/ } @{$value};
+							if(scalar(@matches) != scalar(@{$value})) {
+								croak "validate_strict: All members of parameter '$key' [", join(', ', @{$value}), "] must match pattern '$rule_value'";
+							}
+						} elsif($value !~ $rule_value) {
 							croak "validate_strict: Parameter '$key' ($value) must match pattern '$rule_value'";
 						}
 					};
@@ -358,7 +365,12 @@ sub validate_strict
 						croak(__PACKAGE__, "::validate_strict: Parameter '$key' invalid regex '$rule_value': $@");
 					}
 				} elsif($rule_name eq 'nomatch') {
-					if($value =~ $rule_value) {
+					if($rules->{'type'} eq 'arrayref') {
+						my @matches = grep { /$rule_value/ } @{$value};
+						if(scalar(@matches)) {
+							croak "validate_strict: No member of parameter '$key' [", join(', ', @{$value}), "] must match pattern '$rule_value'";
+						}
+					} elsif($value =~ $rule_value) {
 						croak "validate_strict: Parameter '$key' ($value) must not match pattern '$rule_value'";
 					}
 				} elsif($rule_name eq 'memberof') {
