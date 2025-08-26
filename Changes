@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.11
+0.11	Tue Aug 26 15:02:00 EDT 2025
 	args can now also be input, to be used with Return::Set which takes output
 	Matches and nomatch now works on arrayrefs, checking each member of the array
 
