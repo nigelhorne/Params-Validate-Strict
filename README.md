@@ -13,17 +13,17 @@ Version 0.10
         age => { type => 'integer', min => 0, max => 150 },
     };
 
-    my $args = {
+    my $input = {
          username => 'john_doe',
          age => '30',   # Will be coerced to integer
     };
 
-    my $validated_args = validate_strict(schema => $schema, args => $args);
+    my $validated_input = validate_strict(schema => $schema, input => $input);
 
-    if (defined $validated_args) {
+    if (defined $validated_input) {
         print "Example 1: Validation successful!\n";
-        print 'Username: ', $validated_args->{username}, "\n";
-        print 'Age: ', $validated_args->{age}, "\n";    # It's an integer now
+        print 'Username: ', $validated_input->{username}, "\n";
+        print 'Age: ', $validated_input->{age}, "\n";   # It's an integer now
     } else {
         print "Example 1: Validation failed: $@\n";
     }
@@ -41,9 +41,10 @@ This function takes two mandatory arguments:
     A reference to a hash that defines the validation rules for each parameter.
     The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
 
-- `args`
+- `args` || `input`
 
-    A reference to a hash containing the parameters to be validated.  The keys of the hash are the parameter names, and the values are the parameter values.
+    A reference to a hash containing the parameters to be validated.
+    The keys of the hash are the parameter names, and the values are the parameter values.
 
 It takes one optional argument:
 
