@@ -204,13 +204,25 @@ sub validate_strict
 	foreach my $key (keys %{$args}) {
 		if(!exists($schema->{$key})) {
 			if($unknown_parameter_handler eq 'die') {
+				if($logger) {
+					$logger->error(__PACKAGE__ . "::validate_strict: Unknown parameter '$key'");
+				}
 				croak(__PACKAGE__, "::validate_strict: Unknown parameter '$key'");
 			} elsif($unknown_parameter_handler eq 'warn') {
+				if($logger) {
+					$logger->warn(__PACKAGE__ . "::validate_strict: Unknown parameter '$key'");
+				}
 				carp(__PACKAGE__, "::validate_strict: Unknown parameter '$key'");
 				next;
 			} elsif($unknown_parameter_handler eq 'ignore') {
+				if($logger) {
+					$logger->debug(__PACKAGE__ . "::validate_strict: Unknown parameter '$key'");
+				}
 				next;
 			} else {
+				if($logger) {
+					$logger->error(croak(__PACKAGE__ . "::validate_strict: '$unknown_parameter_handler' unknown_parameter_handler must be one of die, warn, ignore"));
+				}
 				croak(__PACKAGE__, "::validate_strict: '$unknown_parameter_handler' unknown_parameter_handler must be one of die, warn, ignore");
 			}
 		}
