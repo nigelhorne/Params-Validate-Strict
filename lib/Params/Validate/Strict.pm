@@ -68,7 +68,7 @@ The keys of the hash are the parameter names, and the values are the parameter v
 
 =back
 
-It takes one optional argument:
+It takes two optional arguments:
 
 =over 4
 
@@ -76,6 +76,10 @@ It takes one optional argument:
 
 This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
 It must be one of C<die> (the default), C<warn>, or C<ignore>.
+
+=item * C<logger>
+
+A logging object that understands messages such as C<error> and C<warn>.
 
 =back
 
@@ -178,16 +182,23 @@ sub validate_strict
 	my $schema = $params->{'schema'};
 	my $args = $params->{'args'} || $params->{'input'};
 	my $unknown_parameter_handler = $params->{'unknown_parameter_handler'} || 'die';
+	my $logger = $params->{'logger'};
 
 	# Check if schema and args are references to hashes
 	if(ref($schema) ne 'HASH') {
-		croak 'validate_strict: schema must be a hash reference';
+		if($logger) {
+			$logger->error('validate_strict: schema must be a hash reference');
+		}
+		croak('validate_strict: schema must be a hash reference');
 	}
 
 	if(exists($params->{'args'}) && (!defined($args))) {
 		$args = {};
 	} elsif(ref($args) ne 'HASH') {
-		croak 'validate_strict: args must be a hash reference';
+		if($logger) {
+			$logger->error('validate_strict: args must be a hash reference');
+		}
+		croak('validate_strict: args must be a hash reference');
 	}
 
 	foreach my $key (keys %{$args}) {
