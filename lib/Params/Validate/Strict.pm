@@ -186,33 +186,21 @@ sub validate_strict
 
 	# Check if schema and args are references to hashes
 	if(ref($schema) ne 'HASH') {
-		if($logger) {
-			$logger->error('validate_strict: schema must be a hash reference');
-		}
-		croak('validate_strict: schema must be a hash reference');
+		_error($logger, 'validate_strict: schema must be a hash reference');
 	}
 
 	if(exists($params->{'args'}) && (!defined($args))) {
 		$args = {};
 	} elsif(ref($args) ne 'HASH') {
-		if($logger) {
-			$logger->error('validate_strict: args must be a hash reference');
-		}
-		croak('validate_strict: args must be a hash reference');
+		_error($logger, 'validate_strict: args must be a hash reference');
 	}
 
 	foreach my $key (keys %{$args}) {
 		if(!exists($schema->{$key})) {
 			if($unknown_parameter_handler eq 'die') {
-				if($logger) {
-					$logger->error(__PACKAGE__ . "::validate_strict: Unknown parameter '$key'");
-				}
-				croak(__PACKAGE__, "::validate_strict: Unknown parameter '$key'");
+				_error($logger, "::validate_strict: Unknown parameter '$key'");
 			} elsif($unknown_parameter_handler eq 'warn') {
-				if($logger) {
-					$logger->warn(__PACKAGE__ . "::validate_strict: Unknown parameter '$key'");
-				}
-				carp(__PACKAGE__, "::validate_strict: Unknown parameter '$key'");
+				_warn($logger, "::validate_strict: Unknown parameter '$key'");
 				next;
 			} elsif($unknown_parameter_handler eq 'ignore') {
 				if($logger) {
@@ -220,10 +208,7 @@ sub validate_strict
 				}
 				next;
 			} else {
-				if($logger) {
-					$logger->error(croak(__PACKAGE__ . "::validate_strict: '$unknown_parameter_handler' unknown_parameter_handler must be one of die, warn, ignore"));
-				}
-				croak(__PACKAGE__, "::validate_strict: '$unknown_parameter_handler' unknown_parameter_handler must be one of die, warn, ignore");
+				_error($logger, "::validate_strict: '$unknown_parameter_handler' unknown_parameter_handler must be one of die, warn, ignore");
 			}
 		}
 	}
@@ -270,10 +255,13 @@ sub validate_strict
 						if(ref($value)) {
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a string");
 						}
-						unless((ref($value) eq '') || (defined($value) && ($value =~ /^.*$/))) { # Allow undef for optional strings
+						unless((ref($value) eq '') || (defined($value) && length($value))) {	# Allow undef for optional strings
 							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a string");
 						}
 					} elsif($type eq 'integer') {
+						if(!defined($value)) {
+							next;	# Skip if string is undefined
+						}
 						if($value !~ /^\s*[+\-]?\d+\s*$/) {
 							croak "validate_strict: Parameter '$key' ($value) must be an integer";
 						}
@@ -448,6 +436,32 @@ sub validate_strict
 	}
 
 	return \%validated_args;
+}
+
+# Helper to log error or croak
+sub _error
+{
+	my $logger = shift;
+	my $message = join('', @_);
+
+	if($logger) {
+		$logger->error($message);
+	} else {
+		croak(__PACKAGE__ . ": $message");
+	}
+}
+
+# Helper to log warning or carp
+sub _warn
+{
+	my $logger = shift;
+	my $message = join('', @_);
+
+	if($logger) {
+		$logger->warn($message);
+	} else {
+		carp(__PACKAGE__ . ": $message");
+	}
 }
 
 =head1 AUTHOR
