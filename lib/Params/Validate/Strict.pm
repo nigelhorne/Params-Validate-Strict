@@ -38,7 +38,7 @@ our $VERSION = '0.11';
 
     my $validated_input = validate_strict(schema => $schema, input => $input);
 
-    if (defined $validated_input) {
+    if(defined($validated_input)) {
         print "Example 1: Validation successful!\n";
         print 'Username: ', $validated_input->{username}, "\n";
         print 'Age: ', $validated_input->{age}, "\n";	# It's an integer now
@@ -149,14 +149,14 @@ If the validation is successful, the function will return a reference to a new h
     # Old style
     validate(@_, {
         name => { type => SCALAR },
-        age  => { type => SCALAR, regex => qr/^\d+$/ }
+        age => { type => SCALAR, regex => qr/^\d+$/ }
     });
 
     # New style
     validate_strict(
         schema => {
             name => 'string',
-            age  => { type => 'integer', min => 0 }
+            age => { type => 'integer', min => 0 }
         },
         args => { @_ }
     );
@@ -417,19 +417,19 @@ sub validate_strict
 				} elsif($rule_name eq 'can') {
 					if($rules->{'type'} eq 'object') {
 						if(!$value->can($rule_value)) {
-							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be an object that understands the $rule_value method");
+							_error($logger, "::validate_strict: Parameter '$key' must be an object that understands the $rule_value method");
 						}
 					} else {
-						croak(__PACKAGE__, "::validate_strict: Parameter '$key' has meaningless can value $rule_value");
+						_error($logger, "::validate_strict: Parameter '$key' has meaningless can value $rule_value");
 					}
 				} elsif($rule_name eq 'optional') {
 					# Already handled at the beginning of the loop
 				} else {
-					croak "validate_strict: Unknown rule '$rule_name'";
+					_error($logger, "validate_strict: Unknown rule '$rule_name'");
 				}
 			}
 		} elsif(ref($rules)) {
-			croak('rules must be hash reference or string');
+			_error($logger, 'rules must be hash reference or string');
 		}
 
 		$validated_args{$key} = $value;
