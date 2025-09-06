@@ -382,7 +382,7 @@ sub validate_strict
 							croak "validate_strict: No member of parameter '$key' [", join(', ', @{$value}), "] must match pattern '$rule_value'";
 						}
 					} elsif($value =~ $rule_value) {
-						croak "validate_strict: Parameter '$key' ($value) must not match pattern '$rule_value'";
+						_error($logger, "validate_strict: Parameter '$key' ($value) must not match pattern '$rule_value'");
 					}
 				} elsif($rule_name eq 'memberof') {
 					if(ref($rule_value) eq 'ARRAY') {
@@ -409,10 +409,10 @@ sub validate_strict
 				} elsif($rule_name eq 'isa') {
 					if($rules->{'type'} eq 'object') {
 						if(!$value->isa($rule_value)) {
-							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a '$rule_value' object");
+							_error($logger, "validate_strict: Parameter '$key' must be a '$rule_value' object");
 						}
 					} else {
-						croak(__PACKAGE__, "::validate_strict: Parameter '$key' has meaningless isa value $rule_value");
+						_error($logger, "validate_strict: Parameter '$key' has meaningless isa value $rule_value");
 					}
 				} elsif($rule_name eq 'can') {
 					if($rules->{'type'} eq 'object') {
