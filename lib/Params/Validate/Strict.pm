@@ -235,14 +235,14 @@ sub validate_strict
 			}
 		} elsif(!exists($args->{$key})) {
 			# The parameter is required
-			croak(__PACKAGE__, "::validate_strict: Required parameter '$key' is missing");
+			_error($logger, "validate_strict: Required parameter '$key' is missing");
 		}
 
 		# Validate based on rules
 		if(ref($rules) eq 'HASH') {
 			if((my $min = $rules->{'min'}) && (my $max = $rules->{'max'})) {
 				if($min > $max) {
-					croak(__PACKAGE__, "::validate_strict($key): min must be <= max ($min > $max)");
+					_error($logger, "validate_strict($key): min must be <= max ($min > $max)");
 				}
 			}
 			foreach my $rule_name (keys %$rules) {
