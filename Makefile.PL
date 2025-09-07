@@ -13,7 +13,7 @@ if($^O eq 'darwin') {
 
 WriteMakefile(
 	ABSTRACT_FROM	=> 'lib/Params/Validate/Strict.pm',
-	AUTHOR => 'Nigel Horne <njh@bandsman.co.uk>',
+	AUTHOR => 'Nigel Horne <njh@nigelhorne.com>',
 	NAME => 'Params::Validate::Strict',
 	VERSION_FROM => 'lib/Params/Validate/Strict.pm', # finds $VERSION in the module
 	((defined($ExtUtils::MakeMaker::VERSION) && ($ExtUtils::MakeMaker::VERSION >= 6.3002))
@@ -40,6 +40,7 @@ WriteMakefile(
 			},
 		},
 	}, TEST_REQUIRES => {
+		'IPC::System::Simple' => 0,
 		'Test::Compile' => 0,
 		'Test::DescribeMe' => 0,
 		'Test::Most' => 0,

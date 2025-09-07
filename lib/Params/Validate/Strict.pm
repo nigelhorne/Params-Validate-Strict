@@ -253,10 +253,10 @@ sub validate_strict
 
 					if($type eq 'string') {
 						if(ref($value)) {
-							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a string");
+							_error($logger, "validate_strict: Parameter '$key' must be a string");
 						}
 						unless((ref($value) eq '') || (defined($value) && length($value))) {	# Allow undef for optional strings
-							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a string");
+							_error($logger, "validate_strict: Parameter '$key' must be a string");
 						}
 					} elsif($type eq 'integer') {
 						if(!defined($value)) {
@@ -445,7 +445,7 @@ sub _error
 	my $message = join('', @_);
 
 	if($logger) {
-		$logger->error($message);
+		$logger->error(__PACKAGE__, ": $message");
 	} else {
 		croak(__PACKAGE__ . ": $message");
 	}
@@ -458,7 +458,7 @@ sub _warn
 	my $message = join('', @_);
 
 	if($logger) {
-		$logger->warn($message);
+		$logger->warn(__PACKAGE__, ": $message");
 	} else {
 		carp(__PACKAGE__ . ": $message");
 	}
