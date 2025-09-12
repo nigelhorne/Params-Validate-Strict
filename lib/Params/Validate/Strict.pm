@@ -95,6 +95,8 @@ Valid types are C<string>, C<integer>, C<number>, C<hashref>, C<arrayref>, C<obj
 =item * C<can>
 
 The parameter must be an object which understands the method C<can>.
+C<can> can be a simple scalar string of a method name,
+or an arrayref of a list of method names, all of which must be supported by the object.
 
 =item * C<isa>
 
@@ -263,7 +265,7 @@ sub validate_strict
 							next;	# Skip if string is undefined
 						}
 						if($value !~ /^\s*[+\-]?\d+\s*$/) {
-							croak "validate_strict: Parameter '$key' ($value) must be an integer";
+							_error($logger, "validate_strict: Parameter '$key' ($value) must be an integer");
 						}
 						$value = int($value); # Coerce to integer
 					} elsif($type eq 'number') {
@@ -271,7 +273,7 @@ sub validate_strict
 							next;	# Skip if string is undefined
 						}
 						if(!Scalar::Util::looks_like_number($value)) {
-							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be a number");
+							_error($logger, "validate_strict: Parameter '$key' must be a number");
 						}
 						# $value = eval $value; # Coerce to number (be careful with eval)
 						$value = 0 + $value;	# Numeric coercion
@@ -404,7 +406,7 @@ sub validate_strict
 					}
 					my $res = $rule_value->($value);
 					unless ($res) {
-						croak "validate_strict: Parameter '$key' failed custom validation";
+						_error($logger, "validate_strict: Parameter '$key' failed custom validation");;
 					}
 				} elsif($rule_name eq 'isa') {
 					if($rules->{'type'} eq 'object') {
@@ -415,9 +417,20 @@ sub validate_strict
 						_error($logger, "validate_strict: Parameter '$key' has meaningless isa value $rule_value");
 					}
 				} elsif($rule_name eq 'can') {
+					# TODO: allow the value to be a list of methods
 					if($rules->{'type'} eq 'object') {
-						if(!$value->can($rule_value)) {
-							_error($logger, "::validate_strict: Parameter '$key' must be an object that understands the $rule_value method");
+						if(ref($rule_value) eq 'ARRAY') {
+							foreach my $method(@{$rule_value}) {
+								if(!$value->can($method)) {
+									_error($logger, "validate_strict: Parameter '$key' must be an object that understands the $method method");
+								}
+							}
+						} elsif(!ref($rule_value)) {
+							if(!$value->can($rule_value)) {
+								_error($logger, "validate_strict: Parameter '$key' must be an object that understands the $rule_value method");
+							}
+						} else {
+							_error($logger, "validate_strict: 'can' rule for Parameter '$key must be either a scalar or an arrayref");
 						}
 					} else {
 						_error($logger, "::validate_strict: Parameter '$key' has meaningless can value $rule_value");

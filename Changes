@@ -3,6 +3,7 @@ Revision history for Params-Validate-Strict
 0.12
 	Started to support the logger argument
 	Remove unneeded regex
+	Allow 'can' to take a list of methods as arrayref
 
 0.11	Tue Aug 26 15:02:00 EDT 2025
 	args can now also be input, to be used with Return::Set which takes output
