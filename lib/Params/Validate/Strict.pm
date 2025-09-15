@@ -279,7 +279,7 @@ sub validate_strict
 						$value = 0 + $value;	# Numeric coercion
 					} elsif($type eq 'arrayref') {
 						if(ref($value) ne 'ARRAY') {
-							croak(__PACKAGE__, "::validate_strict: Parameter '$key' must be an arrayref");
+							_error($logger, "validate_strict: Parameter '$key' must be an arrayref");
 						}
 					} elsif($type eq 'hashref') {
 						if(ref($value) ne 'HASH') {
