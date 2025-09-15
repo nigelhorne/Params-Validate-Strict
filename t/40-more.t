@@ -35,6 +35,8 @@ subtest 'Type coercion edge cases' => sub {
 		num_field => { type => 'number', optional => 1 },
 	};
 
+	lives_ok { validate_strict(schema => $schema, args => undef) };
+
 	# Integer edge cases
 	for my $test_case (
 		[' 42 ', 42, 'Whitespace trimmed in integer'],
