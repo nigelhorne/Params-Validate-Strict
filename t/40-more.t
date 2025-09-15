@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use Test::Most;
-use Test::Exception;
 use Scalar::Util qw(blessed);
 
 BEGIN { use_ok('Params::Validate::Strict', qw(validate_strict)) }

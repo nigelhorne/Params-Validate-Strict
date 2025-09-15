@@ -16,5 +16,6 @@ t/pod-cm.t
 t/pod-spelling.t
 t/pod-synopsis.t
 t/pod.t
+t/prereq.t
 t/strict.t
 t/vars.t

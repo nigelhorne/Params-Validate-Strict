@@ -28,6 +28,8 @@ WriteMakefile(
 		'List::Util' => 0,
 		'Params::Get' => 0.13,
 		'Scalar::Util' => 0,
+		'strict' => 0,
+		'warnings' => 0
 	}, META_MERGE => {
 		resources => {
 			repository => {
@@ -41,6 +43,7 @@ WriteMakefile(
 		},
 	}, TEST_REQUIRES => {
 		'IPC::System::Simple' => 0,
+		'Readonly' => 0,
 		'Test::Compile' => 0,
 		'Test::DescribeMe' => 0,
 		'Test::Most' => 0,

@@ -1,7 +1,7 @@
 Revision history for Params-Validate-Strict
 
 0.12
-	Started to support the logger argument
+	Support the logger argument
 	Remove unneeded regex
 	Allow 'can' to take a list of methods as arrayref
 
