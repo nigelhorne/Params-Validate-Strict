@@ -532,6 +532,8 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
 =over 4
 
+=item * Test coverage report: L<https://nigelhorne.github.io/Params-Validate-Strict/coverage/>
+
 =item * L<Params::Get>
 
 =item * L<Params::Validate>

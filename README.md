@@ -20,7 +20,7 @@ Version 0.11
 
     my $validated_input = validate_strict(schema => $schema, input => $input);
 
-    if (defined $validated_input) {
+    if(defined($validated_input)) {
         print "Example 1: Validation successful!\n";
         print 'Username: ', $validated_input->{username}, "\n";
         print 'Age: ', $validated_input->{age}, "\n";   # It's an integer now
@@ -46,12 +46,16 @@ This function takes two mandatory arguments:
     A reference to a hash containing the parameters to be validated.
     The keys of the hash are the parameter names, and the values are the parameter values.
 
-It takes one optional argument:
+It takes two optional arguments:
 
 - `unknown_parameter_handler`
 
     This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
     It must be one of `die` (the default), `warn`, or `ignore`.
+
+- `logger`
+
+    A logging object that understands messages such as `error` and `warn`.
 
 The schema can define the following rules for each parameter:
 
@@ -63,6 +67,8 @@ The schema can define the following rules for each parameter:
 - `can`
 
     The parameter must be an object which understands the method `can`.
+    `can` can be a simple scalar string of a method name,
+    or an arrayref of a list of method names, all of which must be supported by the object.
 
 - `isa`
 
@@ -115,14 +121,14 @@ If the validation is successful, the function will return a reference to a new h
     # Old style
     validate(@_, {
         name => { type => SCALAR },
-        age  => { type => SCALAR, regex => qr/^\d+$/ }
+        age => { type => SCALAR, regex => qr/^\d+$/ }
     });
 
     # New style
     validate_strict(
         schema => {
             name => 'string',
-            age  => { type => 'integer', min => 0 }
+            age => { type => 'integer', min => 0 }
         },
         args => { @_ }
     );
@@ -190,6 +196,7 @@ Nigel Horne, `<njh at nigelhorne.com>`
 
 # SEE ALSO
 
+- Test coverage report: [https://nigelhorne.github.io/Params-Validate-Strict/coverage/](https://nigelhorne.github.io/Params-Validate-Strict/coverage/)
 - [Params::Get](https://metacpan.org/pod/Params%3A%3AGet)
 - [Params::Validate](https://metacpan.org/pod/Params%3A%3AValidate)
 - [Return::Set](https://metacpan.org/pod/Return%3A%3ASet)
