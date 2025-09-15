@@ -278,10 +278,16 @@ sub validate_strict
 						# $value = eval $value; # Coerce to number (be careful with eval)
 						$value = 0 + $value;	# Numeric coercion
 					} elsif($type eq 'arrayref') {
+						if(!defined($value)) {
+							next;	# Skip if arrayref is undefined
+						}
 						if(ref($value) ne 'ARRAY') {
 							_error($logger, "validate_strict: Parameter '$key' must be an arrayref");
 						}
 					} elsif($type eq 'hashref') {
+						if(!defined($value)) {
+							next;	# Skip if hashref is undefined
+						}
 						if(ref($value) ne 'HASH') {
 							_error($logger, "validate_strict: Parameter '$key' must be an hashref");
 						}
