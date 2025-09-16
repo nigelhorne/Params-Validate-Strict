@@ -4,7 +4,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 # VERSION
 
-Version 0.11
+Version 0.12
 
 # SYNOPSIS
 
@@ -109,13 +109,13 @@ The schema can define the following rules for each parameter:
 
 - `default`
 
-    Populate missing optional parameters with the specfied value.
+    Populate missing optional parameters with the specified value.
     Note that this value is not validated.
 
-        username => { 
-          type => 'string', 
-          optional => 1, 
-          default => 'guest' 
+        username => {
+          type => 'string',
+          optional => 1,
+          default => 'guest'
         }
 
 - `element_type`
@@ -125,7 +125,7 @@ The schema can define the following rules for each parameter:
         tags => {
           type => 'arrayref',
           element_type => 'number',
-          min => 1,   # this the length of array ref, not the min value for each of the numbers, that's a TODO
+          min => 1,   # this the length of array ref, not the min value for each of the numbers, for that, add a C<schema> rule
           max => 5
         }
 
