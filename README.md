@@ -139,6 +139,38 @@ The schema can define the following rules for each parameter:
           error_message => 'You must be at least 18 years old'
         }
 
+- `schema`
+
+    You can validate nested hashrefs and arrayrefs using the `schema` property:
+
+        my $schema = {
+            user => {
+                type => 'hashref',
+                schema => {
+                    name => { type => 'string' },
+                    age => { type => 'integer', min => 0 },
+                    hobbies => {
+                        type => 'arrayref',
+                        schema => { type => 'string' }, # Validate each element
+                        min => 1 # At least one hobby
+                    }
+                }
+            },
+            metadata => {
+                type => 'hashref',
+                schema => {
+                    created => { type => 'string' },
+                    tags => {
+                        type => 'arrayref',
+                        schema => {
+                            type => 'string',
+                            matches => qr/^[a-z]+$/
+                        }
+                    }
+                }
+            }
+        };
+
 If a parameter is optional and its value is `undef`,
 validation will be skipped for that parameter.
 

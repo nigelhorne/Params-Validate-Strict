@@ -167,6 +167,38 @@ The custom error message to be used in the event of a validation failure.
     error_message => 'You must be at least 18 years old'
   }
 
+=item * C<schema>
+
+You can validate nested hashrefs and arrayrefs using the C<schema> property:
+
+    my $schema = {
+        user => {
+            type => 'hashref',
+            schema => {
+                name => { type => 'string' },
+                age => { type => 'integer', min => 0 },
+                hobbies => {
+                    type => 'arrayref',
+                    schema => { type => 'string' }, # Validate each element
+                    min => 1 # At least one hobby
+                }
+            }
+        },
+        metadata => {
+            type => 'hashref',
+            schema => {
+                created => { type => 'string' },
+                tags => {
+                    type => 'arrayref',
+                    schema => {
+                        type => 'string',
+                        matches => qr/^[a-z]+$/
+                    }
+                }
+            }
+        }
+    };
+
 =back
 
 If a parameter is optional and its value is C<undef>,
@@ -386,6 +418,13 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if array is undefined
 						}
+						if(ref($value) ne 'ARRAY') {
+							if($rules->{'error_message'}) {
+								_error($logger, $rules->{'error_message'});
+							} else {
+								_error($logger, "validate_strict: Parameter '$key' must be an arrayref");
+							}
+						}
 						if(scalar(@{$value}) < $rule_value) {
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
@@ -433,6 +472,13 @@ sub validate_strict
 					} elsif($rules->{'type'} eq 'arrayref') {
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
+						}
+						if(ref($value) ne 'ARRAY') {
+							if($rules->{'error_message'}) {
+								_error($logger, $rules->{'error_message'});
+							} else {
+								_error($logger, "validate_strict: Parameter '$key' must be an arrayref");
+							}
 						}
 						if(scalar(@{$value}) > $rule_value) {
 							if($rules->{'error_message'}) {
@@ -603,6 +649,27 @@ sub validate_strict
 					# Handled earlier
 				} elsif($rule_name eq 'error_message') {
 					# Handled in line
+				} elsif($rule_name eq 'schema') {
+					# Nested schema Run the given schema against each element of the array
+					if($rules->{'type'} eq 'arrayref') {
+						if(ref($value) eq 'ARRAY') {
+							foreach my $member(@{$value}) {
+								validate_strict({ input => { $key => $member }, schema => { $key => $rule_value } });
+							}
+						} else {
+							_error($logger, "validate_strict: Parameter '$value' must be an arrayref");
+						}
+					} elsif($rules->{'type'} eq 'hashref') {
+						if(ref($value) eq 'HASH') {
+							if(scalar keys(%{$value})) {
+								validate_strict({ input => $value, schema => $rule_value });
+							}
+						} else {
+							_error($logger, "validate_strict: Parameter '$value' must be an hashref");
+						}
+					} else {
+						_error($logger, "validate_strict: Parameter '$key': 'schema' only supports arrayref and hashref, not $rules->{type}");
+					}
 				} else {
 					_error($logger, "validate_strict: Unknown rule '$rule_name'");
 				}
