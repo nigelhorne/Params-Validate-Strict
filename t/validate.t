@@ -165,4 +165,20 @@ subtest 'invalid regex in matches' => sub {
 	} qr/invalid regex/, 'invalid regex rejected';
 };
 
-done_testing;
+# Test a string is given
+subtest 'arg must be a string' => sub {
+	my $schema = { param => { type => 'string' } };
+	my $input = { param => {} };
+
+	throws_ok {
+		validate_strict(schema => $schema, input => $input);
+	} qr/must be a string/, 'A hashref is not a string';
+
+	$schema->{'param'}->{'error_message'} = 'Param must only be a string';
+
+	throws_ok {
+		validate_strict(schema => $schema, input => $input);
+	} qr/must only be a string/, 'Check custom error message';
+};
+
+done_testing();

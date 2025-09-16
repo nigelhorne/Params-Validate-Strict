@@ -118,6 +118,27 @@ The schema can define the following rules for each parameter:
           default => 'guest' 
         }
 
+- `element_type`
+
+    Extends the validation to individual elements of arrays.
+
+        tags => {
+          type => 'arrayref',
+          element_type => 'number',
+          min => 1,   # this the length of array ref, not the min value for each of the numbers, that's a TODO
+          max => 5
+        }
+
+- `error_message`
+
+    The custom error message to be used in the event of a validation failure.
+
+        age => {
+          type => 'integer',
+          min => 18,
+          error_message => 'You must be at least 18 years old'
+        }
+
 If a parameter is optional and its value is `undef`,
 validation will be skipped for that parameter.
 
