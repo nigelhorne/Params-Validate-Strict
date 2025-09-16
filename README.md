@@ -66,7 +66,7 @@ The schema can define the following rules for each parameter:
 
 - `can`
 
-    The parameter must be an object which understands the method `can`.
+    The parameter must be an object that understands the method `can`.
     `can` can be a simple scalar string of a method name,
     or an arrayref of a list of method names, all of which must be supported by the object.
 
@@ -106,6 +106,17 @@ The schema can define the following rules for each parameter:
     A boolean value indicating whether the parameter is optional.
     If true, the parameter is not required.
     If false or omitted, the parameter is required.
+
+- `default`
+
+    Populate missing optional parameters with the specfied value.
+    Note that this value is not validated.
+
+        username => { 
+          type => 'string', 
+          optional => 1, 
+          default => 'guest' 
+        }
 
 If a parameter is optional and its value is `undef`,
 validation will be skipped for that parameter.

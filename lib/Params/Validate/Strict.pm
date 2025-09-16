@@ -94,7 +94,7 @@ Valid types are C<string>, C<integer>, C<number>, C<hashref>, C<arrayref>, C<obj
 
 =item * C<can>
 
-The parameter must be an object which understands the method C<can>.
+The parameter must be an object that understands the method C<can>.
 C<can> can be a simple scalar string of a method name,
 or an arrayref of a list of method names, all of which must be supported by the object.
 
@@ -134,6 +134,17 @@ The subroutine should accept the parameter value as an argument and return true 
 A boolean value indicating whether the parameter is optional.
 If true, the parameter is not required.
 If false or omitted, the parameter is required.
+
+=item * C<default>
+
+Populate missing optional parameters with the specfied value.
+Note that this value is not validated.
+
+  username => { 
+    type => 'string', 
+    optional => 1, 
+    default => 'guest' 
+  }
 
 =back
 
@@ -233,6 +244,10 @@ sub validate_strict
 		# Handle optional parameters
 		if((ref($rules) eq 'HASH') && $rules->{optional}) {
 			if(!exists($args->{$key})) {
+				if($rules->{'default'}) {
+					# Populate missing optional parameters with the specfied output values
+					$validated_args{$key} = $rules->{'default'};
+				}
 				next;	# optional and missing
 			}
 		} elsif(!exists($args->{$key})) {
@@ -443,6 +458,8 @@ sub validate_strict
 					}
 				} elsif($rule_name eq 'optional') {
 					# Already handled at the beginning of the loop
+				} elsif($rule_name eq 'default') {
+					# Handled earlier
 				} else {
 					_error($logger, "validate_strict: Unknown rule '$rule_name'");
 				}
