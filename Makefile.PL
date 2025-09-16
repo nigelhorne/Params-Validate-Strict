@@ -21,6 +21,24 @@ WriteMakefile(
 		: ()),
 	CONFIGURE_REQUIRES => {
 		'ExtUtils::MakeMaker' => 6.64,	# Minimum version for TEST_REQUIRES
+	}, META_MERGE => {	# https://perldoc.perl.org/CPAN::Meta::Spec
+		'meta-spec' => { version => 2 },
+		resources => {
+			homepage => 'https://metacpan.org/pod/Params::Validate::Strict',
+			repository => {
+				repository => 'https://github.com/nigelhorne/Params-Validate-Strict',
+				type => 'git',
+				url => 'git://github.com/nigelhorne/Params-Validate-Strict.git',
+				web => 'https://github.com/nigelhorne/Params-Validate-Strict',
+				# license    => 'http://dev.perl.org/licenses/',
+			}, bugtracker => {
+				mailto => 'bug-Params-Validate-Strict@rt.cpan.org',
+				# url => 'https://github.com/nigelhorne/Params-Validate-Strict/issues',
+				url => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Params-Validate-Strict',
+				# web => 'https://github.com/nigelhorne/Params-Validate-Strict/issues'
+				web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Params-Validate-Strict',
+			}
+		}
 	}, PREREQ_PM => {
 		'Carp' => 0,
 		'Exporter' => 0,
@@ -30,17 +48,6 @@ WriteMakefile(
 		'Scalar::Util' => 0,
 		'strict' => 0,
 		'warnings' => 0
-	}, META_MERGE => {
-		resources => {
-			repository => {
-				type => 'git',
-				url => 'https://github.com/nigelhorne/Params-Validate-Strict.git',
-				web => 'https://github.com/nigelhorne/Params-Validate-Strict',
-			},
-			bugtracker => {
-				web => 'https://github.com/nigelhorne/Params-Validate-Strict/issues',
-			},
-		},
 	}, TEST_REQUIRES => {
 		'File::Glob' => 0,
 		'File::Slurp' => 0,
@@ -55,5 +62,5 @@ WriteMakefile(
 		'Test::Needs' => 0,
 		'Test::Warnings' => 0
 	}, dist => $dist,
-	clean => { FILES => 'Params-Validate-Strict-*' },  # Clean up distribution files
+	clean => { FILES => 'Params-Validate-Strict-*' },	# Clean up distribution files
 );
