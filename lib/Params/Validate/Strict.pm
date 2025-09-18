@@ -466,7 +466,7 @@ sub validate_strict
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
 							} else {
-								_error($logger, "validate_strict: String parameter '$key' too long, must be no longer than $rule_value");
+								_error($logger, "validate_strict: String parameter '$key' too long, (" . length($value) . " characters), must be no longer than $rule_value");
 							}
 						}
 					} elsif($rules->{'type'} eq 'arrayref') {

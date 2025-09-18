@@ -1,5 +1,8 @@
 Revision history for Params-Validate-Strict
 
+0.13
+	Say how long the text is, when complaining it's too long
+
 0.12	Tue Sep 16 16:25:18 EDT 2025
 	Support the logger argument
 	Remove unneeded regex
