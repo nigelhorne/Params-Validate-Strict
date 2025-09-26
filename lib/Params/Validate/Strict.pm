@@ -663,7 +663,7 @@ sub validate_strict
 								validate_strict({ input => { $key => $member }, schema => { $key => $rule_value } });
 							}
 						} else {
-							_error($logger, "validate_strict: Parameter '$value' must be an arrayref");
+							_error($logger, "validate_strict: nested schema: Parameter '$value' must be an arrayref");
 						}
 					} elsif($rules->{'type'} eq 'hashref') {
 						if(ref($value) eq 'HASH') {
@@ -671,7 +671,7 @@ sub validate_strict
 								validate_strict({ input => $value, schema => $rule_value });
 							}
 						} else {
-							_error($logger, "validate_strict: Parameter '$value' must be an hashref");
+							_error($logger, "validate_strict: nested schema: Parameter '$value' must be an hashref");
 						}
 					} else {
 						_error($logger, "validate_strict: Parameter '$key': 'schema' only supports arrayref and hashref, not $rules->{type}");
