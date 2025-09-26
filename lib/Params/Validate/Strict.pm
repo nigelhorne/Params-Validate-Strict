@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Carp;
-use List::Util qw(any);	# Required for memberof validation
+use List::Util 1.33 qw(any);	# Required for memberof validation
 use Exporter qw(import);	# Required for @EXPORT_OK
 use Params::Get 0.13;
 use Scalar::Util;
