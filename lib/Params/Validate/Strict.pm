@@ -403,6 +403,9 @@ sub validate_strict
 						_error($logger, "validate_strict: Unknown type '$type'");
 					}
 				} elsif($rule_name eq 'min') {
+					if(!defined($rules->{'type'})) {
+						_error($logger, "validate_strict: Don't know type of '$key' to determine its minimum value $rule_value");
+					}
 					if($rules->{'type'} eq 'string') {
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
@@ -458,6 +461,9 @@ sub validate_strict
 						_error($logger, "validate_strict: Parameter '$key' has meaningless min value $rule_value");
 					}
 				} elsif($rule_name eq 'max') {
+					if(!defined($rules->{'type'})) {
+						_error($logger, "validate_strict: Don't know type of '$key' to determine its maximum value $rule_value");
+					}
 					if($rules->{'type'} eq 'string') {
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
