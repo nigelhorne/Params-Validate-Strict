@@ -290,7 +290,7 @@ sub validate_strict
 		}
 
 		# If rules are a simple type string
-		if((ref($rules) eq '') || !defined(ref($rules))) {
+		if(ref($rules) eq '') {
 			$rules = { type => $rules };
 		}
 
@@ -689,7 +689,7 @@ sub validate_strict
 				}
 			}
 		} elsif(ref($rules)) {
-			_error($logger, 'rules must be hash reference or string');
+			_error($logger, 'rules must be a hash reference or string');
 		}
 
 		$validated_args{$key} = $value;

@@ -18,7 +18,7 @@ use Params::Validate::Strict qw(validate_strict);
 
 my $logger = new_ok('Test::Logger');
 
-# Test 1: Undefined rules (allow anything)
+# Undefined rules (allow anything)
 subtest 'undefined rules' => sub {
 	my $schema = { anything => undef };
 	my $input = { anything => 'this should pass' };
@@ -28,7 +28,25 @@ subtest 'undefined rules' => sub {
 	is $result->{anything}, 'this should pass', 'value should be passed through';
 };
 
-# Test 2: String validation edge cases
+# Rules must be hashref
+subtest 'invald rules' => sub {
+	my $schema = { anything => [ 1, 2 ] };
+	my $input = { anything => 'this should pass' };
+
+	throws_ok { validate_strict(schema => $schema, input => $input) } qr/rules must be a hash reference/, 'Rules must hashref';
+};
+
+# String rules edge cases
+subtest 'string rules edge cases' => sub {
+	my $schema = { bar => 'string' };
+	my $input = { bar => 'foo' };
+	
+	my $result = eval { validate_strict(schema => $schema, input => $input) };
+	is $@, '', 'string rule should be valid';
+	is $result->{bar}, 'foo', 'string should be preserved';
+};
+
+# String validation edge cases
 subtest 'string validation edge cases' => sub {
 	my $schema = { 
 		empty_string => { type => 'string' },
@@ -42,7 +60,7 @@ subtest 'string validation edge cases' => sub {
 	is $result->{empty_string}, '', 'empty string should be preserved';
 };
 
-# Test 3: Arrayref validation with undef
+# Arrayref validation with undef
 subtest 'arrayref with undef' => sub {
 	my $schema = { 
 		array => { type => 'arrayref', optional => 1 },
@@ -60,7 +78,7 @@ subtest 'arrayref with undef' => sub {
 	is $@, '', 'undef arrayref should be allowed when optional';
 };
 
-# Test 4: Hashref validation with undef
+# Hashref validation with undef
 subtest 'hashref with undef' => sub {
 	my $schema = { 
 		hash => { type => 'hashref', optional => 1 },
@@ -78,7 +96,7 @@ subtest 'hashref with undef' => sub {
 	is $@, '', 'undef hashref should be allowed when optional';
 };
 
-# Test 5: Number validation edge cases
+# Number validation edge cases
 subtest 'number validation edge cases' => sub {
 	my $schema = { 
 		undef_number => { type => 'number', optional => 1 },
@@ -97,7 +115,7 @@ subtest 'number validation edge cases' => sub {
 	is $result->{negative}, -5, 'negative number should be preserved';
 };
 
-# Test 6: Invalid min/max combinations
+# Invalid min/max combinations
 subtest 'invalid min/max' => sub {
 	my $schema = { 
 		test => { type => 'string', min => 10, max => 5 },
@@ -109,7 +127,7 @@ subtest 'invalid min/max' => sub {
 	like $@, qr/min must be <= max/, 'should die when min > max';
 };
 
-# Test 7: matches/nomatch with arrayrefs
+# matches/nomatch with arrayrefs
 subtest 'regex with arrayrefs' => sub {
 	my $schema = { 
 		tags => { 
@@ -126,7 +144,7 @@ subtest 'regex with arrayrefs' => sub {
 	is_deeply $result->{tags}, ['hello', 'world'], 'array should be preserved';
 };
 
-# Test 8: memberof validation
+# memberof validation
 subtest 'memberof validation' => sub {
 	my $schema = { 
 		status => { type => 'string', memberof => ['active', 'inactive'] },
@@ -144,7 +162,7 @@ subtest 'memberof validation' => sub {
 	is $result->{number_status}, 2, 'number member should be preserved';
 };
 
-# Test 9: callback validation
+# callback validation
 subtest 'callback validation' => sub {
 	my $schema = { 
 		even_number => { 
@@ -160,7 +178,7 @@ subtest 'callback validation' => sub {
 	is $result->{even_number}, 4, 'validated value should be preserved';
 };
 
-# Test 10: isa and can validation
+# isa and can validation
 subtest 'object validation' => sub {
 	{
 		package Test::Object;
@@ -185,7 +203,7 @@ subtest 'object validation' => sub {
 	is $result->{obj}, $obj, 'object should be preserved';
 };
 
-# Test 11: element_type validation
+# element_type validation
 subtest 'element type validation' => sub {
 	my $schema = { 
 		numbers => { 
@@ -215,7 +233,7 @@ subtest 'element type validation' => sub {
 	is_deeply $result->{strings}, ['a', 'b', 'c'], 'strings array should be preserved';
 };
 
-# Test 12: nested schema validation
+# nested schema validation
 subtest 'nested schema validation' => sub {
 	my $schema = { 
 		user => {
@@ -243,7 +261,7 @@ subtest 'nested schema validation' => sub {
 	is_deeply $result->{tags}, ['perl', 'testing'], 'nested tags should be preserved';
 };
 
-# Test 13: unknown parameter handlers
+# unknown parameter handlers
 subtest 'unknown parameter handlers' => sub {
 	my $schema = { known => { type => 'string' } };
 	my $input = { known => 'ok', unknown => 'should be handled' };
@@ -271,7 +289,7 @@ subtest 'unknown parameter handlers' => sub {
 	is $@, '', 'ignore handler should not die';
 };
 
-# Test 14: default values
+# default values
 subtest 'default values' => sub {
 	my $schema = { 
 		username => { 
@@ -288,7 +306,7 @@ subtest 'default values' => sub {
 	is $result->{username}, 'guest', 'default value should be set';
 };
 
-# Test 15: error messages
+# error messages
 subtest 'custom error messages' => sub {
 	my $schema = { 
 		age => { 
@@ -304,7 +322,7 @@ subtest 'custom error messages' => sub {
 	like $@, qr/You must be at least 18 years old/, 'custom error message should be used';
 };
 
-# Test 16: invalid regex in matches
+# invalid regex in matches
 subtest 'invalid regex' => sub {
 	my $schema = { 
 		test => { 
@@ -319,7 +337,7 @@ subtest 'invalid regex' => sub {
 	like $@, qr/invalid regex/, 'should handle invalid regex gracefully';
 };
 
-# Test 17: coderef validation
+# coderef validation
 subtest 'coderef validation' => sub {
 	my $schema = { 
 		callback => { type => 'coderef' },
