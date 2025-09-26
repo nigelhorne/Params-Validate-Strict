@@ -369,7 +369,7 @@ sub validate_strict
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
 							} else {
-								_error($logger, "validate_strict: Parameter '$key' must be an arrayref");
+								_error($logger, "validate_strict: Parameter '$key' must be an arrayref, not " . ref($value));
 							}
 						}
 					} elsif($type eq 'hashref') {
@@ -425,7 +425,7 @@ sub validate_strict
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
 							} else {
-								_error($logger, "validate_strict: Parameter '$key' must be an arrayref");
+								_error($logger, "validate_strict: Parameter '$key' must be an arrayref, not " . ref($value));
 							}
 						}
 						if(scalar(@{$value}) < $rule_value) {
@@ -483,7 +483,7 @@ sub validate_strict
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
 							} else {
-								_error($logger, "validate_strict: Parameter '$key' must be an arrayref");
+								_error($logger, "validate_strict: Parameter '$key' must be an arrayref, not " . ref($value));
 							}
 						}
 						if(scalar(@{$value}) > $rule_value) {
@@ -662,7 +662,7 @@ sub validate_strict
 							foreach my $member(@{$value}) {
 								validate_strict({ input => { $key => $member }, schema => { $key => $rule_value } });
 							}
-						} else {
+						} elsif(defined($value)) {	# Allow undef for optional values
 							_error($logger, "validate_strict: nested schema: Parameter '$value' must be an arrayref");
 						}
 					} elsif($rules->{'type'} eq 'hashref') {
