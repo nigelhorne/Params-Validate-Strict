@@ -4,6 +4,7 @@ Revision history for Params-Validate-Strict
 	Say how long the text is, when complaining it's too long
 	Say what the current value is when testing max
 	Better assertion that the type of a value has not been given
+	Give line number of the assertion failure
 
 0.12	Tue Sep 16 16:25:18 EDT 2025
 	Support the logger argument

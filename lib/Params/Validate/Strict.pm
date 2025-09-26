@@ -696,10 +696,11 @@ sub _error
 	my $logger = shift;
 	my $message = join('', @_);
 
+	my @call_details = caller(0);
 	if($logger) {
-		$logger->error(__PACKAGE__, ": $message");
+		$logger->error(__PACKAGE__, ' line ', $call_details[2], ": $message");
 	} else {
-		croak(__PACKAGE__ . ": $message");
+		croak(__PACKAGE__, ' line ', $call_details[2], ": $message");
 	}
 }
 
