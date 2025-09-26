@@ -4,8 +4,9 @@ use strict;
 use warnings;
 
 use Test::DescribeMe qw(author);
-use Test::Needs 'Test::Strict';
+use Test::Most;
+use Test::Needs 'Test::Tabs';
 
-Test::Strict->import();
+Test::Tabs->import();
 all_perl_files_ok();
-warnings_ok('lib/Params/Validate/Strict.pm');
+done_testing();

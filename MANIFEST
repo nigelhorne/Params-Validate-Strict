@@ -22,5 +22,6 @@ t/pod-synopsis.t
 t/pod.t
 t/prereq.t
 t/strict.t
+t/tabs.t
 t/validate.t
 t/vars.t
