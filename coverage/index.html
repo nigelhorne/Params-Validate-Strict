@@ -84,27 +84,31 @@
 
 <tbody>
 
-<tr class="med"><td><a href="blib-lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">blib/lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/00d4bca266fd984094a58c3a5a9701b78d422cdd/blib/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="87.2,93.3,88.9,87.2,81.4,82.3,82.9,81.7,81.5,78.4,92.7,93.1,81.8,81.5,81.0,81.3,81.1,81.7,81.1,82.1,81.7"></canvas></td><td>82.9</td><td>80.6</td><td>74.3</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">81.7%</span></td><td class="neutral" title="Previous: 81.7%">&#9679; 0.0%</td></tr>
+<tr class="med"><td><a href="blib-lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">blib/lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/ac41301ea5b57050e1f989ead5d39c5f5e208a96/blib/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="87.2,93.3,88.9,87.2,81.4,82.3,82.9,81.7,81.5,78.4,92.7,93.1,81.8,81.5,81.0,81.3,81.1,81.7,81.1,82.1,81.7"></canvas></td><td>82.9</td><td>80.2</td><td>74.3</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">81.5%</span></td><td class="negative" title="Previous: 81.7%">&#9660; 0.2%</td></tr>
 
 <tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">1 files</td><td colspan="3">Avg: 81%, Low: 0</td></tr>
 
-<tr class="high nosort"><td><strong>Total</strong></td><td>82.9</td><td>80.6</td><td>74.3</td><td>100.0</td><td colspan="2"><strong>81.7</strong></td></tr>
+<tr class="high nosort"><td><strong>Total</strong></td><td>82.9</td><td>80.2</td><td>74.3</td><td>100.0</td><td colspan="2"><strong>81.5</strong></td></tr>
 
 </tbody></table>
-<p>
-	<h2>Coverage Trend</h2>
-	<label>
-		<input type="checkbox" id="toggleTrend" checked>
-		Show regression trend
-	</label>
-</p>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
+	<div>
+		<h2>Coverage Trend</h2>
+		<label>
+			<input type="checkbox" id="toggleTrend" checked>
+			Show regression trend
+		</label>
+		<div>
+		</div>
+	</div>
+	<div id="zoomControls" style="margin-top:8px;">
+		<input type="button" value="Refresh" onClick="refresh(this)">
+		<button id="resetZoomBtn" type="button">Reset Zoom</button>
+	</div>
+</div>
 
 <canvas id="coverageTrend" width="600" height="300"></canvas>
 <!-- Zoom controls for the trend chart -->
-<div id="zoomControls" style="margin-top:8px;">
-	<button id="resetZoomBtn" type="button">Reset Zoom</button>
-	<span style="margin-left:8px;color:#666;font-size:0.9em;">Use mouse wheel or pinch to zoom; drag to pan</span>
-</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Add chartjs-plugin-zoom (required for wheel/pinch/drag zoom & pan) -->
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.1.1/dist/chartjs-plugin-zoom.min.js"></script>
@@ -391,11 +395,15 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 });
 
+function refresh(){
+	window.location.reload("Refresh")
+}
 </script>
 
 <footer>
+	<p><span style="margin-left:8px;color:#666;font-size:0.9em;">Use mouse wheel or pinch to zoom; drag to pan</span></p>
 	<p>Project: <a href="https://github.com/nigelhorne/Params-Validate-Strict">Params-Validate-Strict</a></p>
-	<p><em>Last updated: 2025-09-26 19:21:18 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/00d4bca266fd984094a58c3a5a9701b78d422cdd">commit <code>00d4bca</code></a></em></p>
+	<p><em>Last updated: 2025-09-26 19:22:27 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/ac41301ea5b57050e1f989ead5d39c5f5e208a96">commit <code>ac41301</code></a></em></p>
 </footer>
 </body>
 </html>
