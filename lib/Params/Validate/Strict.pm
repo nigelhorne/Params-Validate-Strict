@@ -506,7 +506,7 @@ sub validate_strict
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
 							} else {
-								_error($logger, "validate_strict: Parameter '$key' must be no more than $rule_value");
+								_error($logger, "validate_strict: Parameter '$key' ($value) must be no more than $rule_value");
 							}
 						}
 					} else {
