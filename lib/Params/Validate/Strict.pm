@@ -153,7 +153,7 @@ Extends the validation to individual elements of arrays.
   tags => {
     type => 'arrayref',
     element_type => 'number',
-    min => 1,	# this the length of array ref, not the min value for each of the numbers, for that, add a C<schema> rule
+    min => 1,	# this is the length of the array, not the min value for each of the numbers. For that, add a C<schema> rule
     max => 5
   }
 
@@ -636,12 +636,20 @@ sub validate_strict
 										_error($logger, "$key can only contain strings");
 									}
 								}
-							} elsif($rule_value eq 'number') {
+							} elsif($rule_value eq 'integer') {
 								if(ref($member) || ($member =~ /\D/)) {
 									if($rules->{'error_message'}) {
 										_error($logger, $rules->{'error_message'});
 									} else {
-										_error($logger, "$key can only contain numbers");
+										_error($logger, "$key can only contain numbers (found $member)");
+									}
+								}
+							} elsif($rule_value eq 'number') {
+								if(ref($member) || ($member !~ /^[-+]?(\d*\.\d+|\d+\.?\d*)$/)) {
+									if($rules->{'error_message'}) {
+										_error($logger, $rules->{'error_message'});
+									} else {
+										_error($logger, "$key can only contain numbers (found $member)");
 									}
 								}
 							}
