@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.13
+0.13	Sat Sep 27 10:27:25 EDT 2025
 	Say how long the text is, when complaining it's too long
 	Say what the current value is when testing max
 	Better assertion that the type of a value has not been given
