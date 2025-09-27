@@ -90,7 +90,7 @@ The schema can define the following rules for each parameter:
 =item * C<type>
 
 The data type of the parameter.
-Valid types are C<string>, C<integer>, C<number>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
+Valid types are C<string>, C<integer>, C<number>, C<boolean>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
 
 =item * C<can>
 
@@ -338,7 +338,7 @@ sub validate_strict
 						}
 					} elsif($type eq 'integer') {
 						if(!defined($value)) {
-							next;	# Skip if string is undefined
+							next;	# Skip if number is undefined
 						}
 						if($value !~ /^\s*[+\-]?\d+\s*$/) {
 							if($rules->{'error_message'}) {
@@ -383,6 +383,23 @@ sub validate_strict
 								_error($logger, "validate_strict: Parameter '$key' must be an hashref");
 							}
 						}
+					} elsif($type eq 'boolean') {
+						if(!defined($value)) {
+							next;	# Skip if bool is undefined
+						}
+						if(($value eq 'true') || ($value eq 'on')) {
+							$value = 1;
+						} elsif(($value eq 'false') || ($value eq 'off')) {
+							$value = 0;
+						}
+						if(($value != 1) && ($value != 0)) {
+							if($rules->{'error_message'}) {
+								_error($logger, $rules->{'error_message'});
+							} else {
+								_error($logger, "validate_strict: Parameter '$key' ($value) must be a boolean");
+							}
+						}
+						$value = int($value);	# Coerce to integer
 					} elsif($type eq 'coderef') {
 						if(ref($value) ne 'CODE') {
 							if($rules->{'error_message'}) {
