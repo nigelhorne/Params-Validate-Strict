@@ -79,8 +79,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L365">365</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (&amp;Scalar::Util::looks_like_number($value))</td></tr>
 <tr><td class="h"><a id="L366">366</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L375">375</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $value)</td></tr>
-<tr><td class="h"><a id="L378">378</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $value ne &quot;ARRAY&quot;)</td></tr>
-<tr><td class="h"><a id="L379">379</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L378">378</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (ref $value ne &quot;ARRAY&quot;)</td></tr>
+<tr><td class="h"><a id="L379">379</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L386">386</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $value)</td></tr>
 <tr><td class="h"><a id="L389">389</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (ref $value ne &quot;HASH&quot;)</td></tr>
 <tr><td class="h"><a id="L390">390</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
@@ -179,8 +179,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L679">679</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L698">698</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;hashref&#39;) { }</td></tr>
-<tr><td class="h"><a id="L699">699</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (ref $value eq &#39;ARRAY&#39;) { }</td></tr>
-<tr><td class="h"></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">elsif (defined $value) { }</td></tr>
+<tr><td class="h"><a id="L699">699</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $value eq &#39;ARRAY&#39;) { }</td></tr>
+<tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (defined $value) { }</td></tr>
 <tr><td class="h"><a id="L707">707</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (ref $value eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"><a id="L708">708</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$value;})</td></tr>
 <tr><td class="h"><a id="L738">738</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($logger) { }</td></tr>
