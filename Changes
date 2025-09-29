@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.14
+0.14	Mon Sep 29 15:17:39 EDT 2025
 	Support optionals for memberof
 	Min/max make no sense with memberof
 
