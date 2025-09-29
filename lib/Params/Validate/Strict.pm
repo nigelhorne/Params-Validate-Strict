@@ -315,6 +315,16 @@ sub validate_strict
 					_error($logger, "validate_strict($key): min must be <= max ($min > $max)");
 				}
 			}
+
+			if($rules->{'memberof'}) {
+				if(my $min = $rules->{'min'}) {
+					_error($logger, "validate_strict($key): min ($min) makes no sense with memberof");
+				}
+				if(my $max = $rules->{'max'}) {
+					_error($logger, "validate_strict($key): max ($max) makes no sense with memberof");
+				}
+			}
+
 			foreach my $rule_name (keys %$rules) {
 				my $rule_value = $rules->{$rule_name};
 
