@@ -578,6 +578,9 @@ sub validate_strict
 						}
 					}
 				} elsif($rule_name eq 'memberof') {
+					if(!defined($value)) {
+						next;	# Skip if string is undefined
+					}
 					if(ref($rule_value) eq 'ARRAY') {
 						if(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number')) {
 							unless(List::Util::any { $_ == $value } @{$rule_value}) {
