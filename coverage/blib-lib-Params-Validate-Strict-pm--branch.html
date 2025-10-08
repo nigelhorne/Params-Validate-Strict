@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Params/Validate/Strict.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c1">79.5%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c1">79.2%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -58,11 +58,11 @@ https://pjcj.net
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rule_name eq &#39;element_type&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rule_name eq &#39;optional&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">elsif ($rule_name eq &#39;default&#39;) { }</td></tr>
-<tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rule_name eq &#39;error_message&#39;) { }</td></tr>
+<tr><td class="h"></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">elsif ($rule_name eq &#39;error_message&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rule_name eq &#39;schema&#39;) { }</td></tr>
 <tr><td class="h"><a id="L334">334</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($type eq &#39;string&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;integer&#39;) { }</td></tr>
-<tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;number&#39;) { }</td></tr>
+<tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;number&#39; or $type eq &#39;float&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;arrayref&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;hashref&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;boolean&#39;) { }</td></tr>
@@ -97,13 +97,13 @@ https://pjcj.net
 <tr><td class="h"><a id="L436">436</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;string&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;hashref&#39;) { }</td></tr>
-<tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;number&#39;) { }</td></tr>
+<tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;number&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;float&#39;) { }</td></tr>
 <tr><td class="h"><a id="L437">437</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (defined $value)</td></tr>
 <tr><td class="h"><a id="L440">440</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (length $value &lt; $rule_value)</td></tr>
 <tr><td class="h"><a id="L441">441</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L448">448</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $value)</td></tr>
-<tr><td class="h"><a id="L451">451</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (ref $value ne &quot;ARRAY&quot;)</td></tr>
-<tr><td class="h"><a id="L452">452</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L451">451</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $value ne &quot;ARRAY&quot;)</td></tr>
+<tr><td class="h"><a id="L452">452</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L458">458</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar @{$value;} &lt; $rule_value)</td></tr>
 <tr><td class="h"><a id="L459">459</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L466">466</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (defined $value)</td></tr>
@@ -116,7 +116,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L494">494</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;string&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;hashref&#39;) { }</td></tr>
-<tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;number&#39;) { }</td></tr>
+<tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;number&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;float&#39;) { }</td></tr>
 <tr><td class="h"><a id="L495">495</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (defined $value)</td></tr>
 <tr><td class="h"><a id="L498">498</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (length $value &gt; $rule_value)</td></tr>
 <tr><td class="h"><a id="L499">499</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
@@ -145,7 +145,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L584">584</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L591">591</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (defined $value)</td></tr>
 <tr><td class="h"><a id="L594">594</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rule_value eq &#39;ARRAY&#39;) { }</td></tr>
-<tr><td class="h"><a id="L595">595</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;number&#39;) { }</td></tr>
+<tr><td class="h"><a id="L595">595</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;number&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;float&#39;) { }</td></tr>
 <tr><td class="h"><a id="L596">596</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (&amp;List::Util::any(sub {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$_ == $value;
 }
@@ -170,7 +170,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L659">659</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) { }</td></tr>
 <tr><td class="h"><a id="L661">661</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rule_value eq &#39;string&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rule_value eq &#39;integer&#39;) { }</td></tr>
-<tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif ($rule_value eq &#39;number&#39;) { }</td></tr>
+<tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif ($rule_value eq &#39;number&#39; or $rule_value eq &#39;float&#39;) { }</td></tr>
 <tr><td class="h"><a id="L662">662</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (ref $member)</td></tr>
 <tr><td class="h"><a id="L663">663</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L670">670</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (ref $member or $member =~ /\D/)</td></tr>
@@ -179,8 +179,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L679">679</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;error_message&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L698">698</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;hashref&#39;) { }</td></tr>
-<tr><td class="h"><a id="L699">699</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $value eq &#39;ARRAY&#39;) { }</td></tr>
-<tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (defined $value) { }</td></tr>
+<tr><td class="h"><a id="L699">699</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (ref $value eq &#39;ARRAY&#39;) { }</td></tr>
+<tr><td class="h"></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">elsif (defined $value) { }</td></tr>
 <tr><td class="h"><a id="L707">707</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (ref $value eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"><a id="L708">708</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$value;})</td></tr>
 <tr><td class="h"><a id="L738">738</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($logger) { }</td></tr>
