@@ -402,7 +402,7 @@ sub validate_strict
 						} elsif(($value eq 'false') || ($value eq 'off')) {
 							$value = 0;
 						}
-						if(($value != 1) && ($value != 0)) {
+						if(($value ne '1') && ($value ne '0')) {	# Do string compare
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
 							} else {
@@ -568,7 +568,7 @@ sub validate_strict
 						}
 					};
 					if($@) {
-						_error($logger, "validate_strict: Parameter '$key' invalid regex '$rule_value': $@");
+						_error($logger, "validate_strict: Parameter '$key' regex '$rule_value' error: $@");
 					}
 				} elsif($rule_name eq 'nomatch') {
 					if($rules->{'type'} eq 'arrayref') {

@@ -2,6 +2,7 @@ Revision history for Params-Validate-Strict
 
 0.15
 	Added float as a synomym of number
+	Do string compares on bools for edge case testing
 
 0.14	Mon Sep 29 15:17:39 EDT 2025
 	Support optionals for memberof
