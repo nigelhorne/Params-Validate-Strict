@@ -199,6 +199,27 @@ You can validate nested hashrefs and arrayrefs using the C<schema> property:
         }
     };
 
+=item * C<validate>
+
+A snippet of code that validates the input.
+It's passed the input arguments,
+and return a string containing a reason for rejection,
+or undef if it's allowed.
+
+    my $schema = {
+      user => {
+        type => 'string',
+	validate => sub {
+	  if($_[0]->{'password'} eq 'bar') {
+	    return undef;
+	  }
+	  return 'Invalid password, try again';
+	}
+      }, password => {
+         type => 'string'
+      }
+    };
+
 =back
 
 If a parameter is optional and its value is C<undef>,
@@ -713,6 +734,15 @@ sub validate_strict
 						}
 					} else {
 						_error($logger, "validate_strict: Parameter '$key': 'schema' only supports arrayref and hashref, not $rules->{type}");
+					}
+				} elsif($rule_name eq 'validate') {
+					if(ref($rule_value) eq 'CODE') {
+						if(my $error = &{$rule_value}($args)) {
+							_error($logger, "validate_string: $key not valid: $error");
+						}
+					} else {
+						# _error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not " . ref($value));
+						_error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not $value");
 					}
 				} else {
 					_error($logger, "validate_strict: Unknown rule '$rule_name'");

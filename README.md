@@ -171,6 +171,27 @@ The schema can define the following rules for each parameter:
             }
         };
 
+- `validate`
+
+    A snippet of code that validates the input.
+    It's passed the input arguments,
+    and return a string containing a reason for rejection,
+    or undef if it's allowed.
+
+        my $schema = {
+          user => {
+            type => 'string',
+            validate => sub {
+              if($_[0]->{'password'} eq 'bar') {
+                return undef;
+              }
+              return 'Invalid password, try again';
+            }
+          }, password => {
+             type => 'string'
+          }
+        };
+
 If a parameter is optional and its value is `undef`,
 validation will be skipped for that parameter.
 
