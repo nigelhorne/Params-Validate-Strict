@@ -2,6 +2,8 @@ Revision history for Params-Validate-Strict
 
 0.16
 	Added 'validate' to the schema language
+	Allow yes/no for booleans
+	Fix value => 0 for default
 
 0.15	Thu Oct  9 16:48:57 EDT 2025
 	Added float as a synomym of number

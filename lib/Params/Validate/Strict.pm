@@ -318,7 +318,7 @@ sub validate_strict
 		# Handle optional parameters
 		if((ref($rules) eq 'HASH') && $rules->{optional}) {
 			if(!exists($args->{$key})) {
-				if($rules->{'default'}) {
+				if(exists($rules->{'default'})) {
 					# Populate missing optional parameters with the specfied output values
 					$validated_args{$key} = $rules->{'default'};
 				}
@@ -418,9 +418,9 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if bool is undefined
 						}
-						if(($value eq 'true') || ($value eq 'on')) {
+						if(($value eq 'true') || ($value eq 'on') || ($value eq 'yes')) {
 							$value = 1;
-						} elsif(($value eq 'false') || ($value eq 'off')) {
+						} elsif(($value eq 'false') || ($value eq 'off') || ($value eq 'no')) {
 							$value = 0;
 						}
 						if(($value ne '1') && ($value ne '0')) {	# Do string compare
@@ -703,6 +703,8 @@ sub validate_strict
 										_error($logger, "$key can only contain numbers (found $member)");
 									}
 								}
+							} else {
+								_error($logger, "Bug: Add $rule_value to element_type list");
 							}
 						}
 					} else {
