@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.16
+0.16	Sat Oct 11 18:35:15 EDT 2025
 	Added 'validate' to the schema language
 	Allow yes/no for booleans
 	Fix value => 0 for default
