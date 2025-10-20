@@ -440,6 +440,9 @@ sub validate_strict
 							}
 						}
 					} elsif($type eq 'object') {
+						if(!defined($value)) {
+							next;	# Skip if object is undefined
+						}
 						if(!Scalar::Util::blessed($value)) {
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
@@ -660,6 +663,9 @@ sub validate_strict
 						_error($logger, "validate_strict: Parameter '$key' has meaningless isa value $rule_value");
 					}
 				} elsif($rule_name eq 'can') {
+					if(!defined($value)) {
+						next;	# Skip if object not given
+					}
 					if($rules->{'type'} eq 'object') {
 						if(ref($rule_value) eq 'ARRAY') {
 							# List of methods
