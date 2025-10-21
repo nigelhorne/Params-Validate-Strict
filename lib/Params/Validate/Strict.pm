@@ -92,6 +92,8 @@ The schema can define the following rules for each parameter:
 The data type of the parameter.
 Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
 
+A type can be a hashref when a parameter could have different types (e.g. a string or an object).
+
 =item * C<can>
 
 The parameter must be an object that understands the method C<can>.
@@ -765,6 +767,38 @@ sub validate_strict
 				} else {
 					_error($logger, "validate_strict: Unknown rule '$rule_name'");
 				}
+			}
+		} elsif(ref($rules) eq 'ARRAY') {
+			if(scalar(@{$rules})) {
+				# An argument can be one of several different type
+				my $rc = 0;
+				my $logger_keep = $logger;
+				undef $logger;
+				my @types;
+				foreach my $rule(@{$rules}) {
+					if(ref($rule) ne 'HASH') {
+						_error($logger, "validate_strict: Parameter '$key' rules must be a hash reference");
+						next;
+					}
+					if(!defined($rule->{'type'})) {
+						_error($logger, "validate_strict: Parameter '$key' is missing a type in an alternative");
+						next;
+					}
+					push @types, $rule->{'type'};
+					eval {
+						validate_strict({ input => { $key => $value }, schema => { $key => $rule } });
+					};
+					if(!$@) {
+						$rc = 1;
+						last;
+					}
+				}
+				$logger = $logger_keep;
+				if(!$rc) {
+					_error($logger, "validate_strict: Parameter: '$key': must be one of " . join(', ', @types));
+				}
+			} else {
+				_error($logger, "validate_strict: Parameter: '$key': schema is empty arrayref");
 			}
 		} elsif(ref($rules)) {
 			_error($logger, 'rules must be a hash reference or string');
