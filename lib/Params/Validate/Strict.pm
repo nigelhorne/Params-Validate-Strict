@@ -18,11 +18,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.18
+Version 0.19
 
 =cut
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 =head1 SYNOPSIS
 
@@ -330,7 +330,7 @@ sub validate_strict
 		if((ref($rules) eq 'HASH') && $rules->{optional}) {
 			if(!exists($args->{$key})) {
 				if(exists($rules->{'default'})) {
-					# Populate missing optional parameters with the specfied output values
+					# Populate missing optional parameters with the specified output values
 					$validated_args{$key} = $rules->{'default'};
 				}
 				next;	# optional and missing
@@ -842,7 +842,7 @@ sub _warn
 	if($logger) {
 		$logger->warn(__PACKAGE__, ": $message");
 	} else {
-		carp(__PACKAGE__ . ": $message");
+		carp(__PACKAGE__, ": $message");
 	}
 }
 
