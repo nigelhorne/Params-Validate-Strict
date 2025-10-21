@@ -34,6 +34,8 @@ Version 0.18
 
 Validates a set of parameters against a schema.
 
+The schema can then be plumbed into [App::Test::Generator](https://metacpan.org/pod/App%3A%3ATest%3A%3AGenerator) to automatically create a set of black-box test cases.
+
 This function takes two mandatory arguments:
 
 - `schema`
@@ -63,8 +65,6 @@ The schema can define the following rules for each parameter:
 
     The data type of the parameter.
     Valid types are `string`, `integer`, `number`, `float` `boolean`, `hashref`, `arrayref`, `object` and `coderef`.
-
-    If a parameter could have different types, list them as an arrayref:
 
     A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
 
@@ -296,6 +296,7 @@ Nigel Horne, `<njh at nigelhorne.com>`
 - [Params::Get](https://metacpan.org/pod/Params%3A%3AGet)
 - [Params::Validate](https://metacpan.org/pod/Params%3A%3AValidate)
 - [Return::Set](https://metacpan.org/pod/Return%3A%3ASet)
+- [App::Test::Generator](App::Test::Generator)
 
 # SUPPORT
 

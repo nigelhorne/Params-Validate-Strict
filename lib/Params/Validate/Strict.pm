@@ -52,6 +52,8 @@ our $VERSION = '0.18';
 
 Validates a set of parameters against a schema.
 
+The schema can then be plumbed into L<App::Test::Generator> to automatically create a set of black-box test cases.
+
 This function takes two mandatory arguments:
 
 =over 4
@@ -91,8 +93,6 @@ The schema can define the following rules for each parameter:
 
 The data type of the parameter.
 Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
-
-If a parameter could have different types, list them as an arrayref:
 
 A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
 
@@ -908,6 +908,8 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 =item * L<Params::Validate>
 
 =item * L<Return::Set>
+
+=item * L<App::Test::Generator>
 
 =back
 
