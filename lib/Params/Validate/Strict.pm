@@ -616,6 +616,9 @@ sub validate_strict
 						_error($logger, "validate_strict: Parameter '$key' regex '$rule_value' error: $@");
 					}
 				} elsif($rule_name eq 'nomatch') {
+					if(!defined($value)) {
+						next;	# Skip if string is undefined
+					}
 					if($rules->{'type'} eq 'arrayref') {
 						my @matches = grep { /$rule_value/ } @{$value};
 						if(scalar(@matches)) {
@@ -767,7 +770,7 @@ sub validate_strict
 				} elsif($rule_name eq 'validate') {
 					if(ref($rule_value) eq 'CODE') {
 						if(my $error = &{$rule_value}($args)) {
-							_error($logger, "validate_string: $key not valid: $error");
+							_error($logger, "validate_strict: $key not valid: $error");
 						}
 					} else {
 						# _error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not " . ref($value));
@@ -781,8 +784,6 @@ sub validate_strict
 			if(scalar(@{$rules})) {
 				# An argument can be one of several different type
 				my $rc = 0;
-				my $logger_keep = $logger;
-				undef $logger;
 				my @types;
 				foreach my $rule(@{$rules}) {
 					if(ref($rule) ne 'HASH') {
@@ -795,14 +796,13 @@ sub validate_strict
 					}
 					push @types, $rule->{'type'};
 					eval {
-						validate_strict({ input => { $key => $value }, schema => { $key => $rule } });
+						validate_strict({ input => { $key => $value }, schema => { $key => $rule }, logger => undef });
 					};
 					if(!$@) {
 						$rc = 1;
 						last;
 					}
 				}
-				$logger = $logger_keep;
 				if(!$rc) {
 					_error($logger, "validate_strict: Parameter: '$key': must be one of " . join(', ', @types));
 				}
