@@ -64,7 +64,7 @@ The schema can define the following rules for each parameter:
     The data type of the parameter.
     Valid types are `string`, `integer`, `number`, `float` `boolean`, `hashref`, `arrayref`, `object` and `coderef`.
 
-    It can be an array ref if the parameter could be one of different types (e.g. a string or a hashref).
+    A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
 
 - `can`
 

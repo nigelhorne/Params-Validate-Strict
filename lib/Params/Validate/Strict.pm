@@ -92,7 +92,7 @@ The schema can define the following rules for each parameter:
 The data type of the parameter.
 Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
 
-A type can be a hashref when a parameter could have different types (e.g. a string or an object).
+A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
 
 =item * C<can>
 
