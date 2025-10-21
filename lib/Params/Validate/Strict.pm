@@ -92,7 +92,16 @@ The schema can define the following rules for each parameter:
 The data type of the parameter.
 Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
 
+If a parameter could have different types, list them as an arrayref:
+
 A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
+
+  $schema = {
+    username => [
+      { type => 'string', min => 3, max => 50 },	# Name
+      { type => 'integer', 'min' => 1 },	# UID that isn't root
+    ]
+  };
 
 =item * C<can>
 
