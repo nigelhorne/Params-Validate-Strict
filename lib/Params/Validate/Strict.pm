@@ -293,6 +293,7 @@ sub validate_strict
 	my $args = $params->{'args'} || $params->{'input'};
 	my $unknown_parameter_handler = $params->{'unknown_parameter_handler'} || 'die';
 	my $logger = $params->{'logger'};
+	my $custom_types = $params->{'custom_types'};
 
 	# Check if schema and args are references to hashes
 	if(ref($schema) ne 'HASH') {
@@ -804,6 +805,11 @@ sub validate_strict
 						_error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not $value");
 					}
 				} else {
+					if(my $custom_type = $custom_types->{'rule_name'}) {
+						if(scalar keys(%{$value})) {
+							validate_strict({ input => $value, schema => $custom_type });
+						}
+					}
 					_error($logger, "validate_strict: Unknown rule '$rule_name'");
 				}
 			}
