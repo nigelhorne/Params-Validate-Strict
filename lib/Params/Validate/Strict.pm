@@ -183,14 +183,14 @@ The custom error message to be used in the event of a validation failure.
 You can validate nested hashrefs and arrayrefs using the C<schema> property:
 
     my $schema = {
-        user => {
+        user => {	# 'user' is a hashref
             type => 'hashref',
-            schema => {
+            schema => {	# Specify what the elements of the hash should be
                 name => { type => 'string' },
                 age => { type => 'integer', min => 0 },
-                hobbies => {
+                hobbies => {	# 'hobbies' is an array ref that this user has
                     type => 'arrayref',
-                    schema => { type => 'string' }, # Validate each element
+                    schema => { type => 'string' }, # Validate each hobby
                     min => 1 # At least one hobby
                 }
             }
@@ -666,21 +666,22 @@ sub validate_strict
 						next;	# Skip if string is undefined
 					}
 					if(ref($rule_value) eq 'ARRAY') {
+						my $ok = 1;
 						if(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number') || ($rules->{'type'} eq 'float')) {
 							unless(List::Util::any { $_ == $value } @{$rule_value}) {
-								if($rules->{'error_message'}) {
-									_error($logger, $rules->{'error_message'});
-								} else {
-									_error($logger, "validate_strict: Parameter '$key' ($value) must be one of ", join(', ', @{$rule_value}));
-								}
+								$ok = 0;
 							}
 						} else {
 							unless(List::Util::any { $_ eq $value } @{$rule_value}) {
-								if($rules->{'error_message'}) {
-									_error($logger, $rules->{'error_message'});
-								} else {
-									_error($logger, "validate_strict: Parameter '$key' ($value) must be one of ", join(', ', @{$rule_value}));
-								}
+								$ok = 0;
+							}
+						}
+
+						if(!$ok) {
+							if($rules->{'error_message'}) {
+								_error($logger, $rules->{'error_message'});
+							} else {
+								_error($logger, "validate_strict: Parameter '$key' ($value) must be one of ", join(', ', @{$rule_value}));
 							}
 						}
 					} else {
