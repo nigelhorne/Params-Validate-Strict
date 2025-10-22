@@ -233,6 +233,18 @@ or undef if it's allowed.
 
 =back
 
+Many validators also allow a code ref to be passed so that you can create your own, conditional validation rule, e.g.:
+
+  $schema = {
+    age => {
+      type => 'integer',
+      min => sub {
+          my ($value, $all_params) = @_;
+          return $all_params->{country} eq 'US' ? 21 : 18;
+      }
+    }
+  }
+
 If a parameter is optional and its value is C<undef>,
 validation will be skipped for that parameter.
 
@@ -326,8 +338,18 @@ sub validate_strict
 			$rules = { type => $rules };
 		}
 
+		my $is_optional = 0;
+
+		if((ref($rules) eq 'HASH') && exists($rules->{optional})) {
+			if(ref($rules->{'optional'}) eq 'CODE') {
+				$is_optional = &{$rules->{optional}}($value, $args);
+			} else {
+				$is_optional = $rules->{'optional'};
+			}
+		}
+
 		# Handle optional parameters
-		if((ref($rules) eq 'HASH') && $rules->{optional}) {
+		if((ref($rules) eq 'HASH') && $is_optional) {
 			if(!exists($args->{$key})) {
 				if(exists($rules->{'default'})) {
 					# Populate missing optional parameters with the specified output values
@@ -359,6 +381,10 @@ sub validate_strict
 
 			foreach my $rule_name (keys %$rules) {
 				my $rule_value = $rules->{$rule_name};
+
+				if((ref($rule_value) eq 'CODE') && ($rule_name ne 'validate') && ($rule_name ne 'callback')) {
+					$rule_value = &{$rule_value}($value, $args);
+				}
 
 				if($rule_name eq 'type') {
 					my $type = lc($rule_value);

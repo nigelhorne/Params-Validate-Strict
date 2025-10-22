@@ -203,6 +203,18 @@ The schema can define the following rules for each parameter:
           }
         };
 
+Many validators also allow a code ref to be passed so that you can create your own, conditional validation rule, e.g.:
+
+    $schema = {
+      age => {
+        type => 'integer',
+        min => sub {
+            my ($value, $all_params) = @_;
+            return $all_params->{country} eq 'US' ? 21 : 18;
+        }
+      }
+    }
+
 If a parameter is optional and its value is `undef`,
 validation will be skipped for that parameter.
 
