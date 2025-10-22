@@ -749,7 +749,7 @@ sub validate_strict
 									if($rules->{'error_message'}) {
 										_error($logger, $rules->{'error_message'});
 									} else {
-										_error($logger, "$key can only contain numbers (found $member)");
+										_error($logger, "$key can only contain integers (found $member)");
 									}
 								}
 							} elsif(($rule_value eq 'number') || ($rule_value eq 'float')) {
