@@ -2,6 +2,7 @@ Revision history for Params-Validate-Strict
 
 0.21
 	Added cross_validation parameter for validating relationships between fields
+	Added notmemberof, to blacklist items
 
 0.20	Thu Oct 23 08:22:29 EDT 2025
 	Added conditional validation rules

@@ -115,7 +115,7 @@ Custom types allow you to define validation rules once and reuse them throughout
 making your validation logic more maintainable and readable.
 
 Each custom type is defined as a hash reference containing the same validation rules available for regular parameters
-(C<type>, C<min>, C<max>, C<matches>, C<memberof>, C<callback>, etc.).
+(C<type>, C<min>, C<max>, C<matches>, C<memberof>, C<notmemberof>, C<callback>, etc.).
 
   my $custom_types = {
     email => {
@@ -195,6 +195,12 @@ The parameter must be an object of type C<isa>.
 =item * C<memberof>
 
 The parameter must be a member of the given arrayref.
+This rule also supports the case_sensitive flag.
+
+=item * C<notmemberof>
+
+The parameter cannot be a member of the given arrayref.
+This rule also supports the case_sensitive flag.
 
 =item * C<min>
 
@@ -1006,7 +1012,8 @@ sub validate_strict
 								$ok = 0;
 							}
 						} else {
-							unless(List::Util::any { $_ eq $value } @{$rule_value}) {
+							my $l = lc($value);
+							unless(List::Util::any { $rules->{'case_sensitive'} ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
 								$ok = 0;
 							}
 						}
@@ -1016,6 +1023,37 @@ sub validate_strict
 								_error($logger, $rules->{'error_message'});
 							} else {
 								_error($logger, "validate_strict: Parameter '$key' ($value) must be one of ", join(', ', @{$rule_value}));
+							}
+						}
+					} else {
+						if($rules->{'error_message'}) {
+							_error($logger, $rules->{'error_message'});
+						} else {
+							_error($logger, "validate_strict: Parameter '$key' rule ($rule_value) must be an array reference");
+						}
+					}
+				} elsif($rule_name eq 'notmemberof') {
+					if(!defined($value)) {
+						next;	# Skip if string is undefined
+					}
+					if(ref($rule_value) eq 'ARRAY') {
+						my $ok = 1;
+						if(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number') || ($rules->{'type'} eq 'float')) {
+							if(List::Util::any { $_ == $value } @{$rule_value}) {
+								$ok = 0;
+							}
+						} else {
+							my $l = lc($value);
+							if(List::Util::any { $rules->{'case_sensitive'} ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
+								$ok = 0;
+							}
+						}
+
+						if(!$ok) {
+							if($rules->{'error_message'}) {
+								_error($logger, $rules->{'error_message'});
+							} else {
+								_error($logger, "validate_strict: Parameter '$key' ($value) must not be one of ", join(', ', @{$rule_value}));
 							}
 						}
 					} else {
@@ -1246,6 +1284,7 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
         matches: REGEX;
         nomatch: REGEX;
         memberof: seq VALUE;
+        notmemberof: seq VALUE;
         callback: FUNCTION;
         isa: TYPE_NAME;
         can: METHOD_NAME
