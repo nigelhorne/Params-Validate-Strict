@@ -46,13 +46,26 @@ our $VERSION = '0.19';
         print "Example 1: Validation failed: $@\n";
     }
 
+Upon first reading this may seem overly complex and full of scope creep,
+however two use cases make use of the extensive logic that comes with this code:
+
+=over 4
+
+=item * Black Box Testing
+
+The schema can be plumbed into L<App::Test::Generator> to automatically create a set of black-box test cases.
+
+=item * WAF
+
+The schema can be plumbed into a WAF to protect from random user input.
+
+=back
+
 =head1	METHODS
 
 =head2 validate_strict
 
 Validates a set of parameters against a schema.
-
-The schema can then be plumbed into L<App::Test::Generator> to automatically create a set of black-box test cases.
 
 This function takes two mandatory arguments:
 

@@ -28,13 +28,22 @@ Version 0.19
         print "Example 1: Validation failed: $@\n";
     }
 
+Upon first reading this may seem overly complex and full of scope creep,
+however two use cases make use of the extensive logic that comes with this code:
+
+- Black Box Testing
+
+    The schema can be plumbed into [App::Test::Generator](https://metacpan.org/pod/App%3A%3ATest%3A%3AGenerator) to automatically create a set of black-box test cases.
+
+- WAF
+
+    The schema can be plumbed into a WAF to protect from random user input.
+
 # METHODS
 
 ## validate\_strict
 
 Validates a set of parameters against a schema.
-
-The schema can then be plumbed into [App::Test::Generator](https://metacpan.org/pod/App%3A%3ATest%3A%3AGenerator) to automatically create a set of black-box test cases.
 
 This function takes two mandatory arguments:
 
