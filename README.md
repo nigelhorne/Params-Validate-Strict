@@ -48,7 +48,7 @@ This function takes two mandatory arguments:
     A reference to a hash containing the parameters to be validated.
     The keys of the hash are the parameter names, and the values are the parameter values.
 
-It takes two optional arguments:
+It takes three optional arguments:
 
 - `unknown_parameter_handler`
 
@@ -58,6 +58,60 @@ It takes two optional arguments:
 - `logger`
 
     A logging object that understands messages such as `error` and `warn`.
+
+- `custom_types`
+
+    A reference to a hash that defines reusable custom types.
+    Custom types allow you to define validation rules once and reuse them throughout your schema,
+    making your validation logic more maintainable and readable.
+
+    Each custom type is defined as a hash reference containing the same validation rules available for regular parameters
+    (`type`, `min`, `max`, `matches`, `memberof`, `callback`, etc.).
+
+        my $custom_types = {
+          email => {
+            type => 'string',
+            matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/,
+            error_message => 'Invalid email address format'
+          }, phone => {
+            type => 'string',
+            matches => qr/^\+?[1-9]\d{1,14}$/,
+            min => 10,
+            max => 15
+          }, percentage => {
+            type => 'number',
+            min => 0,
+            max => 100
+          }, status => {
+            type => 'string',
+            memberof => ['draft', 'published', 'archived']
+          }
+        };
+
+        my $schema = {
+          user_email => { type => 'email' },
+          contact_number => { type => 'phone', optional => 1 },
+          completion => { type => 'percentage' },
+          post_status => { type => 'status' }
+        };
+
+        my $validated = validate_strict(
+          schema => $schema,
+          input => $input,
+          custom_types => $custom_types
+        );
+
+    Custom types can be extended or overridden in the schema by specifying additional constraints:
+
+        my $schema = {
+          admin_username => {
+            type => 'username',  # Uses custom type definition
+            min => 5,            # Overrides custom type's min value
+            max => 15            # Overrides custom type's max value
+          }
+        };
+
+    Custom types work seamlessly with nested schemas, optional parameters, and all other validation features.
 
 The schema can define the following rules for each parameter:
 
@@ -155,14 +209,14 @@ The schema can define the following rules for each parameter:
     You can validate nested hashrefs and arrayrefs using the `schema` property:
 
         my $schema = {
-            user => {
+            user => {       # 'user' is a hashref
                 type => 'hashref',
-                schema => {
+                schema => { # Specify what the elements of the hash should be
                     name => { type => 'string' },
                     age => { type => 'integer', min => 0 },
-                    hobbies => {
+                    hobbies => {    # 'hobbies' is an array ref that this user has
                         type => 'arrayref',
-                        schema => { type => 'string' }, # Validate each element
+                        schema => { type => 'string' }, # Validate each hobby
                         min => 1 # At least one hobby
                     }
                 }

@@ -70,7 +70,7 @@ The keys of the hash are the parameter names, and the values are the parameter v
 
 =back
 
-It takes two optional arguments:
+It takes three optional arguments:
 
 =over 4
 
@@ -82,6 +82,60 @@ It must be one of C<die> (the default), C<warn>, or C<ignore>.
 =item * C<logger>
 
 A logging object that understands messages such as C<error> and C<warn>.
+
+=item * C<custom_types>
+
+A reference to a hash that defines reusable custom types.
+Custom types allow you to define validation rules once and reuse them throughout your schema,
+making your validation logic more maintainable and readable.
+
+Each custom type is defined as a hash reference containing the same validation rules available for regular parameters
+(C<type>, C<min>, C<max>, C<matches>, C<memberof>, C<callback>, etc.).
+
+  my $custom_types = {
+    email => {
+      type => 'string',
+      matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/,
+      error_message => 'Invalid email address format'
+    }, phone => {
+      type => 'string',
+      matches => qr/^\+?[1-9]\d{1,14}$/,
+      min => 10,
+      max => 15
+    }, percentage => {
+      type => 'number',
+      min => 0,
+      max => 100
+    }, status => {
+      type => 'string',
+      memberof => ['draft', 'published', 'archived']
+    }
+  };
+
+  my $schema = {
+    user_email => { type => 'email' },
+    contact_number => { type => 'phone', optional => 1 },
+    completion => { type => 'percentage' },
+    post_status => { type => 'status' }
+  };
+
+  my $validated = validate_strict(
+    schema => $schema,
+    input => $input,
+    custom_types => $custom_types
+  );
+
+Custom types can be extended or overridden in the schema by specifying additional constraints:
+
+  my $schema = {
+    admin_username => {
+      type => 'username',  # Uses custom type definition
+      min => 5,            # Overrides custom type's min value
+      max => 15            # Overrides custom type's max value
+    }
+  };
+
+Custom types work seamlessly with nested schemas, optional parameters, and all other validation features.
 
 =back
 
@@ -488,6 +542,8 @@ sub validate_strict
 								_error($logger, "validate_strict: Parameter '$key' must be an object");
 							}
 						}
+					} elsif(my $custom_type = $custom_types->{$type}) {
+						validate_strict({ input => { $key => $value }, schema => { $key => $custom_type }, custom_types => $custom_types });
 					} else {
 						_error($logger, "validate_strict: Unknown type '$type'");
 					}
@@ -495,7 +551,12 @@ sub validate_strict
 					if(!defined($rules->{'type'})) {
 						_error($logger, "validate_strict: Don't know type of '$key' to determine its minimum value $rule_value");
 					}
-					if($rules->{'type'} eq 'string') {
+					my $type = lc($rules->{'type'});
+					if(exists($custom_types->{$type}->{'min'})) {
+						$rule_value = $custom_types->{$type}->{'min'};
+						$type = $custom_types->{$type}->{'type'};
+					}
+					if($type eq 'string') {
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
@@ -535,7 +596,7 @@ sub validate_strict
 								_error($logger, "validate_strict: Parameter '$key' must contain at least $rule_value keys");
 							}
 						}
-					} elsif(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number') || ($rules->{'type'} eq 'float')) {
+					} elsif(($type eq 'integer') || ($type eq 'number') || ($type eq 'float')) {
 						if(!defined($value)) {
 							next;	# Skip if hash is undefined
 						}
@@ -547,13 +608,18 @@ sub validate_strict
 							}
 						}
 					} else {
-						_error($logger, "validate_strict: Parameter '$key' has meaningless min value $rule_value");
+						_error($logger, "validate_strict: Parameter '$key' of type '$type' has meaningless min value $rule_value");
 					}
 				} elsif($rule_name eq 'max') {
 					if(!defined($rules->{'type'})) {
 						_error($logger, "validate_strict: Don't know type of '$key' to determine its maximum value $rule_value");
 					}
-					if($rules->{'type'} eq 'string') {
+					my $type = lc($rules->{'type'});
+					if(exists($custom_types->{$type}->{'max'})) {
+						$rule_value = $custom_types->{$type}->{'max'};
+						$type = $custom_types->{$type}->{'type'};
+					}
+					if($type eq 'string') {
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
@@ -593,7 +659,7 @@ sub validate_strict
 								_error($logger, "validate_strict: Parameter '$key' must contain no more than $rule_value keys");
 							}
 						}
-					} elsif(($rules->{'type'} eq 'integer') || ($rules->{'type'} eq 'number') || ($rules->{'type'} eq 'float')) {
+					} elsif(($type eq 'integer') || ($type eq 'number') || ($type eq 'float')) {
 						if(!defined($value)) {
 							next;	# Skip if hash is undefined
 						}
@@ -613,7 +679,7 @@ sub validate_strict
 							}
 						}
 					} else {
-						_error($logger, "validate_strict: Parameter '$key' has meaningless max value $rule_value");
+						_error($logger, "validate_strict: Parameter '$key' of type '$type' has meaningless max value $rule_value");
 					}
 				} elsif($rule_name eq 'matches') {
 					if(!defined($value)) {
@@ -805,11 +871,6 @@ sub validate_strict
 						_error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not $value");
 					}
 				} else {
-					if(my $custom_type = $custom_types->{'rule_name'}) {
-						if(scalar keys(%{$value})) {
-							validate_strict({ input => $value, schema => $custom_type });
-						}
-					}
 					_error($logger, "validate_strict: Unknown rule '$rule_name'");
 				}
 			}
