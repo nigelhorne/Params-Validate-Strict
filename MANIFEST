@@ -14,6 +14,7 @@ t/50-even-more.t
 t/alternative.t
 t/array.t
 t/comment-spelling.t
+t/cross_validation.t
 t/custom_types.t
 t/custom_validation.t
 t/default.t
