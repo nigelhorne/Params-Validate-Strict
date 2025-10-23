@@ -195,12 +195,130 @@ The parameter must be an object of type C<isa>.
 =item * C<memberof>
 
 The parameter must be a member of the given arrayref.
-This rule also supports the case_sensitive flag.
+
+  status => {
+    type => 'string',
+    memberof => ['draft', 'published', 'archived']
+  }
+
+  priority => {
+    type => 'integer',
+    memberof => [1, 2, 3, 4, 5]
+  }
+
+For string types, the comparison is case-sensitive by default. Use the C<case_sensitive>
+flag to control this behavior:
+
+  # Case-sensitive (default) - must be exact match
+  code => {
+    type => 'string',
+    memberof => ['ABC', 'DEF', 'GHI']
+    # 'abc' will fail
+  }
+
+  # Case-insensitive - any case accepted
+  code => {
+    type => 'string',
+    memberof => ['ABC', 'DEF', 'GHI'],
+    case_sensitive => 0
+    # 'abc', 'Abc', 'ABC' all pass, original case preserved
+  }
+
+For numeric types (C<integer>, C<number>, C<float>), the comparison uses numeric
+equality (C<==> operator):
+
+  rating => {
+    type => 'number',
+    memberof => [0.5, 1.0, 1.5, 2.0]
+  }
+
+Note that C<memberof> cannot be combined with C<min> or C<max> constraints as they
+serve conflicting purposes - C<memberof> defines an explicit whitelist while C<min>/C<max>
+define ranges.
 
 =item * C<notmemberof>
 
-The parameter cannot be a member of the given arrayref.
-This rule also supports the case_sensitive flag.
+The parameter must not be a member of the given arrayref (blacklist).
+This is the inverse of C<memberof>.
+
+  username => {
+    type => 'string',
+    notmemberof => ['admin', 'root', 'system', 'administrator']
+  }
+
+  port => {
+    type => 'integer',
+    notmemberof => [22, 23, 25, 80, 443]  # Reserved ports
+  }
+
+Like C<memberof>, string comparisons are case-sensitive by default but can be controlled
+with the C<case_sensitive> flag:
+
+  # Case-sensitive (default)
+  username => {
+    type => 'string',
+    notmemberof => ['Admin', 'Root']
+    # 'admin' would pass, 'Admin' would fail
+  }
+
+  # Case-insensitive
+  username => {
+    type => 'string',
+    notmemberof => ['Admin', 'Root'],
+    case_sensitive => 0
+    # 'admin', 'ADMIN', 'Admin' all fail
+  }
+
+The blacklist is checked after any C<transform> rules are applied, allowing you to
+normalize input before checking:
+
+  username => {
+    type => 'string',
+    transform => sub { lc($_[0]) },  # Normalize to lowercase
+    notmemberof => ['admin', 'root', 'system']
+  }
+
+C<notmemberof> can be combined with other validation rules:
+
+  username => {
+    type => 'string',
+    notmemberof => ['admin', 'root', 'system'],
+    min => 3,
+    max => 20,
+    matches => qr/^[a-z0-9_]+$/
+  }
+
+=item * C<case_sensitive>
+
+A boolean value indicating whether string comparisons should be case-sensitive.
+This flag affects the C<memberof> and C<notmemberof> validation rules.
+The default value is C<1> (case-sensitive).
+
+When set to C<0>, string comparisons are performed case-insensitively, allowing values
+with different casing to match. The original case of the input value is preserved in
+the validated output.
+
+  # Case-sensitive (default)
+  status => {
+    type => 'string',
+    memberof => ['Draft', 'Published', 'Archived'] # Input 'draft' will fail - must match exact case
+  }
+
+  # Case-insensitive
+  status => {
+    type => 'string',
+    memberof => ['Draft', 'Published', 'Archived'],
+    case_sensitive => 0 # Input 'draft', 'DRAFT', or 'DrAfT' will all pass
+  }
+
+  country_code => {
+    type => 'string',
+    memberof => ['US', 'UK', 'CA', 'FR'],
+    case_sensitive => 0  # Accept 'us', 'US', 'Us', etc.
+  }
+
+This flag has no effect on numeric types (C<integer>, C<number>, C<float>) as numbers
+do not have case.
 
 =item * C<min>
 
@@ -519,11 +637,11 @@ Cross-validations receive the parameters after individual validation and transfo
 so you can rely on the data being in the correct format and type:
 
   my $schema = {
-    email => { 
+    email => {
       type => 'string',
       transform => sub { lc($_[0]) }  # Lowercased before cross-validation
     },
-    email_confirm => { 
+    email_confirm => {
       type => 'string',
       transform => sub { lc($_[0]) }
     }
@@ -1013,7 +1131,7 @@ sub validate_strict
 							}
 						} else {
 							my $l = lc($value);
-							unless(List::Util::any { $rules->{'case_sensitive'} ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
+							unless(List::Util::any { (!defined($rules->{'case_sensitive'}) || ($rules->{'case_sensitive'} == 1)) ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
 								$ok = 0;
 							}
 						}
@@ -1044,7 +1162,7 @@ sub validate_strict
 							}
 						} else {
 							my $l = lc($value);
-							if(List::Util::any { $rules->{'case_sensitive'} ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
+							if(List::Util::any { (!defined($rules->{'case_sensitive'}) || ($rules->{'case_sensitive'} == 1)) ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
 								$ok = 0;
 							}
 						}
@@ -1147,6 +1265,8 @@ sub validate_strict
 					# Handled inline
 				} elsif($rule_name eq 'transform') {
 					# Handled before the loop
+				} elsif($rule_name eq 'case_sensitive') {
+					# Handled inline
 				} elsif($rule_name eq 'schema') {
 					# Nested schema Run the given schema against each element of the array
 					if($rules->{'type'} eq 'arrayref') {
@@ -1296,9 +1416,15 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
     ValidatedResult == PARAM_NAME ⇸ VALUE
 
-    │ ∀ rule: ComplexRule • rule.min ≤ rule.max
-    │ ∀ schema: Schema; args: Arguments •
-    │   dom(validate_strict(schema, args)) ⊆ dom(schema) ∪ dom(args)
+    ∀ rule: ComplexRule •
+      rule.min ≤ rule.max ∧
+      ¬(rule.memberof ∧ rule.min) ∧
+      ¬(rule.memberof ∧ rule.max) ∧
+      ¬(rule.notmemberof ∧ rule.min) ∧
+      ¬(rule.notmemberof ∧ rule.max)
+
+    ∀ schema: Schema; args: Arguments •
+      dom(validate_strict(schema, args)) ⊆ dom(schema) ∪ dom(args)
 
     validate_strict: Schema × Arguments → ValidatedResult
 

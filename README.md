@@ -87,7 +87,7 @@ It takes three optional arguments:
     making your validation logic more maintainable and readable.
 
     Each custom type is defined as a hash reference containing the same validation rules available for regular parameters
-    (`type`, `min`, `max`, `matches`, `memberof`, `callback`, etc.).
+    (`type`, `min`, `max`, `matches`, `memberof`, `notmemberof`, `callback`, etc.).
 
         my $custom_types = {
           email => {
@@ -163,6 +163,130 @@ The schema can define the following rules for each parameter:
 - `memberof`
 
     The parameter must be a member of the given arrayref.
+
+        status => {
+          type => 'string',
+          memberof => ['draft', 'published', 'archived']
+        }
+
+        priority => {
+          type => 'integer',
+          memberof => [1, 2, 3, 4, 5]
+        }
+
+    For string types, the comparison is case-sensitive by default. Use the `case_sensitive`
+    flag to control this behavior:
+
+        # Case-sensitive (default) - must be exact match
+        code => {
+          type => 'string',
+          memberof => ['ABC', 'DEF', 'GHI']
+          # 'abc' will fail
+        }
+
+        # Case-insensitive - any case accepted
+        code => {
+          type => 'string',
+          memberof => ['ABC', 'DEF', 'GHI'],
+          case_sensitive => 0
+          # 'abc', 'Abc', 'ABC' all pass, original case preserved
+        }
+
+    For numeric types (`integer`, `number`, `float`), the comparison uses numeric
+    equality (`==` operator):
+
+        rating => {
+          type => 'number',
+          memberof => [0.5, 1.0, 1.5, 2.0]
+        }
+
+    Note that `memberof` cannot be combined with `min` or `max` constraints as they
+    serve conflicting purposes - `memberof` defines an explicit whitelist while `min`/`max`
+    define ranges.
+
+- `notmemberof`
+
+    The parameter must not be a member of the given arrayref (blacklist).
+    This is the inverse of `memberof`.
+
+        username => {
+          type => 'string',
+          notmemberof => ['admin', 'root', 'system', 'administrator']
+        }
+
+        port => {
+          type => 'integer',
+          notmemberof => [22, 23, 25, 80, 443]  # Reserved ports
+        }
+
+    Like `memberof`, string comparisons are case-sensitive by default but can be controlled
+    with the `case_sensitive` flag:
+
+        # Case-sensitive (default)
+        username => {
+          type => 'string',
+          notmemberof => ['Admin', 'Root']
+          # 'admin' would pass, 'Admin' would fail
+        }
+
+        # Case-insensitive
+        username => {
+          type => 'string',
+          notmemberof => ['Admin', 'Root'],
+          case_sensitive => 0
+          # 'admin', 'ADMIN', 'Admin' all fail
+        }
+
+    The blacklist is checked after any `transform` rules are applied, allowing you to
+    normalize input before checking:
+
+        username => {
+          type => 'string',
+          transform => sub { lc($_[0]) },  # Normalize to lowercase
+          notmemberof => ['admin', 'root', 'system']
+        }
+
+    `notmemberof` can be combined with other validation rules:
+
+        username => {
+          type => 'string',
+          notmemberof => ['admin', 'root', 'system'],
+          min => 3,
+          max => 20,
+          matches => qr/^[a-z0-9_]+$/
+        }
+
+- `case_sensitive`
+
+    A boolean value indicating whether string comparisons should be case-sensitive.
+    This flag affects the `memberof` and `notmemberof` validation rules.
+    The default value is `1` (case-sensitive).
+
+    When set to `0`, string comparisons are performed case-insensitively, allowing values
+    with different casing to match. The original case of the input value is preserved in
+    the validated output.
+
+        # Case-sensitive (default)
+        status => {
+          type => 'string',
+          memberof => ['Draft', 'Published', 'Archived'] # Input 'draft' will fail - must match exact case
+        }
+
+        # Case-insensitive
+        status => {
+          type => 'string',
+          memberof => ['Draft', 'Published', 'Archived'],
+          case_sensitive => 0 # Input 'draft', 'DRAFT', or 'DrAfT' will all pass
+        }
+
+        country_code => {
+          type => 'string',
+          memberof => ['US', 'UK', 'CA', 'FR'],
+          case_sensitive => 0  # Accept 'us', 'US', 'Us', etc.
+        }
+
+    This flag has no effect on numeric types (`integer`, `number`, `float`) as numbers
+    do not have case.
 
 - `min`
 
@@ -572,6 +696,7 @@ Nigel Horne, `<njh at nigelhorne.com>`
         matches: REGEX;
         nomatch: REGEX;
         memberof: seq VALUE;
+        notmemberof: seq VALUE;
         callback: FUNCTION;
         isa: TYPE_NAME;
         can: METHOD_NAME
@@ -583,9 +708,15 @@ Nigel Horne, `<njh at nigelhorne.com>`
 
     ValidatedResult == PARAM_NAME ⇸ VALUE
 
-    │ ∀ rule: ComplexRule • rule.min ≤ rule.max
-    │ ∀ schema: Schema; args: Arguments •
-    │   dom(validate_strict(schema, args)) ⊆ dom(schema) ∪ dom(args)
+    ∀ rule: ComplexRule • 
+      rule.min ≤ rule.max ∧
+      ¬(rule.memberof ∧ rule.min) ∧
+      ¬(rule.memberof ∧ rule.max) ∧
+      ¬(rule.notmemberof ∧ rule.min) ∧
+      ¬(rule.notmemberof ∧ rule.max)
+
+    ∀ schema: Schema; args: Arguments •
+      dom(validate_strict(schema, args)) ⊆ dom(schema) ∪ dom(args)
 
     validate_strict: Schema × Arguments → ValidatedResult
 
