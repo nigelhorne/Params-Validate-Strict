@@ -4,7 +4,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 # VERSION
 
-Version 0.19
+Version 0.20
 
 # SYNOPSIS
 
@@ -28,8 +28,9 @@ Version 0.19
         print "Example 1: Validation failed: $@\n";
     }
 
-Upon first reading this may seem overly complex and full of scope creep,
-however two use cases make use of the extensive logic that comes with this code:
+Upon first reading this may seem overly complex and full of scope creep in a sledgehammer to crack a nut sort of way,
+however two use cases make use of the extensive logic that comes with this code
+and I have a couple of other reasons for writing it.
 
 - Black Box Testing
 
@@ -38,6 +39,17 @@ however two use cases make use of the extensive logic that comes with this code:
 - WAF
 
     The schema can be plumbed into a WAF to protect from random user input.
+
+- Improved API Documentation
+
+    Even if you don't use this module,
+    the specification syntax can help with documentation.
+
+- I like it
+
+    I find it fun to write this,
+    even if nobody else finds it useful,
+    though I hope you will.
 
 # METHODS
 

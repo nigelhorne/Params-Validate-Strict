@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.20
+0.20	Thu Oct 23 08:22:29 EDT 2025
 	Added conditional validation rules
 	Added custom types
 	Added transformation/sanitization rules
