@@ -6,7 +6,7 @@ use Test::Most tests => 26;
 
 use Params::Validate::Strict qw(validate_strict);
 
-# Test 1: Basic custom type - email
+# Basic custom type - email
 {
     my $custom_types = {
         email => { 
@@ -38,7 +38,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must match pattern/, 'Invalid email fails';
 }
 
-# Test 2: Custom type with min/max constraints - phone
+# Custom type with min/max constraints - phone
 {
     my $custom_types = {
         phone => {
@@ -80,7 +80,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must match pattern/, 'Invalid phone format fails';
 }
 
-# Test 3: Multiple custom types in one schema
+# Multiple custom types in one schema
 {
     my $custom_types = {
         email => { 
@@ -131,7 +131,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must match pattern/, 'Invalid username in multi-type schema';
 }
 
-# Test 4: Custom type with optional field
+# Custom type with optional field
 {
     my $custom_types = {
         url => {
@@ -170,7 +170,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must match pattern/, 'Invalid optional custom type fails';
 }
 
-# Test 5: Custom type extending base type with memberof
+# Custom type extending base type with memberof
 {
     my $custom_types = {
         status => {
@@ -201,7 +201,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of/, 'Invalid enum value fails';
 }
 
-# Test 6: Custom numeric type with range
+# Custom numeric type with range
 {
     my $custom_types = {
         percentage => {
@@ -250,7 +250,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be no more than 150/, 'Age exceeds max';
 }
 
-# Test 7: Custom type with arrayref
+# Custom type with arrayref
 {
     my $custom_types = {
         tag_list => {
@@ -293,7 +293,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be at least length 1/, 'Empty array fails min constraint';
 }
 
-# Test 8: Overriding custom type constraints in schema
+# Overriding custom type constraints in schema
 {
     my $custom_types = {
         username => {
@@ -321,7 +321,7 @@ use Params::Validate::Strict qw(validate_strict);
     ok(defined($result), 'Valid with overridden constraints');
 }
 
-# Test 9: Custom type with callback validation
+# Custom type with callback validation
 {
     my $custom_types = {
         even_number => {
@@ -355,7 +355,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/failed custom validation/, 'Odd number fails callback';
 }
 
-# Test 10: Custom type with error_message
+# Custom type with error_message
 {
     my $custom_types = {
         strong_password => {
@@ -380,7 +380,8 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/Password must be at least 8 characters/, 'Custom error message shown';
 }
 
-# Test 11: Nested custom types (custom type within arrayref/hashref)
+# Nested custom types (custom type within arrayref/hashref)
+# TODO: This functionality is not implemented
 if(0) {
     my $custom_types = {
         email => { 

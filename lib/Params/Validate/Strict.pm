@@ -512,8 +512,12 @@ sub validate_strict
 		my $is_optional = 0;
 
 		if(ref($rules) eq 'HASH') {
-			if($rules->{'transform'} && (ref($rules->{'transform'}) eq 'CODE') && defined($value)) {
-				$value = &{$rules->{'transform'}}($value);
+			if($rules->{'transform'} && defined($value)) {
+				if(ref($rules->{'transform'}) eq 'CODE') {
+					$value = &{$rules->{'transform'}}($value);
+				} else {
+					_error($logger, 'validate_strict: transforms must be a code ref');
+				}
 			}
 			if(exists($rules->{optional})) {
 				if(ref($rules->{'optional'}) eq 'CODE') {
@@ -664,6 +668,15 @@ sub validate_strict
 							}
 						}
 					} elsif(my $custom_type = $custom_types->{$type}) {
+						if($custom_type->{'transform'}) {
+							# The custom type has a transform embeded within it
+							if(ref($custom_type->{'transform'}) eq 'CODE') {
+								$value = &{$custom_type->{'transform'}}($value);
+							} else {
+								_error($logger, 'validate_strict: transforms must be a code ref');
+								next;
+							}
+						}
 						validate_strict({ input => { $key => $value }, schema => { $key => $custom_type }, custom_types => $custom_types });
 					} else {
 						_error($logger, "validate_strict: Unknown type '$type'");
@@ -976,7 +989,9 @@ sub validate_strict
 					} elsif($rules->{'type'} eq 'hashref') {
 						if(ref($value) eq 'HASH') {
 							if(scalar keys(%{$value})) {
-								validate_strict({ input => $value, schema => $rule_value });
+								if(my $new_args = validate_strict({ input => $value, schema => $rule_value })) {
+									$value = $new_args;
+								}
 							}
 						} else {
 							_error($logger, "validate_strict: nested schema: Parameter '$value' must be an hashref");
