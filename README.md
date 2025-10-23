@@ -257,6 +257,109 @@ The schema can define the following rules for each parameter:
           }
         };
 
+- `transform`
+
+    A code reference to a subroutine that transforms/sanitizes the parameter value before validation.
+    The subroutine should accept the parameter value as an argument and return the transformed value.
+    The transformation is applied before any validation rules are checked, allowing you to normalize
+    or clean data before it is validated.
+
+    Common use cases include trimming whitespace, normalizing case, formatting phone numbers,
+    sanitizing user input, and converting between data formats.
+
+        # Simple string transformations
+        username => {
+          type => 'string',
+          transform => sub { lc(trim($_[0])) },  # lowercase and trim
+          matches => qr/^[a-z0-9_]+$/
+        }
+
+        email => {
+          type => 'string',
+          transform => sub { lc(trim($_[0])) },  # normalize email
+          matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
+        }
+
+        # Array transformations
+        tags => {
+          type => 'arrayref',
+          transform => sub { [map { lc($_) } @{$_[0]}] },  # lowercase all elements
+          element_type => 'string'
+        }
+
+        keywords => {
+          type => 'arrayref',
+          transform => sub {
+            my @arr = map { lc(trim($_)) } @{$_[0]};
+            my %seen;
+            return [grep { !$seen{$_}++ } @arr];  # remove duplicates
+          }
+        }
+
+        # Numeric transformations
+        quantity => {
+          type => 'integer',
+          transform => sub { int($_[0] + 0.5) },  # round to nearest integer
+          min => 1
+        }
+
+        # Sanitization
+        slug => {
+          type => 'string',
+          transform => sub {
+            my $str = lc(trim($_[0]));
+            $str =~ s/[^\w\s-]//g;  # remove special characters
+            $str =~ s/\s+/-/g;      # replace spaces with hyphens
+            return $str;
+          },
+          matches => qr/^[a-z0-9-]+$/
+        }
+
+        phone => {
+          type => 'string',
+          transform => sub {
+            my $str = $_[0];
+            $str =~ s/\D//g;  # remove all non-digits
+            return $str;
+          },
+          matches => qr/^\d{10}$/
+        }
+
+    The `transform` function is applied to the value before any validation checks (`min`, `max`,
+    `matches`, `callback`, etc.), ensuring that validation rules are checked against the cleaned data.
+
+    Transformations work with all parameter types including nested structures:
+
+        user => {
+          type => 'hashref',
+          schema => {
+            name => {
+              type => 'string',
+              transform => sub { trim($_[0]) }
+            },
+            email => {
+              type => 'string',
+              transform => sub { lc(trim($_[0])) }
+            }
+          }
+        }
+
+    Transformations can also be defined in custom types for reusability:
+
+        my $custom_types = {
+          email => {
+            type => 'string',
+            transform => sub { lc(trim($_[0])) },
+            matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
+          }
+        };
+
+    Note that the transformed value is what gets returned in the validated result and is what
+    subsequent validation rules will check against. If a transformation might fail, ensure it
+    handles edge cases appropriately.
+    It is the responsibilty of the transformer to ensure that the type of the returned value is correct,
+    since that is what will be validated.
+
 Many validators also allow a code ref to be passed so that you can create your own, conditional validation rule, e.g.:
 
     $schema = {

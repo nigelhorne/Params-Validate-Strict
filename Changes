@@ -3,6 +3,7 @@ Revision history for Params-Validate-Strict
 0.20
 	Added conditional validation rules
 	Added custom types
+	Added transformation/sanitization rules
 
 0.19	Tue Oct 21 15:34:58 EDT 2025
 	Allow a parameter to have different allowable types
