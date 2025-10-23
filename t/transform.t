@@ -2,18 +2,18 @@
 
 use strict;
 use warnings;
-use Test::Most tests => 39;
+use Test::Most tests => 40;
 
 use Params::Validate::Strict qw(validate_strict);
 
 # Helper functions for transformations
 sub trim {
-    my $str = shift;
-    $str =~ s/^\s+|\s+$//g;
-    return $str;
+	my $str = shift;
+	$str =~ s/^\s+|\s+$//g;
+	return $str;
 }
 
-# Test 1: Basic string transformation - lowercase and trim
+# Basic string transformation - lowercase and trim
 {
     my $schema = {
         username => {
@@ -39,7 +39,7 @@ sub trim {
     is($result->{username}, 'admin_user', 'Uppercase transformed to lowercase');
 }
 
-# Test 2: Array transformation - lowercase all elements
+# Array transformation - lowercase all elements
 {
     my $schema = {
         tags => {
@@ -57,7 +57,7 @@ sub trim {
     is_deeply($result->{tags}, ['perl', 'validation', 'testing'], 'All tags lowercased');
 }
 
-# Test 3: Numeric transformation - round to integer
+# Numeric transformation - round to integer
 {
     my $schema = {
         quantity => {
@@ -82,7 +82,7 @@ sub trim {
     is($result->{quantity}, 5, 'Number rounded down correctly');
 }
 
-# Test 4: Email normalization - lowercase and trim
+# Email normalization - lowercase and trim
 {
     my $schema = {
         email => {
@@ -100,7 +100,7 @@ sub trim {
     is($result->{email}, 'user@example.com', 'Email normalized correctly');
 }
 
-# Test 5: String sanitization - remove special characters
+# String sanitization - remove special characters
 {
     my $schema = {
         slug => {
@@ -123,7 +123,7 @@ sub trim {
     is($result->{slug}, 'hello-world-2024', 'Slug sanitized correctly');
 }
 
-# Test 6: Phone number formatting - remove non-digits
+# Phone number formatting - remove non-digits
 {
     my $schema = {
         phone => {
@@ -145,7 +145,7 @@ sub trim {
     is($result->{phone}, '5551234567', 'Phone formatted correctly');
 }
 
-# Test 7: Multiple transformations on different fields
+# Multiple transformations on different fields
 {
     my $schema = {
         username => {
@@ -176,7 +176,7 @@ sub trim {
     is($result->{score}, 95, 'Score transformed');
 }
 
-# Test 8: Transform with validation that depends on transform
+# Transform with validation that depends on transform
 {
     my $schema = {
         code => {
@@ -203,7 +203,7 @@ sub trim {
     } qr/must match pattern/, 'Transform doesnt bypass validation';
 }
 
-# Test 9: Array element transformation with deduplication
+# Array element transformation with deduplication
 {
     my $schema = {
         keywords => {
@@ -227,7 +227,7 @@ sub trim {
     is(scalar(@{$result->{keywords}}), 2, 'Correct count after dedup');
 }
 
-# Test 10: Nested object transformation
+# Nested object transformation
 {
     my $schema = {
         user => {
@@ -259,7 +259,7 @@ sub trim {
     is($result->{user}{email}, 'john@example.com', 'Nested email normalized');
 }
 
-# Test 11: Boolean transformation from various formats
+# Boolean transformation from various formats
 {
     my $schema = {
         enabled => {
@@ -287,7 +287,7 @@ sub trim {
     is($result->{enabled}, 0, 'false transformed to 0');
 }
 
-# Test 12: Transform with custom types
+# Transform with custom types
 {
     my $custom_types = {
         email => {
@@ -315,7 +315,7 @@ sub trim {
     is($result->{backup_email}, 'backup@test.com', 'Backup email transformed');
 }
 
-# Test 13: Transform that prevents validation error
+# Transform that prevents validation error
 {
     my $schema = {
         age => {
@@ -339,7 +339,7 @@ sub trim {
     is($result->{age}, 30, 'Age extracted from string');
 }
 
-# Test 14: Optional field with transform
+# Optional field with transform
 {
     my $schema = {
         nickname => {
@@ -366,4 +366,20 @@ sub trim {
     ok(!exists($result->{nickname}), 'Omitted field not in result');
 }
 
+# Not a code reference
+{
+	my $schema = {
+		username => {
+			type => 'string',
+			transform => 'foo',
+		}
+	};
+
+	throws_ok {
+		my $result = validate_strict(
+			schema => $schema,
+			input => { username => 'Vickie' }
+		);
+	} qr/must be a code ref/, "Errors if transform isn't a code ref"
+}
 done_testing();
