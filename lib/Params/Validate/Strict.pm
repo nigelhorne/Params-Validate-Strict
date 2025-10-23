@@ -413,8 +413,6 @@ handles edge cases appropriately.
 It is the responsibilty of the transformer to ensure that the type of the returned value is correct,
 since that is what will be validated.
 
-=back
-
 Many validators also allow a code ref to be passed so that you can create your own, conditional validation rule, e.g.:
 
   $schema = {
@@ -426,6 +424,129 @@ Many validators also allow a code ref to be passed so that you can create your o
       }
     }
   }
+
+=item * C<cross_validation>
+
+A reference to a hash that defines validation rules that depend on more than one parameter.
+Cross-field validations are performed after all individual parameter validations have passed,
+allowing you to enforce business logic that requires checking relationships between different fields.
+
+Each cross-validation rule is a key-value pair where the key is a descriptive name for the validation
+and the value is a code reference that accepts a hash reference of all validated parameters.
+The subroutine should return C<undef> if the validation passes, or an error message string if it fails.
+
+  my $schema = {
+    password => { type => 'string', min => 8 },
+    password_confirm => { type => 'string' }
+  };
+
+  my $cross_validation = {
+    passwords_match => sub {
+      my $params = shift;
+      return $params->{password} eq $params->{password_confirm}
+        ? undef : "Passwords don't match";
+    }
+  };
+
+  my $validated = validate_strict(
+    schema => $schema,
+    input => $input,
+    cross_validation => $cross_validation
+  );
+
+Common use cases include password confirmation, date range validation, numeric comparisons,
+and conditional requirements:
+
+  # Date range validation
+  my $cross_validation = {
+    date_range_valid => sub {
+      my $params = shift;
+      return $params->{start_date} le $params->{end_date}
+        ? undef : "Start date must be before or equal to end date";
+    }
+  };
+
+  # Price range validation
+  my $cross_validation = {
+    price_range_valid => sub {
+      my $params = shift;
+      return $params->{min_price} <= $params->{max_price}
+        ? undef : "Minimum price must be less than or equal to maximum price";
+    }
+  };
+
+  # Conditional required field
+  my $cross_validation = {
+    address_required_for_delivery => sub {
+      my $params = shift;
+      if ($params->{shipping_method} eq 'delivery' && !$params->{delivery_address}) {
+        return "Delivery address is required when shipping method is 'delivery'";
+      }
+      return undef;
+    }
+  };
+
+Multiple cross-validations can be defined in the same hash, and they are all checked in order.
+If any cross-validation fails, the function will C<croak> with the error message returned by the validation:
+
+  my $cross_validation = {
+    passwords_match => sub {
+      my $params = shift;
+      return $params->{password} eq $params->{password_confirm}
+        ? undef : "Passwords don't match";
+    },
+    emails_match => sub {
+      my $params = shift;
+      return $params->{email} eq $params->{email_confirm}
+        ? undef : "Email addresses don't match";
+    },
+    age_matches_birth_year => sub {
+      my $params = shift;
+      my $current_year = (localtime)[5] + 1900;
+      my $calculated_age = $current_year - $params->{birth_year};
+      return abs($calculated_age - $params->{age}) <= 1
+        ? undef : "Age doesn't match birth year";
+    }
+  };
+
+Cross-validations receive the parameters after individual validation and transformation have been applied,
+so you can rely on the data being in the correct format and type:
+
+  my $schema = {
+    email => { 
+      type => 'string',
+      transform => sub { lc($_[0]) }  # Lowercased before cross-validation
+    },
+    email_confirm => { 
+      type => 'string',
+      transform => sub { lc($_[0]) }
+    }
+  };
+
+  my $cross_validation = {
+    emails_match => sub {
+      my $params = shift;
+      # Both emails are already lowercased at this point
+      return $params->{email} eq $params->{email_confirm}
+        ? undef : "Email addresses don't match";
+    }
+  };
+
+Cross-validations can access nested structures and optional fields:
+
+  my $cross_validation = {
+    guardian_required_for_minors => sub {
+      my $params = shift;
+      if ($params->{user}{age} < 18 && !$params->{guardian}) {
+        return "Guardian information required for users under 18";
+      }
+      return undef;
+    }
+  };
+
+All cross-validations must pass for the overall validation to succeed.
+
+=back
 
 If a parameter is optional and its value is C<undef>,
 validation will be skipped for that parameter.
@@ -1058,6 +1179,19 @@ sub validate_strict
 		}
 
 		$validated_args{$key} = $value;
+	}
+
+	if(my $cross_validation = $params->{'cross_validation'}) {
+		foreach my $validator_name(keys %{$cross_validation}) {
+			my $validator = $cross_validation->{$validator_name};
+			if((!ref($validator)) || (ref($validator) ne 'CODE')) {
+				_error($logger, "validate_strict: cross_validation $validator is not a code snippet");
+				next;
+			}
+			if(my $error = &{$validator}(\%validated_args, $validator)) {
+				_error($logger, $error);
+			}
+		}
 	}
 
 	return \%validated_args;
