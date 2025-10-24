@@ -4,7 +4,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 # VERSION
 
-Version 0.20
+Version 0.21
 
 # SYNOPSIS
 
@@ -605,11 +605,11 @@ The schema can define the following rules for each parameter:
     so you can rely on the data being in the correct format and type:
 
         my $schema = {
-          email => { 
+          email => {
             type => 'string',
             transform => sub { lc($_[0]) }  # Lowercased before cross-validation
           },
-          email_confirm => { 
+          email_confirm => {
             type => 'string',
             transform => sub { lc($_[0]) }
           }
@@ -708,7 +708,7 @@ Nigel Horne, `<njh at nigelhorne.com>`
 
     ValidatedResult == PARAM_NAME ⇸ VALUE
 
-    ∀ rule: ComplexRule • 
+    ∀ rule: ComplexRule •
       rule.min ≤ rule.max ∧
       ¬(rule.memberof ∧ rule.min) ∧
       ¬(rule.memberof ∧ rule.max) ∧

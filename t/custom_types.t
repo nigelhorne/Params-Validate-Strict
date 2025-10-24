@@ -9,8 +9,8 @@ use Params::Validate::Strict qw(validate_strict);
 # Basic custom type - email
 {
     my $custom_types = {
-        email => { 
-            type => 'string', 
+        email => {
+            type => 'string',
             matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
         }
     };
@@ -83,8 +83,8 @@ use Params::Validate::Strict qw(validate_strict);
 # Multiple custom types in one schema
 {
     my $custom_types = {
-        email => { 
-            type => 'string', 
+        email => {
+            type => 'string',
             matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
         },
         zipcode => {
@@ -108,7 +108,7 @@ use Params::Validate::Strict qw(validate_strict);
     # All valid
     my $result = validate_strict(
         schema => $schema,
-        input => { 
+        input => {
             email => 'user@test.com',
             zip => '12345',
             username => 'john_doe'
@@ -121,7 +121,7 @@ use Params::Validate::Strict qw(validate_strict);
     throws_ok {
         validate_strict(
             schema => $schema,
-            input => { 
+            input => {
                 email => 'user@test.com',
                 zip => '12345',
                 username => 'John-Doe'  # capitals and dash not allowed
@@ -305,7 +305,7 @@ use Params::Validate::Strict qw(validate_strict);
     };
 
     my $schema = {
-        admin_username => { 
+        admin_username => {
             type => 'username',
             min => 5,  # Override the custom type's min
             max => 15  # Override the custom type's max
@@ -384,8 +384,8 @@ use Params::Validate::Strict qw(validate_strict);
 # TODO: This functionality is not implemented
 if(0) {
     my $custom_types = {
-        email => { 
-            type => 'string', 
+        email => {
+            type => 'string',
             matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
         }
     };
@@ -403,7 +403,7 @@ if(0) {
     # Valid nested custom type
     my $result = validate_strict(
         schema => $schema,
-        input => { 
+        input => {
             contacts => [
                 { name => 'John', email => 'john@test.com' },
                 { name => 'Jane', email => 'jane@test.com' }
@@ -417,7 +417,7 @@ if(0) {
     throws_ok {
         validate_strict(
             schema => $schema,
-            input => { 
+            input => {
                 contacts => [
                     { name => 'John', email => 'not-an-email' }
                 ]

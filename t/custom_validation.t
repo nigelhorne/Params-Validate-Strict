@@ -175,7 +175,7 @@ use Params::Validate::Strict qw(validate_strict);
                 my ($value, $all_params) = @_;
                 my $method = $all_params->{shipping_method};
                 my $country = $all_params->{country};
-                
+
                 return 0 if $method eq 'standard';
                 return $country eq 'US' ? 10 : 25 if $method eq 'express';
                 return $country eq 'US' ? 25 : 50 if $method eq 'overnight';
@@ -187,10 +187,10 @@ use Params::Validate::Strict qw(validate_strict);
     # Express shipping US with $15 - should pass
     my $result = validate_strict(
         schema => $schema,
-        input => { 
-            shipping_method => 'express', 
-            country => 'US', 
-            shipping_cost => 15 
+        input => {
+            shipping_method => 'express',
+            country => 'US',
+            shipping_cost => 15
         }
     );
     ok(defined($result), 'US express shipping with valid cost');

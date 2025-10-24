@@ -200,7 +200,7 @@ use Params::Validate::Strict qw(validate_strict);
     # Delivery with address
     $result = validate_strict(
         schema => $schema,
-        input => { 
+        input => {
             shipping_method => 'delivery',
             delivery_address => '123 Main St'
         },
@@ -230,7 +230,7 @@ use Params::Validate::Strict qw(validate_strict);
             my $params = shift;
             my $current_year = 2024;
             my $calculated_age = $current_year - $params->{birth_year};
-            
+
             # Allow age to be within 1 year (birthday may not have passed)
             if (abs($calculated_age - $params->{age}) > 1) {
                 return "Age doesn't match birth year";
@@ -268,18 +268,18 @@ use Params::Validate::Strict qw(validate_strict);
     my $cross_validation = {
         discount_valid => sub {
             my $params = shift;
-            
+
             # If discount code provided, discount amount must be provided
             if ($params->{discount_code} && !defined($params->{discount_amount})) {
                 return "Discount amount required when discount code is provided";
             }
-            
+
             # Discount can't exceed total
-            if (defined($params->{discount_amount}) && 
+            if (defined($params->{discount_amount}) &&
                 $params->{discount_amount} > $params->{total_amount}) {
                 return "Discount amount cannot exceed total amount";
             }
-            
+
             return undef;
         }
     };
@@ -334,7 +334,7 @@ use Params::Validate::Strict qw(validate_strict);
             my $params = shift;
             my $sum = 0;
             $sum += $_ for @{$params->{items}};
-            
+
             return $sum == $params->{total}
                 ? undef : "Total ($params->{total}) doesn't match sum of items ($sum)";
         }
@@ -361,11 +361,11 @@ use Params::Validate::Strict qw(validate_strict);
 # Cross-validation with transformed fields
 {
     my $schema = {
-        email => { 
+        email => {
             type => 'string',
             transform => sub { lc($_[0]) }
         },
-        email_confirm => { 
+        email_confirm => {
             type => 'string',
             transform => sub { lc($_[0]) }
         }
@@ -403,7 +403,7 @@ use Params::Validate::Strict qw(validate_strict);
     my $cross_validation = {
         age_range_valid => sub {
             my $params = shift;
-            
+
             # Only validate if both are provided
             if (defined($params->{min_age}) && defined($params->{max_age})) {
                 return $params->{min_age} <= $params->{max_age}

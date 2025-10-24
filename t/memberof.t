@@ -6,7 +6,7 @@ use Test::Most tests => 47;
 
 use Params::Validate::Strict qw(validate_strict);
 
-# Test 1: Basic string memberof (whitelist)
+# Basic string memberof (whitelist)
 {
     my $schema = {
         status => {
@@ -32,7 +32,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of draft, published, archived/, 'Status not in memberof fails';
 }
 
-# Test 2: Numeric memberof (integer)
+# Numeric memberof (integer)
 {
     my $schema = {
         priority => {
@@ -58,7 +58,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of 1, 2, 3, 4, 5/, 'Priority not in memberof fails';
 }
 
-# Test 3: Float/number memberof
+# Float/number memberof
 {
     my $schema = {
         rating => {
@@ -84,7 +84,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of/, 'Rating not in memberof fails';
 }
 
-# Test 4: Case-sensitive string memberof (default behavior)
+# Case-sensitive string memberof (default behavior)
 {
     my $schema = {
         code => {
@@ -109,7 +109,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of ABC, DEF, GHI/, 'Different case fails with default case-sensitive';
 }
 
-# Test 5: Case-sensitive explicitly set to true
+# Case-sensitive explicitly set to true
 {
     my $schema = {
         code => {
@@ -135,7 +135,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of ABC, DEF, GHI/, 'Different case fails with case_sensitive => 1';
 }
 
-# Test 6: Case-insensitive memberof
+# Case-insensitive memberof
 {
     my $schema = {
         code => {
@@ -176,7 +176,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of ABC, DEF, GHI/, 'Non-member fails even with case_sensitive => 0';
 }
 
-# Test 7: Case-insensitive with mixed case memberof list
+# Case-insensitive with mixed case memberof list
 {
     my $schema = {
         country => {
@@ -212,7 +212,7 @@ use Params::Validate::Strict qw(validate_strict);
     ok(defined($result), 'france matches FRANCE case-insensitively');
 }
 
-# Test 8: Optional field with memberof
+# Optional field with memberof
 {
     my $schema = {
         role => {
@@ -245,7 +245,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of admin, user, guest/, 'Optional memberof field still validated';
 }
 
-# Test 9: Custom error message with memberof
+# Custom error message with memberof
 {
     my $schema = {
         status => {
@@ -263,7 +263,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/Status must be either active or inactive/, 'Custom error message shown for memberof';
 }
 
-# Test 10: Empty memberof array
+# Empty memberof array
 {
     my $schema = {
         value => {
@@ -280,7 +280,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of/, 'Empty memberof rejects all values';
 }
 
-# Test 11: Single item memberof
+# Single item memberof
 {
     my $schema = {
         mode => {
@@ -305,7 +305,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of production/, 'Non-member of single-item list fails';
 }
 
-# Test 12: memberof with transformed values
+# memberof with transformed values
 {
     my $schema = {
         status => {
@@ -332,7 +332,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of draft, published, archived/, 'Transformed invalid value still fails';
 }
 
-# Test 13: memberof with custom types
+# memberof with custom types
 {
     my $custom_types = {
         post_status => {
@@ -363,7 +363,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of draft, published, archived, scheduled/, 'Custom type memberof enforced';
 }
 
-# Test 14: Case-insensitive with custom types
+# Case-insensitive with custom types
 {
     my $custom_types = {
         language_code => {
@@ -395,7 +395,7 @@ use Params::Validate::Strict qw(validate_strict);
     ok(defined($result), 'Mixed case with custom type passes');
 }
 
-# Test 15: Invalid memberof value (not an array)
+# Invalid memberof value (not an array)
 {
     my $schema = {
         status => {
@@ -412,7 +412,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be an array reference/, 'memberof requires array reference';
 }
 
-# Test 16: Numeric memberof doesn't use case_sensitive
+# Numeric memberof doesn't use case_sensitive
 {
     my $schema = {
         priority => {
@@ -430,7 +430,7 @@ use Params::Validate::Strict qw(validate_strict);
     is($result->{priority}, 2, 'Numeric value preserved');
 }
 
-# Test 17: Case-insensitive memberof with special characters
+# Case-insensitive memberof with special characters
 {
     my $schema = {
         category => {
@@ -454,10 +454,10 @@ use Params::Validate::Strict qw(validate_strict);
     ok(defined($result), 'Case-insensitive with ampersand passes');
 }
 
-# Test 18: Large memberof list
+# Large memberof list
 {
     my @valid_codes = map { sprintf("CODE%03d", $_) } (1..100);
-    
+
     my $schema = {
         code => {
             type => 'string',
@@ -481,7 +481,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/must be one of/, 'Invalid value in large memberof list fails';
 }
 
-# Test 19: memberof with min/max should conflict
+# memberof with min/max should conflict
 {
     my $schema = {
         status => {
@@ -500,7 +500,7 @@ use Params::Validate::Strict qw(validate_strict);
     } qr/min.*makes no sense with memberof/, 'memberof conflicts with min';
 }
 
-# Test 20: Case-insensitive with whitespace in values
+# Case-insensitive with whitespace in values
 {
     my $schema = {
         title => {
