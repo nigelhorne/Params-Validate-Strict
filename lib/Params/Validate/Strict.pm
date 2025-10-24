@@ -958,6 +958,7 @@ sub validate_strict
 							} else {
 								_error($logger, "validate_strict: String parameter '$key' too short (" . length($value) . "), must be at least length $rule_value");
 							}
+							$invalid_args{$key} = 1;
 						}
 					} elsif($rules->{'type'} eq 'arrayref') {
 						if(!defined($value)) {
@@ -976,6 +977,7 @@ sub validate_strict
 							} else {
 								_error($logger, "validate_strict: Parameter '$key' must be at least length $rule_value");
 							}
+							$invalid_args{$key} = 1;
 						}
 					} elsif($rules->{'type'} eq 'hashref') {
 						if(!defined($value)) {
@@ -987,6 +989,7 @@ sub validate_strict
 							} else {
 								_error($logger, "validate_strict: Parameter '$key' must contain at least $rule_value keys");
 							}
+							$invalid_args{$key} = 1;
 						}
 					} elsif(($type eq 'integer') || ($type eq 'number') || ($type eq 'float')) {
 						if(!defined($value)) {
@@ -998,6 +1001,7 @@ sub validate_strict
 							} else {
 								_error($logger, "validate_strict: Parameter '$key' ($value) must be at least $rule_value");
 							}
+							$invalid_args{$key} = 1;
 						}
 					} else {
 						_error($logger, "validate_strict: Parameter '$key' of type '$type' has meaningless min value $rule_value");
@@ -1021,6 +1025,7 @@ sub validate_strict
 							} else {
 								_error($logger, "validate_strict: String parameter '$key' too long, (" . length($value) . " characters), must be no longer than $rule_value");
 							}
+							$invalid_args{$key} = 1;
 						}
 					} elsif($rules->{'type'} eq 'arrayref') {
 						if(!defined($value)) {
@@ -1039,6 +1044,7 @@ sub validate_strict
 							} else {
 								_error($logger, "validate_strict: Parameter '$key' must contain no more than $rule_value items");
 							}
+							$invalid_args{$key} = 1;
 						}
 					} elsif($rules->{'type'} eq 'hashref') {
 						if(!defined($value)) {
@@ -1050,6 +1056,7 @@ sub validate_strict
 							} else {
 								_error($logger, "validate_strict: Parameter '$key' must contain no more than $rule_value keys");
 							}
+							$invalid_args{$key} = 1;
 						}
 					} elsif(($type eq 'integer') || ($type eq 'number') || ($type eq 'float')) {
 						if(!defined($value)) {
@@ -1062,7 +1069,6 @@ sub validate_strict
 								} else {
 									_error($logger, "validate_strict: Parameter '$key' ($value) must be no more than $rule_value");
 								}
-								delete $validated_args{$key};
 								$invalid_args{$key} = 1;
 								next;
 							}
