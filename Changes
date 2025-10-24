@@ -1,5 +1,8 @@
 Revision history for Params-Validate-Strict
 
+0.22
+	If a cross_validation fails, invalidate all arguments
+
 0.21	Thu Oct 23 20:12:51 EDT 2025
 	Added cross_validation parameter for validating relationships between fields
 	Added notmemberof to blacklist items

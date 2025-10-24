@@ -1348,6 +1348,8 @@ sub validate_strict
 			}
 			if(my $error = &{$validator}(\%validated_args, $validator)) {
 				_error($logger, $error);
+				# We have no idea which parameters are still valid, so let's invalidat them all
+				return;
 			}
 		}
 	}
