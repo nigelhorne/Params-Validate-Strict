@@ -752,6 +752,7 @@ sub validate_strict
 	}
 
 	my %validated_args;
+	my %invalid_args;
 	foreach my $key (keys %{$schema}) {
 		my $rules = $schema->{$key};
 		my $value = $args->{$key};
@@ -1061,6 +1062,9 @@ sub validate_strict
 								} else {
 									_error($logger, "validate_strict: Parameter '$key' ($value) must be no more than $rule_value");
 								}
+								delete $validated_args{$key};
+								$invalid_args{$key} = 1;
+								next;
 							}
 						} else {
 							if($rules->{'error_message'}) {
@@ -1352,6 +1356,10 @@ sub validate_strict
 				return;
 			}
 		}
+	}
+
+	foreach my $key(keys %invalid_args) {
+		delete $validated_args{$key};
 	}
 
 	return \%validated_args;
