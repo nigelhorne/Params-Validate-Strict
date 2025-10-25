@@ -1046,6 +1046,374 @@ subtest 'Transform with type changes' => sub {
 	} 'transform can change data structure';
 };
 
+use Test::Most;
+use Params::Validate::Strict qw(validate_strict);
+
+subtest 'Complex error conditions in validation rules' => sub {
+	# Test min > max error (line 806-809)
+	my $schema = {
+		test => {
+			type => 'integer',
+			min => 10,
+			max => 5  # min > max
+		}
+	};
+
+	dies_ok {
+		validate_strict(
+			schema => $schema,
+			input => { test => 7 }
+		);
+	} 'dies when min > max';
+
+	like $@, qr/min must be <= max/, 'correct error for min > max';
+
+	# Test memberof with min constraint (line 812-814)
+	$schema = {
+		status => {
+			type => 'string',
+			memberof => ['active', 'inactive'],
+			min => 3  # Should trigger error
+		}
+	};
+
+	dies_ok {
+		validate_strict(
+			schema => $schema,
+			input => { status => 'active' }
+		);
+	} 'dies when memberof combined with min';
+};
+
+subtest 'Type validation edge cases' => sub {
+	# Test undefined values for various types
+	my $schema = {
+		str => { type => 'string' },
+		num => { type => 'number' },
+		arr => { type => 'arrayref' },
+		hash => { type => 'hashref' },
+		obj => { type => 'object' },
+		code => { type => 'coderef' },
+		bool => { type => 'boolean' }
+	};
+
+	# These should handle undefined values gracefully
+	lives_ok {
+		my $result = validate_strict(
+			schema => $schema,
+			input => {
+				str => undef,
+				num => undef,
+				arr => undef,
+				hash => undef,
+				obj => undef,
+				code => undef,
+				bool => undef
+			}
+		);
+		ok !defined $result->{str}, 'undefined string handled';
+		ok !defined $result->{num}, 'undefined number handled';
+		ok !defined $result->{arr}, 'undefined arrayref handled';
+		ok !defined $result->{hash}, 'undefined hashref handled';
+		ok !defined $result->{obj}, 'undefined object handled';
+		ok !defined $result->{code}, 'undefined coderef handled';
+		ok !defined $result->{bool}, 'undefined boolean handled';
+	} 'undefined values for all types handled without crashing';
+};
+
+subtest 'Complex custom type recursion' => sub {
+	# Test custom types that reference other custom types
+	my $custom_types = {
+		id => {
+			type => 'integer',
+			min => 1
+		},
+		email => {
+			type => 'string',
+			matches => qr/\@/
+		},
+		user_ref => {
+			type => 'hashref',
+			schema => {
+				user_id => { type => 'id' },
+				email => { type => 'email' }
+			}
+		}
+	};
+
+	my $schema = {
+		user => { type => 'user_ref' },
+		backup_user => { type => 'user_ref' }
+	};
+
+	lives_ok {
+		my $result = validate_strict(
+			schema => $schema,
+			input => {
+				user => {
+					user_id => 123,
+					email => 'test@example.com'
+				},
+				backup_user => {
+					user_id => 456,
+					email => 'backup@example.com'
+				}
+			},
+			custom_types => $custom_types
+		);
+		is $result->{user}{user_id}, 123, 'nested custom types work';
+		is $result->{backup_user}{user_id}, 456, 'multiple custom type instances work';
+	} 'complex custom type recursion works';
+};
+
+subtest 'Array validation with schema edge cases' => sub {
+	# Test array schema validation with various failure modes
+	my $schema = {
+		matrix => {
+			type => 'arrayref',
+			schema => {
+				type => 'arrayref',
+				element_type => 'number'
+			}
+		}
+	};
+
+	# Valid case
+	lives_ok {
+		my $result = validate_strict(
+			schema => $schema,
+			input => { matrix => [[1, 2], [3, 4]] }
+		);
+		is_deeply $result->{matrix}, [[1, 2], [3, 4]], 'nested array validation works';
+	} 'valid nested array schema';
+
+	# Invalid case - should trigger the array element validation failure path
+	dies_ok {
+		validate_strict(
+			schema => $schema,
+			input => { matrix => [[1, 'invalid'], [3, 4]] }
+		);
+	} 'nested array validation fails for invalid element';
+};
+
+subtest 'Complex cross-validation with nested data' => sub {
+	my $schema = {
+		users => {
+			type => 'arrayref',
+			schema => {
+				type => 'hashref',
+				schema => {
+					age => { type => 'integer' },
+					role => { type => 'string' }
+				}
+			}
+		}
+	};
+
+	my $cross_validation = {
+		adult_has_valid_role => sub {
+			my $params = shift;
+			foreach my $user (@{$params->{users}}) {
+				if ($user->{age} >= 18 && $user->{role} !~ /^(admin|user)$/) {
+					return "User with age $user->{age} has invalid role: $user->{role}";
+				}
+			}
+			return undef;
+		}
+	};
+
+	dies_ok {
+		validate_strict(
+			schema => $schema,
+			input => {
+				users => [
+					{ age => 25, role => 'admin' },
+					{ age => 30, role => 'invalid' }  # This should fail cross-validation
+				]
+			},
+			cross_validation => $cross_validation
+		);
+	} 'cross-validation fails for nested data';
+
+	like $@, qr/invalid role/, 'correct cross-validation error message';
+};
+
+subtest 'Transform with validation interactions' => sub {
+	# Test that transforms work correctly with subsequent validation
+	my $schema = {
+		data => {
+			type => 'string',
+			transform => sub {
+				my $val = $_[0];
+				return $val =~ s/\s+//gr;  # Remove whitespace
+			},
+			matches => qr/^[A-Z]+$/,  # Should validate against transformed value
+			min => 3
+		}
+	};
+
+	lives_ok {
+		my $result = validate_strict(
+			schema => $schema,
+			input => { data => '  ABC  ' }
+		);
+		is $result->{data}, 'ABC', 'transform applied before validation';
+	} 'transform interacts correctly with subsequent validation';
+
+	dies_ok {
+		validate_strict(
+			schema => $schema,
+			input => { data => '  a b c  ' }	# Becomes 'abc' which fails matches
+		);
+	} 'validation fails on transformed value';
+};
+
+subtest 'Optional with code ref edge cases' => sub {
+	# Test complex optional code ref scenarios
+	my $schema = {
+		field1 => { type => 'string', optional => 1 },
+		field2 => {
+			type => 'string',
+			optional => sub {
+				my ($value, $all) = @_;
+				return !($all->{field1} && $all->{field1} eq 'show');
+			}
+		},
+		field3 => {
+			type => 'integer',
+			optional => sub {
+				my ($value, $all) = @_;
+				# Complex logic that might return undef or other values
+				return $all->{field2} ? 0 : 1;
+			}
+		}
+	};
+
+	lives_ok {
+		my $result = validate_strict(
+			schema => $schema,
+			input => { field1 => 'show', field2 => 'present', field3 => 42 }
+		);
+		is $result->{field1}, 'show', 'complex optional logic works';
+		is $result->{field2}, 'present', 'field2 required when field1 is "show"';
+		is $result->{field3}, 42, 'field3 required when field2 present';
+	} 'complex conditional optional logic works';
+};
+
+subtest 'Type coercion edge cases' => sub {
+	# Test various numeric coercion scenarios
+	my $schema = {
+		int_val => { type => 'integer' },
+		num_val => { type => 'number' },
+		float_val => { type => 'float' }
+	};
+
+	lives_ok {
+		my $result = validate_strict(
+			schema => $schema,
+			input => {
+				int_val => '42',	# String that looks like integer
+				num_val => '3.14',	# String that looks like number
+				float_val => '2.718'
+			}
+		);
+		is $result->{int_val}, 42, 'string integer coerced';
+		is $result->{num_val}, 3.14, 'string number coerced';
+		is $result->{float_val}, 2.718, 'string float coerced';
+	} 'numeric type coercion from strings works';
+
+	# Test edge cases for numeric validation
+	$schema = {
+		weird_num => { type => 'number' }
+	};
+
+	# These should all be considered numbers
+	my @valid_numbers = ('0', '0.0', '-1', '+1', '1e10', '1.23e-4');
+
+	foreach my $num (@valid_numbers) {
+		lives_ok {
+			my $result = validate_strict(
+				schema => $schema,
+				input => { weird_num => $num }
+			);
+			ok looks_like_number($result->{weird_num}), "valid number: $num";
+		} "valid number format: $num";
+	}
+};
+
+subtest 'Complex object validation scenarios' => sub {
+	# Create a test object hierarchy
+	{
+		package Test::Base;
+		sub new { bless {}, shift }
+		sub base_method { 1 }
+
+		package Test::Child;
+		our @ISA = 'Test::Base';
+		sub child_method { 1 }
+		sub another_method { 1 }
+	}
+
+	my $obj = Test::Child->new;
+
+	my $schema = {
+		obj => {
+			type => 'object',
+			isa => 'Test::Base',
+			can => ['base_method', 'child_method', 'another_method']
+		}
+	};
+
+	lives_ok {
+		my $result = validate_strict(
+			schema => $schema,
+			input => { obj => $obj }
+		);
+		is blessed($result->{obj}), 'Test::Child', 'object validation with inheritance works';
+	} 'complex object validation with isa and can works';
+};
+
+subtest 'Error handling in nested validation' => sub {
+	# Test that errors in nested validation are properly propagated
+	my $schema = {
+		container => {
+			type => 'hashref',
+			schema => {
+				nested => {
+					type => 'hashref',
+					schema => {
+						deep => {
+							type => 'integer',
+							min => 10
+						}
+					}
+				}
+			}
+		}
+	};
+
+	dies_ok {
+		validate_strict(
+			schema => $schema,
+			input => {
+				container => {
+					nested => {
+						deep => 5	# Fails min validation
+					}
+				}
+			}
+		);
+	} 'nested validation errors propagate correctly';
+
+	like $@, qr/must be at least 10/, 'nested error message is correct';
+};
+
+# Helper function
+sub looks_like_number {
+	local $_ = shift;
+	return defined && /^\s*[+-]?(?=\.?\d)\d*\.?\d*(?:[eE][+-]?\d+)?\s*$/;
+}
+
 # Helper function for trim
 sub trim {
 	my $s = shift;

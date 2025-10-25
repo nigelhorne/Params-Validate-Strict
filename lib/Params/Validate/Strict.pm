@@ -1317,7 +1317,7 @@ sub validate_strict
 					if($rules->{'type'} eq 'arrayref') {
 						if(ref($value) eq 'ARRAY') {
 							foreach my $member(@{$value}) {
-								if(!validate_strict({ input => { $key => $member }, schema => { $key => $rule_value } })) {
+								if(!validate_strict({ input => { $key => $member }, schema => { $key => $rule_value }, custom_types => $custom_types })) {
 									$invalid_args{$key} = 1;
 								}
 							}
@@ -1329,7 +1329,7 @@ sub validate_strict
 							# Apply nested defaults before validation
 							my $nested_with_defaults = _apply_nested_defaults($value, $rule_value);
 							if(scalar keys(%{$value})) {
-								if(my $new_args = validate_strict({ input => $nested_with_defaults, schema => $rule_value })) {
+								if(my $new_args = validate_strict({ input => $nested_with_defaults, schema => $rule_value, custom_types => $custom_types })) {
 									$value = $new_args;
 								} else {
 									$invalid_args{$key} = 1;
@@ -1371,7 +1371,7 @@ sub validate_strict
 					}
 					push @types, $rule->{'type'};
 					eval {
-						validate_strict({ input => { $key => $value }, schema => { $key => $rule }, logger => undef });
+						validate_strict({ input => { $key => $value }, schema => { $key => $rule }, logger => undef, custom_types => $custom_types });
 					};
 					if(!$@) {
 						$rc = 1;
