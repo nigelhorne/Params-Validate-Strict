@@ -914,6 +914,9 @@ sub validate_strict
 						}
 						$value = int($value);	# Coerce to integer
 					} elsif($type eq 'coderef') {
+						if(!defined($value)) {
+							next;	# Skip if code is undefined
+						}
 						if(ref($value) ne 'CODE') {
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
