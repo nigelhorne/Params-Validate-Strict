@@ -1244,10 +1244,20 @@ sub validate_strict
 				} elsif($rule_name eq 'element_type') {
 					if($rules->{'type'} eq 'arrayref') {
 						my $type = $rule_value;
-						if(defined($custom_types->{$rule_value})) {
-							$type = $custom_types->{$rule_value}->{'type'};
+						my $custom_type = $custom_types->{$rule_value};
+						if($custom_type && $custom_type->{'type'}) {
+							$type = $custom_type->{'type'};
 						}
 						foreach my $member(@{$value}) {
+							if($custom_type && $custom_type->{'transform'}) {
+								# The custom type has a transform embedded within it
+								if(ref($custom_type->{'transform'}) eq 'CODE') {
+									$member = &{$custom_type->{'transform'}}($member);
+								} else {
+									_error($logger, 'validate_strict: transforms must be a code ref');
+									last;
+								}
+							}
 							if($type eq 'string') {
 								if(ref($member)) {
 									if($rules->{'error_message'}) {
