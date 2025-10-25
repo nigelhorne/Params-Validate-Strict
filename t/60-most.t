@@ -892,7 +892,8 @@ subtest 'Complex optional and default scenarios' => sub {
 		input => { advanced_mode => 1 }
 	);
 
-	diag('TODO: nested default values');
+	ok exists $result->{settings}, 'dynamically optional field included';
+	is $result->{settings}{theme}, 'light', 'nested default values work';
 };
 
 subtest 'Regex validation edge cases' => sub {

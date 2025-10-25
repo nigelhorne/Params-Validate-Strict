@@ -792,11 +792,15 @@ sub validate_strict
 				if(exists($rules->{'default'})) {
 					# Populate missing optional parameters with the specified output values
 					$validated_args{$key} = $rules->{'default'};
-				} elsif(exists($rules->{'schema'})) {
-					# TODO - search for default values in nested schemas
-					# See test case in t/60-most.t
 				}
-				next;	# optional and missing
+
+				if($rules->{'schema'}) {
+					$value = _apply_nested_defaults({}, $rules->{'schema'});
+					next unless scalar(%{$value});
+					# The nested schema has a default value
+				} else {
+					next;	# optional and missing
+				}
 			}
 		} elsif(!exists($args->{$key})) {
 			# The parameter is required
@@ -1319,8 +1323,10 @@ sub validate_strict
 						}
 					} elsif($rules->{'type'} eq 'hashref') {
 						if(ref($value) eq 'HASH') {
+							# Apply nested defaults before validation
+							my $nested_with_defaults = _apply_nested_defaults($value, $rule_value);
 							if(scalar keys(%{$value})) {
-								if(my $new_args = validate_strict({ input => $value, schema => $rule_value })) {
+								if(my $new_args = validate_strict({ input => $nested_with_defaults, schema => $rule_value })) {
 									$value = $new_args;
 								} else {
 									$invalid_args{$key} = 1;
@@ -1430,6 +1436,26 @@ sub _warn
 	} else {
 		carp(__PACKAGE__, ": $message");
 	}
+}
+
+sub _apply_nested_defaults {
+	my ($input, $schema) = @_;
+	my %result = %$input;
+
+	foreach my $key (keys %$schema) {
+		my $rules = $schema->{$key};
+
+		if (ref $rules eq 'HASH' && exists $rules->{default} && !exists $result{$key}) {
+			$result{$key} = $rules->{default};
+		}
+
+		# Recursively handle nested schemas
+		if (ref $rules eq 'HASH' && $rules->{schema} && ref $result{$key} eq 'HASH') {
+			$result{$key} = _apply_nested_defaults($result{$key}, $rules->{schema});
+		}
+	}
+
+	return \%result;
 }
 
 =head1 AUTHOR
