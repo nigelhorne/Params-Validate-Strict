@@ -370,4 +370,239 @@ subtest 'Multiple type alternatives' => sub {
 	} 'fails when no alternative matches';
 };
 
+subtest 'Boolean string coercion - unreachable code' => sub {
+    my $schema = { flag => { type => 'boolean' } };
+    
+    # Test boolean string representations that should trigger unreachable code
+    my %boolean_strings = (
+        'true'  => 1,
+        'false' => 0, 
+        'on'    => 1,
+        'off'   => 0,
+        'yes'   => 1,
+        'no'    => 0
+    );
+    
+    while (my ($string, $expected) = each %boolean_strings) {
+        my $result = validate_strict(
+            schema => $schema,
+            input => { flag => $string }
+        );
+        is $result->{flag}, $expected, "boolean string '$string' coerces to $expected";
+    }
+};
+
+subtest 'Invalid arguments cleanup - unreachable code' => sub {
+    # This tests the foreach loop that deletes invalid_args (lines 1384-1386)
+    # We need to create a scenario where %invalid_args has entries
+    
+    my $schema = {
+        test1 => { 
+            type => 'integer',
+            min => 10,
+            callback => sub { 0 }  # Always fails
+        },
+        test2 => {
+            type => 'string', 
+            min => 5
+        }
+    };
+    
+    dies_ok {
+        validate_strict(
+            schema => $schema,
+            input => { 
+                test1 => 5,  # Fails min and callback
+                test2 => 'hi' # Fails min length
+            }
+        );
+    } 'validation fails with multiple invalid arguments';
+    
+    # The %invalid_args hash should have been populated before the cleanup loop
+};
+
+subtest 'Memberof with max constraint - unreachable code' => sub {
+    # Lines 815-818: This should trigger an error but the min check catches it first
+    my $schema = {
+        status => {
+            type => 'string',
+            memberof => ['active', 'inactive'],
+            max => 10  # This should trigger the "makes no sense with memberof" error
+        }
+    };
+    
+    dies_ok {
+        validate_strict(
+            schema => $schema,
+            input => { status => 'active' }
+        );
+    } 'dies when memberof combined with max';
+    
+    like $@, qr/makes no sense with memberof/, 'correct error message for memberof+max';
+};
+
+subtest 'Non-HASH/ARRAY rule references - unreachable code' => sub {
+    # Lines 1362-1363: Rules that aren't HASH or ARRAY references
+    
+    # Create a schema with a CODE reference as rules (should be invalid)
+    my $bad_schema = {
+        test => sub { "code ref rules" }
+    };
+    
+    dies_ok {
+        validate_strict(
+            schema => $bad_schema,
+            input => { test => 'value' }
+        );
+    } 'dies with code reference as rules';
+    
+    like $@, qr/rules must be a hash reference or string/, 'correct error message';
+};
+
+subtest 'Complex nested validation failures' => sub {
+    # Test scenarios that might trigger the invalid_args cleanup
+    
+    my $schema = {
+        user => {
+            type => 'hashref',
+            schema => {
+                profile => {
+                    type => 'hashref', 
+                    schema => {
+                        age => {
+                            type => 'integer',
+                            min => 18,
+                            callback => sub { 0 }  # Always fail
+                        }
+                    }
+                }
+            }
+        }
+    };
+    
+    dies_ok {
+        validate_strict(
+            schema => $schema,
+            input => {
+                user => {
+                    profile => {
+                        age => 25  # Should fail callback
+                    }
+                }
+            }
+        );
+    } 'nested validation with callback failure';
+};
+
+subtest 'Array validation edge cases' => sub {
+    # Test array element validation with various failure modes
+    
+    my $schema = {
+        numbers => {
+            type => 'arrayref',
+            element_type => 'integer',
+            min => 2,
+            schema => {  # This might create complex failure scenarios
+                type => 'integer',
+                min => 10
+            }
+        }
+    };
+    
+    # This should trigger multiple validation paths
+    dies_ok {
+        validate_strict(
+            schema => $schema,
+            input => {
+                numbers => [5, 'invalid', 15]  # Second element fails type validation
+            }
+        );
+    } 'array validation with mixed valid/invalid elements';
+};
+
+subtest 'Cross-validation with non-CODE references' => sub {
+    # Test the cross_validation error path (lines 1372-1375)
+    
+    my $schema = {
+        password => { type => 'string' },
+        confirm => { type => 'string' }
+    };
+    
+    my $bad_cross_validation = {
+        test => 'not_a_code_ref'  # String instead of CODE ref
+    };
+    
+    dies_ok {
+        validate_strict(
+            schema => $schema,
+            input => { password => 'secret', confirm => 'secret' },
+            cross_validation => $bad_cross_validation
+        );
+    } 'dies with non-CODE cross_validation';
+    
+    like $@, qr/not a code snippet/, 'correct error message for bad cross_validation';
+};
+
+subtest 'Object validation edge cases' => sub {
+    my $obj = bless {}, 'Test::Object';
+    
+    # Test 'can' with arrayref containing some invalid methods
+    my $schema = {
+        obj => {
+            type => 'object',
+            can => ['valid_method', 'invalid_method']  # Should fail on second method
+        }
+    };
+    
+    dies_ok {
+        validate_strict(
+            schema => $schema,
+            input => { obj => $obj }
+        );
+    } 'object validation fails for missing method in array';
+};
+
+subtest 'Transform with recursive validation' => sub {
+    # Test transform that might interact with custom types recursively
+    my $custom_types = {
+        email => {
+            type => 'string',
+            transform => sub { lc $_[0] },
+            matches => qr/\@/
+        }
+    };
+    
+    my $schema = {
+        contacts => {
+            type => 'arrayref',
+            element_type => 'email'  # This might trigger recursive validation paths
+        }
+    };
+    
+    my $result = validate_strict(
+        schema => $schema,
+        input => { contacts => ['TEST@example.com', 'TEST2@example.com'] },
+        custom_types => $custom_types
+    );
+    
+    is_deeply $result->{contacts}, ['test@example.com', 'test2@example.com'], 
+        'recursive transform with custom types works';
+};
+
+subtest 'Empty arrayref rules' => sub {
+    # Test the empty arrayref case (line 1359-1361)
+    my $schema = {
+        test => []  # Empty arrayref as rules
+    };
+    
+    dies_ok {
+        validate_strict(
+            schema => $schema,
+            input => { test => 'value' }
+        );
+    } 'dies with empty arrayref rules';
+    
+    like $@, qr/schema is empty arrayref/, 'correct error message';
+};
+
 done_testing();

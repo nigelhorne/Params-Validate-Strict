@@ -1243,8 +1243,12 @@ sub validate_strict
 					}
 				} elsif($rule_name eq 'element_type') {
 					if($rules->{'type'} eq 'arrayref') {
+						my $type = $rule_value;
+						if(defined($custom_types->{$rule_value})) {
+							$type = $custom_types->{$rule_value}->{'type'};
+						}
 						foreach my $member(@{$value}) {
-							if($rule_value eq 'string') {
+							if($type eq 'string') {
 								if(ref($member)) {
 									if($rules->{'error_message'}) {
 										_error($logger, $rules->{'error_message'});
@@ -1253,7 +1257,7 @@ sub validate_strict
 									}
 									$invalid_args{$key} = 1;
 								}
-							} elsif($rule_value eq 'integer') {
+							} elsif($type eq 'integer') {
 								if(ref($member) || ($member =~ /\D/)) {
 									if($rules->{'error_message'}) {
 										_error($logger, $rules->{'error_message'});
@@ -1262,7 +1266,7 @@ sub validate_strict
 									}
 									$invalid_args{$key} = 1;
 								}
-							} elsif(($rule_value eq 'number') || ($rule_value eq 'float')) {
+							} elsif(($type eq 'number') || ($rule_value eq 'float')) {
 								if(ref($member) || ($member !~ /^[-+]?(\d*\.\d+|\d+\.?\d*)$/)) {
 									if($rules->{'error_message'}) {
 										_error($logger, $rules->{'error_message'});
@@ -1272,7 +1276,7 @@ sub validate_strict
 									$invalid_args{$key} = 1;
 								}
 							} else {
-								_error($logger, "Bug: Add $rule_value to element_type list");
+								_error($logger, "BUG: Add $type to element_type list");
 							}
 						}
 					} else {
