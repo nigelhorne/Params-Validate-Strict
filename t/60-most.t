@@ -1173,8 +1173,9 @@ subtest 'Array validation with schema edge cases' => sub {
 			type => 'arrayref',
 			schema => {
 				type => 'arrayref',
-				element_type => 'number'
-			}
+				element_type => 'number',
+				error_message => 'matrix elements must be an array of numbers'
+			},
 		}
 	};
 
@@ -1194,6 +1195,8 @@ subtest 'Array validation with schema edge cases' => sub {
 			input => { matrix => [[1, 'invalid'], [3, 4]] }
 		);
 	} 'nested array validation fails for invalid element';
+
+	like($@, qr/matrix elements must be an array of numbers/);
 };
 
 subtest 'Complex cross-validation with nested data' => sub {
@@ -1248,7 +1251,8 @@ subtest 'Transform with validation interactions' => sub {
 				return $val =~ s/\s+//gr;  # Remove whitespace
 			},
 			matches => qr/^[A-Z]+$/,  # Should validate against transformed value
-			min => 3
+			min => 3,
+			error_message => 'invalid data'
 		}
 	};
 
@@ -1263,9 +1267,11 @@ subtest 'Transform with validation interactions' => sub {
 	dies_ok {
 		validate_strict(
 			schema => $schema,
-			input => { data => '  a b c  ' }	# Becomes 'abc' which fails matches
+			input => { data => '  a b c  ' },	# Becomes 'abc' which fails matches
 		);
 	} 'validation fails on transformed value';
+
+	like($@, qr/invalid data/);
 };
 
 subtest 'Optional with code ref edge cases' => sub {

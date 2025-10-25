@@ -1117,7 +1117,11 @@ sub validate_strict
 						1;
 					};
 					if($@) {
-						_error($logger, "validate_strict: Parameter '$key' regex '$rule_value' error: $@");
+						if($rules->{'error_message'}) {
+							_error($logger, $rules->{'error_message'});
+						} else {
+							_error($logger, "validate_strict: Parameter '$key' regex '$rule_value' error: $@");
+						}
 						$invalid_args{$key} = 1;
 					}
 				} elsif($rule_name eq 'nomatch') {
