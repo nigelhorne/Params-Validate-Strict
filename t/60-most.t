@@ -1173,7 +1173,7 @@ subtest 'Array validation with schema edge cases' => sub {
 			type => 'arrayref',
 			schema => {
 				type => 'arrayref',
-				element_type => 'number',
+				element_type => 'integer',
 				error_message => 'matrix elements must be an array of numbers'
 			},
 		}
