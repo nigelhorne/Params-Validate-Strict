@@ -792,6 +792,9 @@ sub validate_strict
 				if(exists($rules->{'default'})) {
 					# Populate missing optional parameters with the specified output values
 					$validated_args{$key} = $rules->{'default'};
+				} elsif(exists($rules->{'schema'})) {
+					# TODO - search for default values in nested schemas
+					# See test case in t/60-most.t
 				}
 				next;	# optional and missing
 			}
