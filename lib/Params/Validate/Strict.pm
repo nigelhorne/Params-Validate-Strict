@@ -1005,13 +1005,23 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if hash is undefined
 						}
-						if($value < $rule_value) {
+						if(Scalar::Util::looks_like_number($value)) {
+							if($value < $rule_value) {
+								if($rules->{'error_message'}) {
+									_error($logger, $rules->{'error_message'});
+								} else {
+									_error($logger, "validate_strict: Parameter '$key' ($value) must be at least $rule_value");
+								}
+								$invalid_args{$key} = 1;
+								next;
+							}
+						} else {
 							if($rules->{'error_message'}) {
 								_error($logger, $rules->{'error_message'});
 							} else {
-								_error($logger, "validate_strict: Parameter '$key' ($value) must be at least $rule_value");
+								_error($logger, "validate_strict: Parameter '$key' ($value) must be a number");
 							}
-							$invalid_args{$key} = 1;
+							next;
 						}
 					} else {
 						_error($logger, "validate_strict: Parameter '$key' of type '$type' has meaningless min value $rule_value");
@@ -1088,6 +1098,7 @@ sub validate_strict
 							} else {
 								_error($logger, "validate_strict: Parameter '$key' ($value) must be a number");
 							}
+							next;
 						}
 					} else {
 						_error($logger, "validate_strict: Parameter '$key' of type '$type' has meaningless max value $rule_value");
