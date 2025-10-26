@@ -18,11 +18,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.21
+Version 0.22
 
 =cut
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 =head1 SYNOPSIS
 
@@ -160,7 +160,7 @@ Custom types can be extended or overridden in the schema by specifying additiona
     }
   };
 
-Custom types work seamlessly with nested schemas, optional parameters, and all other validation features.
+Custom types work seamlessly with nested schema, optional parameters, and all other validation features.
 
 =back
 
@@ -1456,8 +1456,8 @@ sub _apply_nested_defaults {
 			$result{$key} = $rules->{default};
 		}
 
-		# Recursively handle nested schemas
-		if (ref $rules eq 'HASH' && $rules->{schema} && ref $result{$key} eq 'HASH') {
+		# Recursively handle nested schema
+		if((ref $rules eq 'HASH') && $rules->{schema} && (ref $result{$key} eq 'HASH')) {
 			$result{$key} = _apply_nested_defaults($result{$key}, $rules->{schema});
 		}
 	}
