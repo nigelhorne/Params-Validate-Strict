@@ -1413,8 +1413,8 @@ sub validate_strict
 							$invalid_args{$key} = 1;
 						}
 					} else {
-						# _error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not " . ref($value));
-						_error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not $value");
+						# _error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not $value");
+						_error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not " . ref($rule_value) // $rule_value);
 					}
 				} elsif($rule_name eq 'position') {
 					if($rule_value =~ /\D/) {
