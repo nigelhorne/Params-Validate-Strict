@@ -729,24 +729,27 @@ sub validate_strict
 
 	if(exists($params->{'args'}) && (!defined($args))) {
 		$args = {};
-	} elsif(ref($args) ne 'HASH') {
-		_error($logger, 'validate_strict: args must be a hash reference');
+	} elsif((ref($args) ne 'HASH') && (ref($args) ne 'ARRAY')) {
+		_error($logger, 'validate_strict: args must be a hash or array reference');
 	}
 
-	foreach my $key (keys %{$args}) {
-		if(!exists($schema->{$key})) {
-			if($unknown_parameter_handler eq 'die') {
-				_error($logger, "::validate_strict: Unknown parameter '$key'");
-			} elsif($unknown_parameter_handler eq 'warn') {
-				_warn($logger, "::validate_strict: Unknown parameter '$key'");
-				next;
-			} elsif($unknown_parameter_handler eq 'ignore') {
-				if($logger) {
-					$logger->debug(__PACKAGE__ . "::validate_strict: Unknown parameter '$key'");
+	if(ref($args) eq 'HASH') {
+		# Named args
+		foreach my $key (keys %{$args}) {
+			if(!exists($schema->{$key})) {
+				if($unknown_parameter_handler eq 'die') {
+					_error($logger, "::validate_strict: Unknown parameter '$key'");
+				} elsif($unknown_parameter_handler eq 'warn') {
+					_warn($logger, "::validate_strict: Unknown parameter '$key'");
+					next;
+				} elsif($unknown_parameter_handler eq 'ignore') {
+					if($logger) {
+						$logger->debug(__PACKAGE__ . "::validate_strict: Unknown parameter '$key'");
+					}
+					next;
+				} else {
+					_error($logger, "::validate_strict: '$unknown_parameter_handler' unknown_parameter_handler must be one of die, warn, ignore");
 				}
-				next;
-			} else {
-				_error($logger, "::validate_strict: '$unknown_parameter_handler' unknown_parameter_handler must be one of die, warn, ignore");
 			}
 		}
 	}
@@ -1405,6 +1408,10 @@ sub validate_strict
 					} else {
 						# _error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not " . ref($value));
 						_error($logger, "validate_strict: Parameter '$key': 'validate' only supports coderef, not $value");
+					}
+				} elsif($rule_name eq 'position') {
+					if($rule_value =~ /\D/) {
+						_error($logger, "validate_strict: Parameter '$key': 'position' must be an integer");
 					}
 				} else {
 					_error($logger, "validate_strict: Unknown rule '$rule_name'");
