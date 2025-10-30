@@ -338,6 +338,13 @@ Checks all members of arrayrefs.
 A regular expression that the parameter value must not match.
 Checks all members of arrayrefs.
 
+=item * C<position>
+
+For routines and methods that take positional args,
+this integer value defines which position the argument will be in.
+If this is set for all arguments,
+C<validate_string> will return a reference to an array, rather than a reference to a hash.
+
 =item * C<callback>
 
 A code reference to a subroutine that performs custom validation logic.
@@ -534,7 +541,7 @@ Transformations can also be defined in custom types for reusability:
 Note that the transformed value is what gets returned in the validated result and is what
 subsequent validation rules will check against. If a transformation might fail, ensure it
 handles edge cases appropriately.
-It is the responsibilty of the transformer to ensure that the type of the returned value is correct,
+It is the responsibility of the transformer to ensure that the type of the returned value is correct,
 since that is what will be validated.
 
 Many validators also allow a code ref to be passed so that you can create your own, conditional validation rule, e.g.:
@@ -825,6 +832,13 @@ sub validate_strict
 				}
 			}
 			if($look_for_default) {
+				if($are_positional_args == 1) {
+					if(scalar(@{$args}) < $rules->{'position'}) {
+						# arg array is too short, so it must be missing
+						_error($logger, "validate_strict: Required parameter '$key' is missing");
+						next;
+					}
+				}
 				if(exists($rules->{'default'})) {
 					# Populate missing optional parameters with the specified output values
 					$validated_args{$key} = $rules->{'default'};
@@ -838,16 +852,9 @@ sub validate_strict
 					next;	# optional and missing
 				}
 			}
-		} else {
-			if($are_positional_args > 1) {
-				if(scalar(@{$args}) < $rules->{'position'}) {
-					# arg array is too short, so it must be missing
-					_error($logger, "validate_strict: Required parameter '$key' is missing");
-				}
-			} elsif(!exists($args->{$key})) {
-				# The parameter is required
-				_error($logger, "validate_strict: Required parameter '$key' is missing");
-			}
+		} elsif((ref($args) eq 'HASH') && !exists($args->{$key})) {
+			# The parameter is required
+			_error($logger, "validate_strict: Required parameter '$key' is missing");
 		}
 
 		# Validate based on rules
@@ -1413,6 +1420,9 @@ sub validate_strict
 					if($rule_value =~ /\D/) {
 						_error($logger, "validate_strict: Parameter '$key': 'position' must be an integer");
 					}
+					if($rule_value < 0) {
+						_error($logger, "validate_strict: Parameter '$key': 'position' must be a positive integer, not $value");
+					}
 				} else {
 					_error($logger, "validate_strict: Unknown rule '$rule_name'");
 				}
@@ -1473,6 +1483,15 @@ sub validate_strict
 		delete $validated_args{$key};
 	}
 
+	if($are_positional_args == 1) {
+		my @rc;
+		foreach my $key (keys %{$schema}) {
+			if(my $value = delete $validated_args{$key}) {
+				$rc[$schema->{$key}->{'position'}] = $value;
+			}
+		}
+		return \@rc;
+	}
 	return \%validated_args;
 }
 

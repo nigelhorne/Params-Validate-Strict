@@ -2,7 +2,7 @@ Revision history for Params-Validate-Strict
 
 0.23
 	Flag attempting to compare numbers as strings
-	Added handling for positional arguments.  Yet to be tested or documented.
+	Added handling for positional arguments.
 
 0.22	Sat Oct 25 21:51:13 EDT 2025
 	If a cross_validation fails, invalidate all arguments
