@@ -751,11 +751,34 @@ sub validate_strict
 		}
 	}
 
+	# Find out if this routine takes positional arguments
+	my $are_positional_args = -1;
+	foreach my $key (keys %{$schema}) {
+		if(defined(my $rules = $schema->{$key})) {
+			if(ref($rules) eq 'HASH') {
+				if(!defined($rules->{'position'})) {
+					if($are_positional_args == 1) {
+						_error($logger, "::validate_strict: $key is missing position value");
+					}
+					$are_positional_args = 0;
+					last;
+				}
+				$are_positional_args = 1;
+			} else {
+				$are_positional_args = 0;
+				last;
+			}
+		} else {
+			$are_positional_args = 0;
+			last;
+		}
+	}
+
 	my %validated_args;
 	my %invalid_args;
 	foreach my $key (keys %{$schema}) {
 		my $rules = $schema->{$key};
-		my $value = $args->{$key};
+		my $value = ($are_positional_args == 1) ? @{$args}[$rules->{'position'}] : $args->{$key};
 
 		if(!defined($rules)) {	# Allow anything
 			$validated_args{$key} = $value;
@@ -788,7 +811,17 @@ sub validate_strict
 
 		# Handle optional parameters
 		if((ref($rules) eq 'HASH') && $is_optional) {
-			if(!exists($args->{$key})) {
+			my $look_for_default = 0;
+			if($are_positional_args == 1) {
+				if(!defined(@{$args}[$rules->{'position'}])) {
+					$look_for_default = 1;
+				}
+			} else {
+				if(!exists($args->{$key})) {
+					$look_for_default = 1;
+				}
+			}
+			if($look_for_default) {
 				if(exists($rules->{'default'})) {
 					# Populate missing optional parameters with the specified output values
 					$validated_args{$key} = $rules->{'default'};
@@ -802,9 +835,16 @@ sub validate_strict
 					next;	# optional and missing
 				}
 			}
-		} elsif(!exists($args->{$key})) {
-			# The parameter is required
-			_error($logger, "validate_strict: Required parameter '$key' is missing");
+		} else {
+			if($are_positional_args > 1) {
+				if(scalar(@{$args}) < $rules->{'position'}) {
+					# arg array is too short, so it must be missing
+					_error($logger, "validate_strict: Required parameter '$key' is missing");
+				}
+			} elsif(!exists($args->{$key})) {
+				# The parameter is required
+				_error($logger, "validate_strict: Required parameter '$key' is missing");
+			}
 		}
 
 		# Validate based on rules
