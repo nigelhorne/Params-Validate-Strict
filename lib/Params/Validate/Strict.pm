@@ -343,7 +343,7 @@ Checks all members of arrayrefs.
 For routines and methods that take positional args,
 this integer value defines which position the argument will be in.
 If this is set for all arguments,
-C<validate_string> will return a reference to an array, rather than a reference to a hash.
+C<validate_strict> will return a reference to an array, rather than a reference to a hash.
 
 =item * C<callback>
 
@@ -1489,7 +1489,7 @@ sub validate_strict
 			if(my $value = delete $validated_args{$key}) {
 				my $position = $schema->{$key}->{'position'};
 				if(defined($rc[$position])) {
-					_error($logger, "validate_string: $key: position $position appears twice");
+					_error($logger, "validate_strict: $key: position $position appears twice");
 				}
 				$rc[$position] = $value;
 			}

@@ -311,7 +311,7 @@ The schema can define the following rules for each parameter:
     For routines and methods that take positional args,
     this integer value defines which position the argument will be in.
     If this is set for all arguments,
-    `validate_string` will return a reference to an array, rather than a reference to a hash.
+    `validate_strict` will return a reference to an array, rather than a reference to a hash.
 
 - `callback`
 
