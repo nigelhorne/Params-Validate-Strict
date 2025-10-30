@@ -20,4 +20,18 @@ $result = validate_strict({ schema => $schema, args => [ ] });
 
 is_deeply($result, [ 'xyzzy' ], 'positional default arg works');
 
+$schema = {
+	name => {
+		'type' => 'string',
+		'position' => 0
+	}, age => {
+		'type' => 'integer',
+		'position' => 1
+	}
+};
+
+$result = validate_strict({ schema => $schema, args => [ 'Fred Bloggs', 64 ] });
+
+is_deeply($result, [ 'Fred Bloggs', 64 ], 'positional arg works with two args');
+
 done_testing();

@@ -1487,7 +1487,11 @@ sub validate_strict
 		my @rc;
 		foreach my $key (keys %{$schema}) {
 			if(my $value = delete $validated_args{$key}) {
-				$rc[$schema->{$key}->{'position'}] = $value;
+				my $position = $schema->{$key}->{'position'};
+				if(defined($rc[$position])) {
+					_error($logger, "validate_string: $key: position $position appears twice");
+				}
+				$rc[$position] = $value;
 			}
 		}
 		return \@rc;
