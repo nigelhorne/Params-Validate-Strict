@@ -30,6 +30,7 @@ t/pod-coverage.t
 t/pod-spelling.t
 t/pod-synopsis.t
 t/pod.t
+t/positional.t
 t/prereq.t
 t/strict.t
 t/tabs.t
