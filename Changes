@@ -1,5 +1,9 @@
 Revision history for Params-Validate-Strict
 
+0.24
+	error_message renamed error_msg (now consistent with Data::Processor)
+	added description field (inspired by Data::Processor)
+
 0.23	Thu Oct 30 13:37:31 EDT 2025
 	Flag attempting to compare numbers as strings
 	Added handling for positional arguments
