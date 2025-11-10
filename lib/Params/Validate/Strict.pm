@@ -1657,7 +1657,7 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
         my $params = Params::Validate::Strict::validate_strict({
             args => Params::Get::get_params(undef, \@_),
 	    description => 'Print a string of latitude and longitude',
-	    error_msg => 'Latitude is a number between +/- 90, longitude if a number between +/- 180',
+	    error_msg => 'Latitude is a number between +/- 90, longitude is a number between +/- 180',
             members => {
                 'latitude' => {
                     type => 'number',
@@ -1674,7 +1674,6 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
         print 'You are at ', $params->{'latitude'}, ', ', $params->{'longitude'}, "\n";
     }
 
-    where_am_i(latitude => 0.3, longitude => 124);
     where_am_i({ latitude => 3.14, longitude => -155 });
 
 =head1 BUGS
