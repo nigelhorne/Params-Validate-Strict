@@ -83,7 +83,7 @@ This function takes two mandatory arguments:
 
 =over 4
 
-=item * C<schema>
+=item * C<schema> || C<members>
 
 A reference to a hash that defines the validation rules for each parameter.
 The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
@@ -106,9 +106,18 @@ The keys of the hash are the parameter names, and the values are the parameter v
 
 =back
 
-It takes three optional arguments:
+It takes optional arguments:
 
 =over 4
+
+=item * C<description>
+
+What the schema does,
+used in error messages.
+
+=item * C<error_msg>
+
+Overrides the default message when something doesn't validate.
 
 =item * C<unknown_parameter_handler>
 
@@ -573,7 +582,7 @@ Many validators also allow a code ref to be passed so that you can create your o
 
 =item * C<validator>
 
-A synonym of Cvalidate>, for compatability with L<Data::Processor>.
+A synonym of Cvalidate>, for compatibility with L<Data::Processor>.
 
 =item * C<cross_validation>
 
@@ -717,7 +726,7 @@ If the validation is successful, the function will return a reference to a new h
 
     # New style
     validate_strict(
-        schema => {
+        schema => {	# or "members"
             name => 'string',
             age => { type => 'integer', min => 0 }
         },
@@ -742,7 +751,7 @@ sub validate_strict
 {
 	my $params = Params::Get::get_params(undef, \@_);
 
-	my $schema = $params->{'schema'};
+	my $schema = $params->{'schema'} || $params->{'members'};
 	my $args = $params->{'args'} || $params->{'input'};
 	my $unknown_parameter_handler = $params->{'unknown_parameter_handler'} || 'die';
 	my $logger = $params->{'logger'};
@@ -754,8 +763,8 @@ sub validate_strict
 	}
 
 	# Inspired by Data::Processor
-	my $schema_description = 'validate_strict';
-	my $error_msg;
+	my $schema_description = $params->{'description'} || 'validate_strict';
+	my $error_msg = $params->{'error_msg'};
 
 	if($schema->{'members'} && ($schema->{'description'} || $schema->{'error_msg'})) {
 		$schema_description = $schema->{'description'};
@@ -831,7 +840,7 @@ sub validate_strict
 
 		my $is_optional = 0;
 
-		my $rule_description = $schema_description;	# Can be overriden in each element
+		my $rule_description = $schema_description;	# Can be overridden in each element
 
 		if(ref($rules) eq 'HASH') {
 			if(exists($rules->{'description'})) {
@@ -1637,6 +1646,36 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
           ¬optional(schema(name)) ⇒ name ∈ dom(args))
 
     type_matches: VALUE × ValidationRule → 𝔹
+
+=head1 EXAMPLE
+
+    use Params::Get;
+    use Params::Validate::Strict;
+
+    sub where_am_i
+    {
+        my $params = Params::Validate::Strict::validate_strict({
+            args => Params::Get::get_params(undef, \@_),
+	    description => 'Print a string of latitude and longitude',
+	    error_msg => 'Latitude is a number between +/- 90, longitude if a number between +/- 180',
+            members => {
+                'latitude' => {
+                    type => 'number',
+                    min => -90,
+                    max => 90
+                }, 'longitude' => {
+                    type => 'number',
+                    min => -180,
+                    max => 180
+                }
+            }
+        });
+
+        print 'You are at ', $params->{'latitude'}, ', ', $params->{'longitude'}, "\n";
+    }
+
+    where_am_i(latitude => 0.3, longitude => 124);
+    where_am_i({ latitude => 3.14, longitude => -155 });
 
 =head1 BUGS
 
