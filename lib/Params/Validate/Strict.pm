@@ -1688,6 +1688,8 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
 =item * L<Params::Get>
 
+=item * L<Params::Smart>
+
 =item * L<Params::Validate>
 
 =item * L<Return::Set>
