@@ -1555,6 +1555,8 @@ sub _error
 		$logger->error(__PACKAGE__, ' line ', $call_details[2], ": $message");
 	} else {
 		croak(__PACKAGE__, ' line ', $call_details[2], ": $message");
+		# Be absolutely sure, sometimes croak diesn't die for me in Test::Most scripts
+		die (__PACKAGE__, ' line ', $call_details[2], ": $message");
 	}
 }
 
