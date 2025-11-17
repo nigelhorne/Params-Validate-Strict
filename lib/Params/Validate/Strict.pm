@@ -1,7 +1,5 @@
 package Params::Validate::Strict;
 
-use 5.014;	# RT#171339
-
 use strict;
 use warnings;
 

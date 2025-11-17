@@ -1248,7 +1248,8 @@ subtest 'Transform with validation interactions' => sub {
 			type => 'string',
 			transform => sub {
 				my $val = $_[0];
-				return $val =~ s/\s+//gr;  # Remove whitespace
+				$val =~ s/\s+//g;	# Remove whitespace (RT#171339)
+				return $val;
 			},
 			matches => qr/^[A-Z]+$/,  # Should validate against transformed value
 			min => 3,
