@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.24
+0.24	Mon Nov 17 08:19:19 EST 2025
 	error_message renamed error_msg (now consistent with Data::Processor)
 	added description field (inspired by Data::Processor)
 	Call die after croak to be sure of death
