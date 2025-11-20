@@ -1052,6 +1052,13 @@ sub validate_strict
 						$type = $custom_types->{$type}->{'type'};
 					}
 					if($type eq 'string') {
+						if($rule_value < 0) {
+							if($rules->{'error_msg'}) {
+								_error($logger, $rules->{'error_msg'});
+							} else {
+								_error($logger, "$rule_description: String parameter '$key' has meaningless minimum value that is less than zero");
+							}
+						}
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
@@ -1555,7 +1562,7 @@ sub _error
 		$logger->error(__PACKAGE__, ' line ', $call_details[2], ": $message");
 	} else {
 		croak(__PACKAGE__, ' line ', $call_details[2], ": $message");
-		# Be absolutely sure, sometimes croak diesn't die for me in Test::Most scripts
+		# Be absolutely sure, sometimes croak doesn't die for me in Test::Most scripts
 		die (__PACKAGE__, ' line ', $call_details[2], ": $message");
 	}
 }
