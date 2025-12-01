@@ -1,5 +1,7 @@
 package Params::Validate::Strict;
 
+# FIXME: {max} doesn't play ball with non-ascii strings
+
 use strict;
 use warnings;
 
