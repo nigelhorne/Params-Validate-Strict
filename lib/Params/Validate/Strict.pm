@@ -6,8 +6,9 @@ use strict;
 use warnings;
 
 use Carp;
-use List::Util 1.33 qw(any);	# Required for memberof validation
 use Exporter qw(import);	# Required for @EXPORT_OK
+use Encode qw(decode_utf8);
+use List::Util 1.33 qw(any);	# Required for memberof validation
 use Params::Get 0.13;
 use Scalar::Util;
 
@@ -344,11 +345,11 @@ do not have case.
 
 =item * C<min>
 
-The minimum length (for strings), value (for numbers) or number of keys (for hashrefs).
+The minimum length (for strings in characters not bytes), value (for numbers) or number of keys (for hashrefs).
 
 =item * C<max>
 
-The maximum length (for strings), value (for numbers) or number of keys (for hashrefs).
+The maximum length (for strings in characters not bytes), value (for numbers) or number of keys (for hashrefs).
 
 =item * C<matches>
 
@@ -931,18 +932,10 @@ sub validate_strict
 
 					if($type eq 'string') {
 						if(ref($value)) {
-							if($rules->{'error_msg'}) {
-								_error($logger, $rules->{'error_msg'});
-							} else {
-								_error($logger, "$rule_description: Parameter '$key' must be a string");
-							}
+							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a string");
 						}
 						unless((ref($value) eq '') || (defined($value) && length($value))) {	# Allow undef for optional strings
-							if($rules->{'error_msg'}) {
-								_error($logger, $rules->{'error_msg'});
-							} else {
-								_error($logger, "$rule_description: Parameter '$key' must be a string");
-							}
+							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a string");
 						}
 					} elsif($type eq 'integer') {
 						if(!defined($value)) {
@@ -1064,12 +1057,11 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
-						if(length($value) < $rule_value) {
-							if($rules->{'error_msg'}) {
-								_error($logger, $rules->{'error_msg'});
-							} else {
-								_error($logger, "$rule_description: String parameter '$key' too short (" . length($value) . "), must be at least length $rule_value");
-							}
+						# Ensure string is decoded into Perl characters
+						my $bytes = decode_utf8($value) unless utf8::is_utf8($value);
+						my $len = length($bytes);
+						if($len < $rule_value) {
+							_error($logger, $rules->{'error_msg'} || "$rule_description: String parameter '$key' too short, ($len characters), must be at least $rule_value characters");
 							$invalid_args{$key} = 1;
 						}
 					} elsif($rules->{'type'} eq 'arrayref') {
@@ -1141,12 +1133,11 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
-						if(length($value) > $rule_value) {
-							if($rules->{'error_msg'}) {
-								_error($logger, $rules->{'error_msg'});
-							} else {
-								_error($logger, "$rule_description: String parameter '$key' too long, (" . length($value) . " characters), must be no longer than $rule_value");
-							}
+						# Ensure string is decoded into Perl characters
+						my $bytes = decode_utf8($value) unless utf8::is_utf8($value);
+						my $len = length($bytes);
+						if($len > $rule_value) {
+							_error($logger, $rules->{'error_msg'} || "$rule_description: String parameter '$key' too long, ($len characters), must be no longer than $rule_value");
 							$invalid_args{$key} = 1;
 						}
 					} elsif($rules->{'type'} eq 'arrayref') {
