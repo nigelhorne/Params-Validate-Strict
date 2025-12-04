@@ -208,6 +208,12 @@ subtest 'Constraint validation' => sub {
 		validate_strict(schema => $string_schema, args => {short => 'ab'});
 	} qr/too short/, 'String too short rejected';
 
+	ok(validate_strict({ schema => $string_schema, args => { 'short' => 'abc' } }));
+
+	throws_ok {
+		validate_strict(schema => $string_schema, args => {short => 'àb'});	# Non ascii
+	} qr/too short/, 'String too short rejected';
+
 	throws_ok {
 		validate_strict(schema => $string_schema, args => {short => 'a' x 11});
 	} qr/too long/, 'String too long rejected';
