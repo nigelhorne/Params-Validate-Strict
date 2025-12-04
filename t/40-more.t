@@ -201,12 +201,15 @@ subtest 'Constraint validation' => sub {
 		short => {type => 'string', min => 3, max => 10}
 	};
 
+	ok(validate_strict({ schema => $string_schema, args => { 'short' => 'a' x 10 } }));
+	ok(validate_strict({ schema => $string_schema, args => { 'short' => 'à' x 10 } }));	# Non ascii
+
 	throws_ok {
 		validate_strict(schema => $string_schema, args => {short => 'ab'});
 	} qr/too short/, 'String too short rejected';
 
 	throws_ok {
-		validate_strict(schema => $string_schema, args => {short => 'a' x 15});
+		validate_strict(schema => $string_schema, args => {short => 'a' x 11});
 	} qr/too long/, 'String too long rejected';
 
 	lives_ok {
