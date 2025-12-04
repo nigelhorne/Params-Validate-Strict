@@ -1060,6 +1060,11 @@ sub validate_strict
 						# Ensure string is decoded into Perl characters
 						my $bytes = decode_utf8($value) unless utf8::is_utf8($value);
 						my $len = length($bytes);
+						if(!defined($len)) {
+							_error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
+							$invalid_args{$key} = 1;
+							$len = length($value);
+						}
 						if($len < $rule_value) {
 							_error($logger, $rules->{'error_msg'} || "$rule_description: String parameter '$key' too short, ($len characters), must be at least $rule_value characters");
 							$invalid_args{$key} = 1;
@@ -1136,6 +1141,11 @@ sub validate_strict
 						# Ensure string is decoded into Perl characters
 						my $bytes = decode_utf8($value) unless utf8::is_utf8($value);
 						my $len = length($bytes);
+						if(!defined($len)) {
+							_error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
+							$invalid_args{$key} = 1;
+							$len = length($value);
+						}
 						if($len > $rule_value) {
 							_error($logger, $rules->{'error_msg'} || "$rule_description: String parameter '$key' too long, ($len characters), must be no longer than $rule_value");
 							$invalid_args{$key} = 1;
