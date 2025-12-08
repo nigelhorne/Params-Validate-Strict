@@ -1061,8 +1061,8 @@ sub validate_strict
 						my $bytes = decode_utf8($value) unless utf8::is_utf8($value);
 						my $len = length($bytes);
 						if(!defined($len)) {
-							_error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
-							$invalid_args{$key} = 1;
+							# _error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
+							# $invalid_args{$key} = 1;
 							$len = length($value);
 						}
 						if($len < $rule_value) {
@@ -1142,8 +1142,8 @@ sub validate_strict
 						my $bytes = decode_utf8($value) unless utf8::is_utf8($value);
 						my $len = length($bytes);
 						if(!defined($len)) {
-							_error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
-							$invalid_args{$key} = 1;
+							# _error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
+							# $invalid_args{$key} = 1;
 							$len = length($value);
 						}
 						if($len > $rule_value) {
