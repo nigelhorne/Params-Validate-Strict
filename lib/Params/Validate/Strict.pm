@@ -1057,14 +1057,13 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
-						my $len = _number_of_characters($value);
-						if(!defined($len)) {
-							# _error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
-							# $invalid_args{$key} = 1;
-							$len = length($value);
-						}
-						if($len < $rule_value) {
-							_error($logger, $rules->{'error_msg'} || "$rule_description: String parameter '$key' too short, ($len characters), must be at least $rule_value characters");
+						if(defined(my $len = _number_of_characters($value))) {
+							if($len < $rule_value) {
+								_error($logger, $rules->{'error_msg'} || "$rule_description: String parameter '$key' too short, ($len characters), must be at least $rule_value characters");
+								$invalid_args{$key} = 1;
+							}
+						} else {
+							_error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
 							$invalid_args{$key} = 1;
 						}
 					} elsif($rules->{'type'} eq 'arrayref') {
@@ -1136,14 +1135,13 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
-						my $len = _number_of_characters($value);
-						if(!defined($len)) {
-							# _error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
-							# $invalid_args{$key} = 1;
-							$len = length($value);
-						}
-						if($len > $rule_value) {
-							_error($logger, $rules->{'error_msg'} || "$rule_description: String parameter '$key' too long, ($len characters), must be no longer than $rule_value");
+						if(defined(my $len = _number_of_characters($value))) {
+							if($len > $rule_value) {
+								_error($logger, $rules->{'error_msg'} || "$rule_description: String parameter '$key' too long, ($len characters), must be no longer than $rule_value");
+								$invalid_args{$key} = 1;
+							}
+						} else {
+							_error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
 							$invalid_args{$key} = 1;
 						}
 					} elsif($rules->{'type'} eq 'arrayref') {
