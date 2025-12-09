@@ -11,6 +11,7 @@ use Encode qw(decode_utf8);
 use List::Util 1.33 qw(any);	# Required for memberof validation
 use Params::Get 0.13;
 use Scalar::Util;
+use Unicode::GCString;
 
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(validate_strict);
@@ -1548,7 +1549,7 @@ sub validate_strict
 	return \%validated_args;
 }
 
-# Return number of characters not number of bytes
+# Return number of visibile characters not number of bytes
 # Ensure string is decoded into Perl characters
 sub _number_of_characters
 {
@@ -1562,7 +1563,8 @@ sub _number_of_characters
 	# Decode only if it's not already a Perl character string
 	$value = decode_utf8($value) unless utf8::is_utf8($value);
 
-	return length($value);  # character count
+	# Count grapheme clusters (visible characters)
+	return Unicode::GCString->new($value)->length();
 }
 
 # Helper to log error or croak
