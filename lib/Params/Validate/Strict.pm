@@ -1057,9 +1057,7 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
-						# Ensure string is decoded into Perl characters
-						my $bytes = decode_utf8($value) unless utf8::is_utf8($value);
-						my $len = length($bytes);
+						my $len = _number_of_characters($value);
 						if(!defined($len)) {
 							# _error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
 							# $invalid_args{$key} = 1;
@@ -1138,9 +1136,7 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
-						# Ensure string is decoded into Perl characters
-						my $bytes = decode_utf8($value) unless utf8::is_utf8($value);
-						my $len = length($bytes);
+						my $len = _number_of_characters($value);
 						if(!defined($len)) {
 							# _error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
 							# $invalid_args{$key} = 1;
@@ -1552,6 +1548,23 @@ sub validate_strict
 		return \@rc;
 	}
 	return \%validated_args;
+}
+
+# Return number of characters not number of bytes
+# Ensure string is decoded into Perl characters
+sub _number_of_characters
+{
+	my $value = $_[0];
+
+	return if(!defined($value));
+
+	if($value !~ /[^[:ascii:]]/) {
+		return length($value);
+	}
+	# Decode only if it's not already a Perl character string
+	$value = decode_utf8($value) unless utf8::is_utf8($value);
+
+	return length($value);  # character count
 }
 
 # Helper to log error or croak
