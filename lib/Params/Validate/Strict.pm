@@ -1564,6 +1564,9 @@ sub _number_of_characters
 	$value = decode_utf8($value) unless utf8::is_utf8($value);
 
 	# Count grapheme clusters (visible characters)
+	# The pseudo-operator () = forces list context to count matches
+	# return scalar( () = $value =~ /\X/g );
+
 	return Unicode::GCString->new($value)->length();
 }
 
