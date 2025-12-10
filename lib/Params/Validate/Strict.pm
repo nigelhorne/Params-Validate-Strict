@@ -22,11 +22,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.25
+Version 0.26
 
 =cut
 
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 
 =head1 SYNOPSIS
 
@@ -1549,7 +1549,7 @@ sub validate_strict
 	return \%validated_args;
 }
 
-# Return number of visibile characters not number of bytes
+# Return number of visible characters not number of bytes
 # Ensure string is decoded into Perl characters
 sub _number_of_characters
 {
