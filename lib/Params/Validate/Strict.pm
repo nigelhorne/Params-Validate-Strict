@@ -1430,8 +1430,13 @@ sub validate_strict
 				} elsif($rule_name =~ /^_/) {
 					# Ignore internal/metadata fields from schema extraction
 				} elsif($rule_name eq 'semantic') {
-					# Ignore semantic type hints
-					_warn($logger, "semantic types are not yet supported (type = $value");
+					if($rule_value eq 'unix_timestamp') {
+						if($value < 0 || $value > 2147483647) {
+							error($logger, 'Invalid Unix timestamp: $value');
+						}
+					} else {
+						_warn($logger, "semantic type $rule_value is not yet supported");
+					}
 				} elsif($rule_name eq 'schema') {
 					# Nested schema Run the given schema against each element of the array
 					if($rules->{'type'} eq 'arrayref') {
