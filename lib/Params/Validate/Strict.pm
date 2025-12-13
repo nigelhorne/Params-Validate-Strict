@@ -139,7 +139,7 @@ Custom types allow you to define validation rules once and reuse them throughout
 making your validation logic more maintainable and readable.
 
 Each custom type is defined as a hash reference containing the same validation rules available for regular parameters
-(C<type>, C<min>, C<max>, C<matches>, C<memberof>, C<notmemberof>, C<callback>, etc.).
+(C<type>, C<min>, C<max>, C<matches>, C<memberof>, C<enum>, C<notmemberof>, C<callback>, etc.).
 
   my $custom_types = {
     email => {
@@ -259,6 +259,10 @@ equality (C<==> operator):
 Note that C<memberof> cannot be combined with C<min> or C<max> constraints as they
 serve conflicting purposes - C<memberof> defines an explicit whitelist while C<min>/C<max>
 define ranges.
+
+=item * C<enum>
+
+Same as C<memberof>.
 
 =item * C<notmemberof>
 
@@ -1254,7 +1258,7 @@ sub validate_strict
 						}
 						$invalid_args{$key} = 1;
 					}
-				} elsif($rule_name eq 'memberof') {
+				} elsif(($rule_name eq 'memberof') || ($rule_name eq 'enum')) {
 					if(!defined($value)) {
 						next;	# Skip if string is undefined
 					}
