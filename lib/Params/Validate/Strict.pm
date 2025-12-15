@@ -731,6 +731,139 @@ If the validation fails, the function will C<croak> with an error message descri
 
 If the validation is successful, the function will return a reference to a new hash containing the validated and (where applicable) coerced parameters.  Integer and number parameters will be coerced to their respective types.
 
+=item * C<relationships>
+
+A reference to an array that defines validation rules based on relationships between parameters.
+Relationship validations are performed after all individual parameter validations have passed,
+but before cross-validations.
+
+Each relationship is a hash reference with a C<type> field and additional fields depending on the type:
+
+=over 4
+
+=item * B<mutually_exclusive>
+
+Parameters that cannot be specified together.
+
+  relationships => [
+    {
+      type => 'mutually_exclusive',
+      params => ['file', 'content'],
+      description => 'Cannot specify both file and content'
+    }
+  ]
+
+=item * B<required_group>
+
+At least one parameter from the group must be specified.
+
+  relationships => [
+    {
+      type => 'required_group',
+      params => ['id', 'name'],
+      logic => 'or',
+      description => 'Must specify either id or name'
+    }
+  ]
+
+=item * B<conditional_requirement>
+
+If one parameter is specified, another becomes required.
+
+  relationships => [
+    {
+      type => 'conditional_requirement',
+      if => 'async',
+      then_required => 'callback',
+      description => 'When async is specified, callback is required'
+    }
+  ]
+
+=item * B<dependency>
+
+One parameter requires another to be present.
+
+  relationships => [
+    {
+      type => 'dependency',
+      param => 'port',
+      requires => 'host',
+      description => 'port requires host to be specified'
+    }
+  ]
+
+=item * B<value_constraint>
+
+Specific value requirements between parameters.
+
+  relationships => [
+    {
+      type => 'value_constraint',
+      if => 'ssl',
+      then => 'port',
+      operator => '==',
+      value => 443,
+      description => 'When ssl is specified, port must equal 443'
+    }
+  ]
+
+=item * B<value_conditional>
+
+Parameter required when another has a specific value.
+
+  relationships => [
+    {
+      type => 'value_conditional',
+      if => 'mode',
+      equals => 'secure',
+      then_required => 'key',
+      description => "When mode equals 'secure', key is required"
+    }
+  ]
+
+=back
+
+The C<description> field is optional but recommended for clearer error messages.
+
+=head2 Example Usage
+
+  my $schema = {
+    host => { type => 'string' },
+    port => { type => 'integer' },
+    ssl => { type => 'boolean' },
+    file => { type => 'string', optional => 1 },
+    content => { type => 'string', optional => 1 }
+  };
+
+  my $relationships = [
+    {
+      type => 'mutually_exclusive',
+      params => ['file', 'content']
+    },
+    {
+      type => 'required_group',
+      params => ['host', 'file']
+    },
+    {
+      type => 'dependency',
+      param => 'port',
+      requires => 'host'
+    },
+    {
+      type => 'value_constraint',
+      if => 'ssl',
+      then => 'port',
+      operator => '==',
+      value => 443
+    }
+  ];
+
+  my $validated = validate_strict(
+    schema => $schema,
+    input => $input,
+    relationships => $relationships
+  );
+
 =head1 MIGRATION FROM LEGACY VALIDATORS
 
 =head2 From L<Params::Validate>
@@ -1537,6 +1670,11 @@ sub validate_strict
 		$validated_args{$key} = $value;
 	}
 
+	# Validate parameter relationships
+	if (my $relationships = $params->{'relationships'}) {
+		_validate_relationships(\%validated_args, $relationships, $logger, $schema_description);
+	}
+
 	if(my $cross_validation = $params->{'cross_validation'}) {
 		foreach my $validator_name(keys %{$cross_validation}) {
 			my $validator = $cross_validation->{$validator_name};
@@ -1593,6 +1731,176 @@ sub _number_of_characters
 	return Unicode::GCString->new($value)->length();
 }
 
+sub _apply_nested_defaults {
+	my ($input, $schema) = @_;
+	my %result = %$input;
+
+	foreach my $key (keys %$schema) {
+		my $rules = $schema->{$key};
+
+		if (ref $rules eq 'HASH' && exists $rules->{default} && !exists $result{$key}) {
+			$result{$key} = $rules->{default};
+		}
+
+		# Recursively handle nested schema
+		if((ref $rules eq 'HASH') && $rules->{schema} && (ref $result{$key} eq 'HASH')) {
+			$result{$key} = _apply_nested_defaults($result{$key}, $rules->{schema});
+		}
+	}
+
+	return \%result;
+}
+
+sub _validate_relationships {
+	my ($validated_args, $relationships, $logger, $description) = @_;
+
+	return unless ref($relationships) eq 'ARRAY';
+
+	foreach my $rel (@$relationships) {
+		my $type = $rel->{type} or next;
+
+		if ($type eq 'mutually_exclusive') {
+			_validate_mutually_exclusive($validated_args, $rel, $logger, $description);
+		} elsif ($type eq 'required_group') {
+			_validate_required_group($validated_args, $rel, $logger, $description);
+		} elsif ($type eq 'conditional_requirement') {
+			_validate_conditional_requirement($validated_args, $rel, $logger, $description);
+		} elsif ($type eq 'dependency') {
+			_validate_dependency($validated_args, $rel, $logger, $description);
+		} elsif ($type eq 'value_constraint') {
+			_validate_value_constraint($validated_args, $rel, $logger, $description);
+		} elsif ($type eq 'value_conditional') {
+			_validate_value_conditional($validated_args, $rel, $logger, $description);
+		}
+	}
+}
+
+sub _validate_mutually_exclusive {
+    my ($args, $rel, $logger, $description) = @_;
+    
+    my @params = @{$rel->{params} || []};
+    return unless @params >= 2;
+    
+    my @present = grep { exists($args->{$_}) && defined($args->{$_}) } @params;
+    
+    if (@present > 1) {
+        my $msg = $rel->{description} || 
+                  "Cannot specify both " . join(' and ', @present);
+        _error($logger, "$description: $msg");
+    }
+}
+
+sub _validate_required_group {
+    my ($args, $rel, $logger, $description) = @_;
+    
+    my @params = @{$rel->{params} || []};
+    return unless @params >= 2;
+    
+    my @present = grep { exists($args->{$_}) && defined($args->{$_}) } @params;
+    
+    if (@present == 0) {
+        my $msg = $rel->{description} || 
+                  "Must specify at least one of: " . join(', ', @params);
+        _error($logger, "$description: $msg");
+    }
+}
+
+sub _validate_conditional_requirement {
+    my ($args, $rel, $logger, $description) = @_;
+    
+    my $if_param = $rel->{if} or return;
+    my $then_param = $rel->{then_required} or return;
+    
+    # If the condition parameter is present and defined
+    if (exists($args->{$if_param}) && defined($args->{$if_param})) {
+        # Check if it's truthy (for booleans and general values)
+        if ($args->{$if_param}) {
+            # Then the required parameter must also be present
+            unless (exists($args->{$then_param}) && defined($args->{$then_param})) {
+                my $msg = $rel->{description} || 
+                          "When $if_param is specified, $then_param is required";
+                _error($logger, "$description: $msg");
+            }
+        }
+    }
+}
+
+sub _validate_dependency {
+    my ($args, $rel, $logger, $description) = @_;
+    
+    my $param = $rel->{param} or return;
+    my $requires = $rel->{requires} or return;
+    
+    # If param is present, requires must also be present
+    if (exists($args->{$param}) && defined($args->{$param})) {
+        unless (exists($args->{$requires}) && defined($args->{$requires})) {
+            my $msg = $rel->{description} || 
+                      "$param requires $requires to be specified";
+            _error($logger, "$description: $msg");
+        }
+    }
+}
+
+sub _validate_value_constraint {
+    my ($args, $rel, $logger, $description) = @_;
+    
+    my $if_param = $rel->{if} or return;
+    my $then_param = $rel->{then} or return;
+    my $operator = $rel->{operator} or return;
+    my $value = $rel->{value};
+    return unless defined $value;
+    
+    # If the condition parameter is present and truthy
+    if (exists($args->{$if_param}) && defined($args->{$if_param}) && $args->{$if_param}) {
+        # Check if the then parameter exists
+        if (exists($args->{$then_param}) && defined($args->{$then_param})) {
+            my $actual = $args->{$then_param};
+            my $valid = 0;
+            
+            if ($operator eq '==') {
+                $valid = ($actual == $value);
+            } elsif ($operator eq '!=') {
+                $valid = ($actual != $value);
+            } elsif ($operator eq '<') {
+                $valid = ($actual < $value);
+            } elsif ($operator eq '<=') {
+                $valid = ($actual <= $value);
+            } elsif ($operator eq '>') {
+                $valid = ($actual > $value);
+            } elsif ($operator eq '>=') {
+                $valid = ($actual >= $value);
+            }
+            
+            unless ($valid) {
+                my $msg = $rel->{description} || 
+                          "When $if_param is specified, $then_param must be $operator $value (got $actual)";
+                _error($logger, "$description: $msg");
+            }
+        }
+    }
+}
+
+sub _validate_value_conditional {
+	my ($args, $rel, $logger, $description) = @_;
+
+	my $if_param = $rel->{if} or return;
+	my $equals = $rel->{equals};
+	my $then_param = $rel->{then_required} or return;
+	return unless defined $equals;
+
+	# If the parameter has the specific value
+	if (exists($args->{$if_param}) && defined($args->{$if_param})) {
+		if ($args->{$if_param} eq $equals) {
+			# Then the required parameter must be present
+			unless (exists($args->{$then_param}) && defined($args->{$then_param})) {
+				my $msg = $rel->{description} || 
+					"When $if_param equals '$equals', $then_param is required";
+				_error($logger, "$description: $msg");
+			}
+		}
+	}
+}
+
 # Helper to log error or croak
 sub _error
 {
@@ -1620,26 +1928,6 @@ sub _warn
 	} else {
 		carp(__PACKAGE__, ": $message");
 	}
-}
-
-sub _apply_nested_defaults {
-	my ($input, $schema) = @_;
-	my %result = %$input;
-
-	foreach my $key (keys %$schema) {
-		my $rules = $schema->{$key};
-
-		if (ref $rules eq 'HASH' && exists $rules->{default} && !exists $result{$key}) {
-			$result{$key} = $rules->{default};
-		}
-
-		# Recursively handle nested schema
-		if((ref $rules eq 'HASH') && $rules->{schema} && (ref $result{$key} eq 'HASH')) {
-			$result{$key} = _apply_nested_defaults($result{$key}, $rules->{schema});
-		}
-	}
-
-	return \%result;
 }
 
 =head1 AUTHOR

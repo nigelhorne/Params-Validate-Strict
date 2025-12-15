@@ -1,5 +1,8 @@
 Revision history for Params-Validate-Strict
 
+0.28
+	Added relationship validator
+
 0.27	Sat Dec 13 11:03:00 EST 2025
 	Added enum as a synonym of memberof
 	Support unix_timestamp semantic
