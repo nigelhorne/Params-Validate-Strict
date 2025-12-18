@@ -1465,14 +1465,11 @@ sub validate_strict
 						}
 					}
 				} elsif($rule_name eq 'isa') {
+					if(!defined($value)) {
+						next;	# Skip if object not given
+					}
 					if($rules->{'type'} eq 'object') {
-						if(!defined($value)) {
-							if($rules->{'error_msg'}) {
-								_error($logger, $rules->{'error_msg'});
-							} else {
-								_error($logger, "$rule_description: Parameter '$key' rule ($rule_value) class must be specified");
-							}
-						} elsif(!$value->isa($rule_value)) {
+						if(!$value->isa($rule_value)) {
 							_error($logger, "$rule_description: Parameter '$key' must be a '$rule_value' object");
 							$invalid_args{$key} = 1;
 						}
