@@ -939,7 +939,7 @@ sub validate_strict
 					next;
 				} elsif($unknown_parameter_handler eq 'ignore') {
 					if($logger) {
-						$logger->debug(__PACKAGE__ . "$schema_description: Unknown parameter '$key'");
+						$logger->debug(__PACKAGE__ . ": $schema_description: Unknown parameter '$key'");
 					}
 					next;
 				} else {
@@ -1016,7 +1016,8 @@ sub validate_strict
 		if((ref($rules) eq 'HASH') && $is_optional) {
 			my $look_for_default = 0;
 			if($are_positional_args == 1) {
-				if(!defined(@{$args}[$rules->{'position'}])) {
+				# if(!defined(@{$args}[$rules->{'position'}])) {
+				if(!defined($args->[$rules->{position}])) {
 					$look_for_default = 1;
 				}
 			} else {
@@ -1052,17 +1053,17 @@ sub validate_strict
 
 		# Validate based on rules
 		if(ref($rules) eq 'HASH') {
-			if((my $min = $rules->{'min'}) && (my $max = $rules->{'max'})) {
+			if(defined(my $min = $rules->{'min'}) && defined(my $max = $rules->{'max'})) {
 				if($min > $max) {
 					_error($logger, "validate_strict($key): min must be <= max ($min > $max)");
 				}
 			}
 
 			if($rules->{'memberof'}) {
-				if(my $min = $rules->{'min'}) {
+				if(defined(my $min = $rules->{'min'})) {
 					_error($logger, "validate_strict($key): min ($min) makes no sense with memberof");
 				}
-				if(my $max = $rules->{'max'}) {
+				if(defined(my $max = $rules->{'max'})) {
 					_error($logger, "validate_strict($key): max ($max) makes no sense with memberof");
 				}
 			}
