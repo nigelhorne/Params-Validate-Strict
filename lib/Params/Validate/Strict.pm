@@ -722,15 +722,6 @@ TODO: gives an idea of what the field will be, e.g. C<filename>.
 
 All cross-validations must pass for the overall validation to succeed.
 
-=back
-
-If a parameter is optional and its value is C<undef>,
-validation will be skipped for that parameter.
-
-If the validation fails, the function will C<croak> with an error message describing the validation failure.
-
-If the validation is successful, the function will return a reference to a new hash containing the validated and (where applicable) coerced parameters.  Integer and number parameters will be coerced to their respective types.
-
 =item * C<relationships>
 
 A reference to an array that defines validation rules based on relationships between parameters.
@@ -823,7 +814,16 @@ Parameter required when another has a specific value.
 
 =back
 
+If a parameter is optional and its value is C<undef>,
+validation will be skipped for that parameter.
+
+If the validation fails, the function will C<croak> with an error message describing the validation failure.
+
+If the validation is successful, the function will return a reference to a new hash containing the validated and (where applicable) coerced parameters.  Integer and number parameters will be coerced to their respective types.
+
 The C<description> field is optional but recommended for clearer error messages.
+
+=back
 
 =head2 Example Usage
 
