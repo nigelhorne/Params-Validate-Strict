@@ -1078,7 +1078,7 @@ sub validate_strict
 				if($rule_name eq 'type') {
 					my $type = lc($rule_value);
 
-					if($type eq 'string') {
+					if(($type eq 'string') || ($type eq 'Str')) {
 						if(ref($value)) {
 							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a string");
 						}
@@ -1132,7 +1132,7 @@ sub validate_strict
 								_error($logger, "$rule_description: Parameter '$key' must be an hashref");
 							}
 						}
-					} elsif($type eq 'boolean') {
+					} elsif(($type eq 'boolean') || ($type eq 'bool')) {
 						if(!defined($value)) {
 							next;	# Skip if bool is undefined
 						}
@@ -1194,7 +1194,7 @@ sub validate_strict
 						$rule_value = $custom_types->{$type}->{'min'};
 						$type = $custom_types->{$type}->{'type'};
 					}
-					if($type eq 'string') {
+					if(($type eq 'string') || ($type eq 'str')) {
 						if($rule_value < 0) {
 							if($rules->{'error_msg'}) {
 								_error($logger, $rules->{'error_msg'});
@@ -1214,7 +1214,7 @@ sub validate_strict
 							_error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
 							$invalid_args{$key} = 1;
 						}
-					} elsif($rules->{'type'} eq 'arrayref') {
+					} elsif($type eq 'arrayref') {
 						if(!defined($value)) {
 							next;	# Skip if array is undefined
 						}
@@ -1233,7 +1233,7 @@ sub validate_strict
 							}
 							$invalid_args{$key} = 1;
 						}
-					} elsif($rules->{'type'} eq 'hashref') {
+					} elsif($type eq 'hashref') {
 						if(!defined($value)) {
 							next;	# Skip if hash is undefined
 						}
@@ -1279,7 +1279,7 @@ sub validate_strict
 						$rule_value = $custom_types->{$type}->{'max'};
 						$type = $custom_types->{$type}->{'type'};
 					}
-					if($type eq 'string') {
+					if(($type eq 'string') || ($type eq 'str')) {
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
@@ -1292,7 +1292,7 @@ sub validate_strict
 							_error($logger, $rules->{'error_msg'} || "$rule_description: '$key' can't be decoded");
 							$invalid_args{$key} = 1;
 						}
-					} elsif($rules->{'type'} eq 'arrayref') {
+					} elsif($type eq 'arrayref') {
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
@@ -1311,7 +1311,7 @@ sub validate_strict
 							}
 							$invalid_args{$key} = 1;
 						}
-					} elsif($rules->{'type'} eq 'hashref') {
+					} elsif($type eq 'hashref') {
 						if(!defined($value)) {
 							next;	# Skip if hash is undefined
 						}
@@ -1354,7 +1354,7 @@ sub validate_strict
 					}
 					eval {
 						my $re = (ref($rule_value) eq 'Regexp') ? $rule_value : qr/\Q$rule_value\E/;
-						if($rules->{'type'} eq 'arrayref') {
+						if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
 							my @matches = grep { $_ =~ $re } @{$value};
 							if(scalar(@matches) != scalar(@{$value})) {
 								if($rules->{'error_msg'}) {
@@ -1384,7 +1384,7 @@ sub validate_strict
 					if(!defined($value)) {
 						next;	# Skip if string is undefined
 					}
-					if($rules->{'type'} eq 'arrayref') {
+					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
 						my @matches = grep { /$rule_value/ } @{$value};
 						if(scalar(@matches)) {
 							if($rules->{'error_msg'}) {
@@ -1502,7 +1502,7 @@ sub validate_strict
 						_error($logger, "$rule_description: Parameter '$key' has meaningless can value $rule_value");
 					}
 				} elsif($rule_name eq 'element_type') {
-					if($rules->{'type'} eq 'arrayref') {
+					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
 						my $type = $rule_value;
 						my $custom_type = $custom_types->{$rule_value};
 						if($custom_type && $custom_type->{'type'}) {
@@ -1518,7 +1518,7 @@ sub validate_strict
 									last;
 								}
 							}
-							if($type eq 'string') {
+							if(($type eq 'string') || ($type eq 'Str')) {
 								if(ref($member)) {
 									if($rules->{'error_msg'}) {
 										_error($logger, $rules->{'error_msg'});
@@ -1576,7 +1576,7 @@ sub validate_strict
 					}
 				} elsif($rule_name eq 'schema') {
 					# Nested schema Run the given schema against each element of the array
-					if($rules->{'type'} eq 'arrayref') {
+					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
 						if(ref($value) eq 'ARRAY') {
 							foreach my $member(@{$value}) {
 								if(!validate_strict({ input => { $key => $member }, schema => { $key => $rule_value }, custom_types => $custom_types })) {
