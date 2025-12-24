@@ -1,0 +1,536 @@
+{
+   "runs" : [
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539260.25815,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539260.25782,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539260.42849,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539260.42828,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539260.59246,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539260.59212,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539260.75852,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539260.75814,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539260.9227,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539260.92249,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539261.08735,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539261.08709,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539261.25133,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539261.25108,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539261.41454,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539261.41434,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539261.59709,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539261.58477,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539275.19993,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539261.79283,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539261.93741,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "-e",
+         "start" : 1766539261.93731,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539262.21719,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/00-load.t",
+         "start" : 1766539262.21613,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539262.8174,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/10-compile.t",
+         "start" : 1766539262.64812,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539263.13709,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/30-basics.t",
+         "start" : 1766539263.1029,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539263.78404,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/40-more.t",
+         "start" : 1766539263.65135,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539264.50294,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/50-even-more.t",
+         "start" : 1766539264.464,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539265.18037,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/60-most.t",
+         "start" : 1766539265.02878,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539265.83142,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/70-more.t",
+         "start" : 1766539265.80533,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539266.33551,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/alternative.t",
+         "start" : 1766539266.32891,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539266.81364,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/array.t",
+         "start" : 1766539266.80903,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539267.24851,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/comment-spelling.t",
+         "start" : 1766539267.24828,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539267.55063,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/cross_validation.t",
+         "start" : 1766539267.52679,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539268.10635,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/custom_types.t",
+         "start" : 1766539268.08168,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539268.61805,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/custom_validation.t",
+         "start" : 1766539268.60829,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539269.10754,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/default.t",
+         "start" : 1766539269.1062,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539269.53824,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/eof.t",
+         "start" : 1766539269.53799,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539269.77254,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/eol.t",
+         "start" : 1766539269.7723,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539270.05228,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/get.t",
+         "start" : 1766539270.05088,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539270.55188,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/memberof.t",
+         "start" : 1766539270.52726,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539271.07793,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/nested.t",
+         "start" : 1766539271.06346,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539271.57165,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/notmemberof.t",
+         "start" : 1766539271.55037,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539272.02842,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/pod-cm.t",
+         "start" : 1766539272.02815,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539272.26532,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/pod-coverage.t",
+         "start" : 1766539272.26504,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539272.50181,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/pod-spelling.t",
+         "start" : 1766539272.50154,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539272.73598,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/pod-synopsis.t",
+         "start" : 1766539272.73576,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539272.96837,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/pod.t",
+         "start" : 1766539272.96815,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539273.2475,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/positional.t",
+         "start" : 1766539273.24555,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539273.67993,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/prereq.t",
+         "start" : 1766539273.67966,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539273.91609,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/strict.t",
+         "start" : 1766539273.91585,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539274.21382,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/transform.t",
+         "start" : 1766539274.1968,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539274.72642,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/validate.t",
+         "start" : 1766539274.7234,
+         "version" : "0.27"
+      },
+      {
+         "OS" : "linux",
+         "abstract" : "Validates a set of parameters against a schema",
+         "dir" : "/home/runner/work/Params-Validate-Strict/Params-Validate-Strict",
+         "finish" : 1766539275.15797,
+         "name" : "Params-Validate-Strict",
+         "perl" : "5.40.3",
+         "run" : "t/vars.t",
+         "start" : 1766539275.15771,
+         "version" : "0.27"
+      }
+   ],
+   "summary" : {
+      "Total" : {
+         "branch" : {
+            "covered" : 436,
+            "error" : 128,
+            "percentage" : 77.3049645390071,
+            "total" : 564,
+            "uncoverable" : 0
+         },
+         "condition" : {
+            "covered" : 148,
+            "error" : 81,
+            "percentage" : 64.6288209606987,
+            "total" : 229,
+            "uncoverable" : 0
+         },
+         "statement" : {
+            "covered" : 506,
+            "error" : 118,
+            "percentage" : 81.0897435897436,
+            "total" : 624
+         },
+         "subroutine" : {
+            "covered" : 25,
+            "percentage" : 100,
+            "total" : 25
+         },
+         "total" : {
+            "covered" : 1115,
+            "error" : 327,
+            "percentage" : 77.3231622746186,
+            "total" : 1442,
+            "uncoverable" : 0
+         }
+      },
+      "blib/lib/Params/Validate/Strict.pm" : {
+         "branch" : {
+            "covered" : 436,
+            "error" : 128,
+            "percentage" : 77.3049645390071,
+            "total" : 564,
+            "uncoverable" : 0
+         },
+         "condition" : {
+            "covered" : 148,
+            "error" : 81,
+            "percentage" : 64.6288209606987,
+            "total" : 229,
+            "uncoverable" : 0
+         },
+         "statement" : {
+            "covered" : 506,
+            "error" : 118,
+            "percentage" : 81.0897435897436,
+            "total" : 624
+         },
+         "subroutine" : {
+            "covered" : 25,
+            "percentage" : 100,
+            "total" : 25
+         },
+         "total" : {
+            "covered" : 1115,
+            "error" : 327,
+            "percentage" : 77.3231622746186,
+            "total" : 1442,
+            "uncoverable" : 0
+         }
+      }
+   }
+}
