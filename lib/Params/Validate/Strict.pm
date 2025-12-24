@@ -22,11 +22,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.27
+Version 0.28
 
 =cut
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 
 =head1 SYNOPSIS
 
@@ -1078,7 +1078,7 @@ sub validate_strict
 				if($rule_name eq 'type') {
 					my $type = lc($rule_value);
 
-					if(($type eq 'string') || ($type eq 'Str')) {
+					if(($type eq 'string') || ($type eq 'str')) {
 						if(ref($value)) {
 							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a string");
 						}
