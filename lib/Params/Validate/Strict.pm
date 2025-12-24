@@ -1780,108 +1780,105 @@ sub _validate_relationships {
 }
 
 sub _validate_mutually_exclusive {
-    my ($args, $rel, $logger, $description) = @_;
-    
-    my @params = @{$rel->{params} || []};
-    return unless @params >= 2;
-    
-    my @present = grep { exists($args->{$_}) && defined($args->{$_}) } @params;
-    
-    if (@present > 1) {
-        my $msg = $rel->{description} || 
-                  "Cannot specify both " . join(' and ', @present);
-        _error($logger, "$description: $msg");
-    }
+	my ($args, $rel, $logger, $description) = @_;
+
+	my @params = @{$rel->{params} || []};
+	return unless @params >= 2;
+
+	my @present = grep { exists($args->{$_}) && defined($args->{$_}) } @params;
+
+	if (@present > 1) {
+		my $msg = $rel->{description} ||
+		'Cannot specify both ' . join(' and ', @present);
+		_error($logger, "$description: $msg");
+	}
 }
 
 sub _validate_required_group {
-    my ($args, $rel, $logger, $description) = @_;
-    
-    my @params = @{$rel->{params} || []};
-    return unless @params >= 2;
-    
-    my @present = grep { exists($args->{$_}) && defined($args->{$_}) } @params;
-    
-    if (@present == 0) {
-        my $msg = $rel->{description} || 
-                  "Must specify at least one of: " . join(', ', @params);
-        _error($logger, "$description: $msg");
-    }
+	my ($args, $rel, $logger, $description) = @_;
+
+	my @params = @{$rel->{params} || []};
+	return unless @params >= 2;
+
+	my @present = grep { exists($args->{$_}) && defined($args->{$_}) } @params;
+
+	if (@present == 0) {
+		my $msg = $rel->{description} ||
+			'Must specify at least one of: ' . join(', ', @params);
+		_error($logger, "$description: $msg");
+	}
 }
 
 sub _validate_conditional_requirement {
-    my ($args, $rel, $logger, $description) = @_;
-    
-    my $if_param = $rel->{if} or return;
-    my $then_param = $rel->{then_required} or return;
-    
-    # If the condition parameter is present and defined
-    if (exists($args->{$if_param}) && defined($args->{$if_param})) {
-        # Check if it's truthy (for booleans and general values)
-        if ($args->{$if_param}) {
-            # Then the required parameter must also be present
-            unless (exists($args->{$then_param}) && defined($args->{$then_param})) {
-                my $msg = $rel->{description} || 
-                          "When $if_param is specified, $then_param is required";
-                _error($logger, "$description: $msg");
-            }
-        }
-    }
+	my ($args, $rel, $logger, $description) = @_;
+
+	my $if_param = $rel->{if} or return;
+	my $then_param = $rel->{then_required} or return;
+
+	# If the condition parameter is present and defined
+	if (exists($args->{$if_param}) && defined($args->{$if_param})) {
+		# Check if it's truthy (for booleans and general values)
+		if ($args->{$if_param}) {
+			# Then the required parameter must also be present
+			unless (exists($args->{$then_param}) && defined($args->{$then_param})) {
+				my $msg = $rel->{description} || "When $if_param is specified, $then_param is required";
+				_error($logger, "$description: $msg");
+			}
+		}
+	}
 }
 
 sub _validate_dependency {
-    my ($args, $rel, $logger, $description) = @_;
-    
-    my $param = $rel->{param} or return;
-    my $requires = $rel->{requires} or return;
-    
-    # If param is present, requires must also be present
-    if (exists($args->{$param}) && defined($args->{$param})) {
-        unless (exists($args->{$requires}) && defined($args->{$requires})) {
-            my $msg = $rel->{description} || 
-                      "$param requires $requires to be specified";
-            _error($logger, "$description: $msg");
-        }
-    }
+	my ($args, $rel, $logger, $description) = @_;
+
+	my $param = $rel->{param} or return;
+	my $requires = $rel->{requires} or return;
+
+	# If param is present, requires must also be present
+	if (exists($args->{$param}) && defined($args->{$param})) {
+		unless (exists($args->{$requires}) && defined($args->{$requires})) {
+			my $msg = $rel->{description} || "$param requires $requires to be specified";
+			_error($logger, "$description: $msg");
+		}
+	}
 }
 
 sub _validate_value_constraint {
-    my ($args, $rel, $logger, $description) = @_;
-    
-    my $if_param = $rel->{if} or return;
-    my $then_param = $rel->{then} or return;
-    my $operator = $rel->{operator} or return;
-    my $value = $rel->{value};
-    return unless defined $value;
-    
-    # If the condition parameter is present and truthy
-    if (exists($args->{$if_param}) && defined($args->{$if_param}) && $args->{$if_param}) {
-        # Check if the then parameter exists
-        if (exists($args->{$then_param}) && defined($args->{$then_param})) {
-            my $actual = $args->{$then_param};
-            my $valid = 0;
-            
-            if ($operator eq '==') {
-                $valid = ($actual == $value);
-            } elsif ($operator eq '!=') {
-                $valid = ($actual != $value);
-            } elsif ($operator eq '<') {
-                $valid = ($actual < $value);
-            } elsif ($operator eq '<=') {
-                $valid = ($actual <= $value);
-            } elsif ($operator eq '>') {
-                $valid = ($actual > $value);
-            } elsif ($operator eq '>=') {
-                $valid = ($actual >= $value);
-            }
-            
-            unless ($valid) {
-                my $msg = $rel->{description} || 
-                          "When $if_param is specified, $then_param must be $operator $value (got $actual)";
-                _error($logger, "$description: $msg");
-            }
-        }
-    }
+	my ($args, $rel, $logger, $description) = @_;
+
+	my $if_param = $rel->{if} or return;
+	my $then_param = $rel->{then} or return;
+	my $operator = $rel->{operator} or return;
+	my $value = $rel->{value};
+	return unless defined $value;
+
+	# If the condition parameter is present and truthy
+	if (exists($args->{$if_param}) && defined($args->{$if_param}) && $args->{$if_param}) {
+		# Check if the then parameter exists
+		if (exists($args->{$then_param}) && defined($args->{$then_param})) {
+			my $actual = $args->{$then_param};
+			my $valid = 0;
+
+			if ($operator eq '==') {
+				$valid = ($actual == $value);
+			} elsif ($operator eq '!=') {
+				$valid = ($actual != $value);
+			} elsif ($operator eq '<') {
+				$valid = ($actual < $value);
+			} elsif ($operator eq '<=') {
+				$valid = ($actual <= $value);
+			} elsif ($operator eq '>') {
+				$valid = ($actual > $value);
+			} elsif ($operator eq '>=') {
+				$valid = ($actual >= $value);
+			}
+
+			unless ($valid) {
+				my $msg = $rel->{description} || "When $if_param is specified, $then_param must be $operator $value (got $actual)";
+				_error($logger, "$description: $msg");
+			}
+		}
+	}
 }
 
 sub _validate_value_conditional {
@@ -1897,7 +1894,7 @@ sub _validate_value_conditional {
 		if ($args->{$if_param} eq $equals) {
 			# Then the required parameter must be present
 			unless (exists($args->{$then_param}) && defined($args->{$then_param})) {
-				my $msg = $rel->{description} || 
+				my $msg = $rel->{description} ||
 					"When $if_param equals '$equals', $then_param is required";
 				_error($logger, "$description: $msg");
 			}
