@@ -1775,6 +1775,8 @@ sub _validate_relationships {
 			_validate_value_constraint($validated_args, $rel, $logger, $description);
 		} elsif ($type eq 'value_conditional') {
 			_validate_value_conditional($validated_args, $rel, $logger, $description);
+		} else {
+			_error($logger, "Unknown relationship type $type");
 		}
 	}
 }
@@ -1788,8 +1790,7 @@ sub _validate_mutually_exclusive {
 	my @present = grep { exists($args->{$_}) && defined($args->{$_}) } @params;
 
 	if (@present > 1) {
-		my $msg = $rel->{description} ||
-		'Cannot specify both ' . join(' and ', @present);
+		my $msg = $rel->{description} || 'Cannot specify both ' . join(' and ', @present);
 		_error($logger, "$description: $msg");
 	}
 }
@@ -1911,11 +1912,10 @@ sub _error
 	my @call_details = caller(0);
 	if($logger) {
 		$logger->error(__PACKAGE__, ' line ', $call_details[2], ": $message");
-	} else {
-		croak(__PACKAGE__, ' line ', $call_details[2], ": $message");
-		# Be absolutely sure, sometimes croak doesn't die for me in Test::Most scripts
-		die (__PACKAGE__, ' line ', $call_details[2], ": $message");
 	}
+	croak(__PACKAGE__, ' line ', $call_details[2], ": $message");
+	# Be absolutely sure, sometimes croak doesn't die for me in Test::Most scripts
+	die (__PACKAGE__, ' line ', $call_details[2], ": $message");
 }
 
 # Helper to log warning or carp
