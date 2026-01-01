@@ -212,6 +212,10 @@ The parameter must be an object that understands the method C<can>.
 C<can> can be a simple scalar string of a method name,
 or an arrayref of a list of method names, all of which must be supported by the object.
 
+   $schema = {
+     gedcom => { type => object, can => 'get_individual' }
+   }
+
 =item * C<isa>
 
 The parameter must be an object of type C<isa>.
