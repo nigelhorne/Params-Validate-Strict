@@ -1,5 +1,8 @@
 Revision history for Params-Validate-Strict
 
+0.29
+	Document "can" a bit more
+
 0.28	Tue Dec 23 20:28:19 EST 2025
 	Added relationship validator
 	Handle undefined value in 'isa' test
