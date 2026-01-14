@@ -1,7 +1,8 @@
 Revision history for Params-Validate-Strict
 
 0.29
-	Document "can" a bit more
+	Document "can" and "optional" as a code ref a bit more
+	Added nullable as a synonym for optional.
 
 0.28	Tue Dec 23 20:28:19 EST 2025
 	Added relationship validator

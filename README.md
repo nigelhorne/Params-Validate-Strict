@@ -356,6 +356,23 @@ The schema can define the following rules for each parameter:
     If true, the parameter is not required.
     If false or omitted, the parameter is required.
 
+    It can be a reference to a code snippet that will return true or false,
+    to determine if the parameter is optional or not.
+    The code will be called with two arguments: the value of the parameter and hash ref of all parameters:
+
+        my $schema = {
+          optional_field => {
+            type => 'string',
+            optional => sub {
+              my ($value, $all_params) = @_;
+              return $all_params->{make_optional} ? 1 : 0;
+            }
+          },
+          make_optional => { type => 'boolean' }
+        };
+
+        my $result = validate_strict(schema => $schema, input => { make_optional => 1 });
+
 - `default`
 
     Populate missing optional parameters with the specified value.
@@ -387,6 +404,12 @@ The schema can define the following rules for each parameter:
           min => 18,
           error_msg => 'You must be at least 18 years old'
         }
+
+- `nullable`
+
+    Like optional,
+    though this cannot be a coderef,
+    only a flag.
 
 - `schema`
 
