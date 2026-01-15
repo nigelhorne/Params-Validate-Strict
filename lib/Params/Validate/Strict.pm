@@ -2105,7 +2105,7 @@ L<http://deps.cpantesters.org/?module=Params::Validate::Strict>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2025 Nigel Horne.
+Copyright 2025-2026 Nigel Horne.
 
 This program is released under the following licence: GPL2
 
