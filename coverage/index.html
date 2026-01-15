@@ -39,7 +39,7 @@
 		td.positive { color: green; font-weight: bold; }
 		td.negative { color: red; font-weight: bold; }
 		td.neutral { color: gray; }
-		// Show cursor points on the headers to show that they are clickable
+		/* Show cursor points on the headers to show that they are clickable */
 		th { background-color: #f2f2f2; cursor: pointer; }
 		th.sortable {
 			cursor: pointer;
@@ -84,11 +84,11 @@
 
 <tbody>
 
-<tr class="med"><td><a href="blib-lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">blib/lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/2e9e99051c562c48cc6aa6b1281a37eedaefc069/blib/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="87.2,93.3,88.9,87.2,81.4,82.3,82.9,81.7,81.5,78.4,92.7,93.1,81.8,81.7,81.5,81.0,81.3,81.1,81.7,81.5,81.1,82.1,81.7,80.2,80.2,80.1,79.9,79.9,80.4,79.8,79.9,79.9,77.1,76.8,76.6,76.9,76.9,76.8,76.0,76.5,76.1,76.3,76.0,76.0,76.1,76.0,76.5,75.9,76.1,76.0,76.3,77.7,76.4,76.6,78.0,76.3,77.8,79.2,78.9,77.0,77.2,76.6,78.3,79.2,78.2,79.6,77.5,80.8,77.3,81.3,80.0,81.6,79.8,80.6,80.0,79.4,81.9,81.0,79.5,81.2,81.8,82.2,81.5,79.4,80.9,81.2,80.3,80.6,80.6,81.6,80.2,80.9,81.3,80.6,81.1,80.9,80.6,80.9,80.9,80.3,80.2,80.2,80.0,80.6,80.7,80.1,79.7,80.5,79.6,80.2,79.5,79.5,79.2,80.1,67.0,67.1,67.0,67.0,66.9,67.0,76.6,67.2,77.3,77.3,76.8"></canvas></td><td>81.0</td><td>76.9</td><td>64.6</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">77.1%</span></td><td class="positive" title="Previous: 76.8%">&#9650; 0.3%</td></tr>
+<tr class="med"><td><a href="blib-lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">blib/lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/4241f989fde117f98a6c43645acfc14511a89387/blib/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="67.0,67.0,66.9,67.0,76.6,67.2,77.3,77.3,76.8,77.1"></canvas></td><td>80.8</td><td>76.7</td><td>65.1</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">77.0%</span></td><td class="negative" title="Previous: 77.1%">&#9660; 0.1%</td></tr>
 
 <tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">1 files</td><td colspan="3">Avg: 77%, Low: 0</td></tr>
 
-<tr class="med nosort"><td><strong>Total</strong></td><td>81.0</td><td>76.9</td><td>64.6</td><td>100.0</td><td colspan="2"><strong>77.1</strong></td></tr>
+<tr class="med nosort"><td><strong>Total</strong></td><td>80.8</td><td>76.7</td><td>65.1</td><td>100.0</td><td colspan="2"><strong>77.0</strong></td></tr>
 
 </tbody></table>
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
@@ -133,16 +133,16 @@ function linearRegression(data) {
 	}));
 }
 
-const dataPoints = [ { x: "2025-12-14T20:44:32-05:00", y: 67.0446491849752, delta: 0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/5cf969f", label: "2025-12-14T20:44:32-05:00", pointBackgroundColor: "gray", comment: "Added relationship validator" },
-{ x: "2025-12-18T13:10:25-05:00", y: 66.9957686882934, delta: -0.0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/1cab1a5", label: "2025-12-18T13:10:25-05:00", pointBackgroundColor: "gray", comment: "Handle undefined value in 'isa' test" },
+const dataPoints = [ { x: "2025-12-18T13:10:25-05:00", y: 66.9957686882934, delta: 0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/1cab1a5", label: "2025-12-18T13:10:25-05:00", pointBackgroundColor: "gray", comment: "Handle undefined value in 'isa' test" },
 { x: "2025-12-18T13:39:02-05:00", y: 67.0671378091873, delta: 0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/00a54ab", label: "2025-12-18T13:39:02-05:00", pointBackgroundColor: "green", comment: "Correct fix for ISA when no value is given" },
 { x: "2025-12-22T08:13:16-05:00", y: 67.043847241867, delta: -0.0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/ac6ad7c", label: "2025-12-22T08:13:16-05:00", pointBackgroundColor: "gray", comment: "Fixed handling of min or max set to 0" },
 { x: "2025-12-23T15:17:57-05:00", y: 66.9673837612769, delta: -0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/93ce354", label: "2025-12-23T15:17:57-05:00", pointBackgroundColor: "red", comment: "Allow type to be 'Str' or 'Bool' to be compatible with other schema definitions" },
 { x: "2025-12-23T16:02:00-05:00", y: 66.8979875086745, delta: -0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/5006415", label: "2025-12-23T16:02:00-05:00", pointBackgroundColor: "red", comment: "Fix the POD" },
 { x: "2025-12-23T19:46:34-05:00", y: 67.175572519084, delta: 0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/3d3db1d", label: "2025-12-23T19:46:34-05:00", pointBackgroundColor: "green", comment: "Fix spacing and indentation" },
 { x: "2025-12-23T20:18:41-05:00", y: 77.3231622746186, delta: 10.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/a89d94d", label: "2025-12-23T20:18:41-05:00", pointBackgroundColor: "green", comment: "Try to increase the test coverage" },
-{ x: "2025-12-31T21:35:09-05:00", y: 77.3231622746186, delta: 0.0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/37dd7d4", label: "2025-12-31T21:35:09-05:00", pointBackgroundColor: "gray", comment: "Document "can" a bit more" },
-{ x: "2025-12-31T21:35:36-05:00", y: 76.8377253814147, delta: -0.5, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/b8e41f0", label: "2025-12-31T21:35:36-05:00", pointBackgroundColor: "red", comment: "Added to changelog" } ];
+{ x: "2025-12-31T21:35:09-05:00", y: 77.3231622746186, delta: 0.0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/37dd7d4", label: "2025-12-31T21:35:09-05:00", pointBackgroundColor: "gray", comment: "Document \"can\" a bit more" },
+{ x: "2025-12-31T21:35:36-05:00", y: 76.8377253814147, delta: -0.5, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/b8e41f0", label: "2025-12-31T21:35:36-05:00", pointBackgroundColor: "red", comment: "Added to changelog" },
+{ x: "2026-01-14T11:31:34-05:00", y: 77.0934256055363, delta: 0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/2e9e990", label: "2026-01-14T11:31:34-05:00", pointBackgroundColor: "green", comment: "Added nullable" } ];
 
 const regressionPoints = linearRegression(dataPoints);
 // Try to register the zoom plugin (handles different UMD builds)
@@ -403,7 +403,7 @@ function refresh(){
 <footer>
 	<p><span style="margin-left:8px;color:#666;font-size:0.9em;">Use mouse wheel or pinch to zoom; drag to pan</span></p>
 	<p>Project: <a href="https://github.com/nigelhorne/Params-Validate-Strict">Params-Validate-Strict</a></p>
-	<p><em>Last updated: 2026-01-14 16:35:05 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/2e9e99051c562c48cc6aa6b1281a37eedaefc069">commit <code>2e9e990</code></a></em></p>
+	<p><em>Last updated: 2026-01-15 13:05:48 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/4241f989fde117f98a6c43645acfc14511a89387">commit <code>4241f98</code></a></em></p>
 </footer>
 </body>
 </html>
