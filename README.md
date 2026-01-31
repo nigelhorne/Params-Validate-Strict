@@ -4,7 +4,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 # VERSION
 
-Version 0.28
+Version 0.29
 
 # SYNOPSIS
 
@@ -1009,6 +1009,6 @@ You can also look for information at:
 
 # LICENSE AND COPYRIGHT
 
-Copyright 2025 Nigel Horne.
+Copyright 2025-2026 Nigel Horne.
 
 This program is released under the following licence: GPL2
