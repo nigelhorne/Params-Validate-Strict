@@ -73,6 +73,27 @@
 			border-radius: 4px;
 			font-size: 0.85em;
 		}
+		.notice {
+			padding: 8px 12px;
+			margin: 10px 0;
+			border-radius: 4px;
+			font-size: 0.95em;
+		}
+		.notice strong {
+			font-weight: bold;
+		}
+		.notice.perl-version-cliff {
+			background-color: #fff3cd;   /* soft amber */
+			border: 1px solid #ffeeba;
+			color: #856404;
+		}
+		.notice.perl-version-cliff a {
+			color: #533f03;
+			text-decoration: underline;
+		}
+		.notice.perl-version-cliff a:hover {
+			text-decoration: none;
+		}
 	</style>
 </head>
 <body>
@@ -80,7 +101,7 @@
 	<a href="https://github.com/nigelhorne/Params-Validate-Strict">
 		<img src="https://img.shields.io/github/stars/nigelhorne/Params-Validate-Strict?style=social" alt="GitHub stars">
 	</a>
-	<img src="https://img.shields.io/badge/coverage-77%25-yellow" alt="Coverage badge">
+	<img src="https://img.shields.io/badge/coverage-76%25-yellow" alt="Coverage badge">
 </div>
 <h1>Params::Validate::Strict</h1><h2>Coverage Report</h2>
 <table data-sort-col="0" data-sort-order="asc">
@@ -99,9 +120,9 @@
 
 <tbody>
 
-<tr class="med"><td><a href="blib-lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">blib/lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/68152d796a0a1885bfc2a0e7b7c2596e383d378a/blib/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="76.6,67.2,77.3,77.3,76.8,77.1,77.0,76.8,76.9,76.7"></canvas></td><td>81.0</td><td>77.2</td><td>65.5</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">77.4%</span></td><td class="positive" title="Previous: 76.7%">&#9650; 0.6%</td></tr>
-<tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">1 files</td><td colspan="3">Avg: 77%, Low: 0</td></tr>
-<tr class="med nosort"><td><strong>Total</strong></td><td>81.0</td><td>77.2</td><td>65.5</td><td>100.0</td><td colspan="2"><strong>77.4</strong></td></tr>
+<tr class="med"><td><a href="blib-lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">blib/lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/ba0b6b056e5b92e24bb9e69faf80d6b472806631/blib/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="67.2,77.3,77.3,76.8,77.1,77.0,76.8,77.4,76.9,76.7"></canvas></td><td>80.8</td><td>76.7</td><td>64.6</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">77.0%</span></td><td class="positive" title="Previous: 76.7%">&#9650; 0.2%</td></tr>
+<tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">1 files</td><td colspan="3">Avg: 76%, Low: 0</td></tr>
+<tr class="med nosort"><td><strong>Total</strong></td><td>80.8</td><td>76.7</td><td>64.6</td><td>100.0</td><td colspan="2"><strong>77.0</strong></td></tr>
 </tbody></table>
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
 	<div>
@@ -489,34 +510,36 @@ document.addEventListener("DOMContentLoaded", () => {
 </thead>
 <tbody>
 
-<tr class="cpan-fail"><td>2026-01-27T21:08:00Z</td><td>solaris</td><td>5.12.5</td><td>Chris Williams (BINGOS)</td><td></td>
-				<td><a href="https://www.cpantesters.org/cpan/report/44e4f2a4-fbc4-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-01-28T23:58:00Z</td><td>solaris</td><td>5.12.3</td><td>Chris Williams (BINGOS)</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/4676a5ea-fca5-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-01-31T14:43:00Z</td><td>linux</td><td>5.12.3</td><td>Slaven Rezi&#x107;</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/29a6e528-feb3-11f0-b888-30156e8775ea" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-01-28T12:47:00Z</td><td>solaris</td><td>5.12.4</td><td>Chris Williams (BINGOS)</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/7c45cfec-fc47-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
 <tr class="cpan-fail"><td>2026-01-29T17:23:00Z</td><td>solaris</td><td>5.12.1</td><td>Chris Williams (BINGOS)</td><td></td>
 				<td><a href="https://www.cpantesters.org/cpan/report/33e860c0-fd37-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2025-12-27T06:53:00Z</td><td>linux</td><td>5.10.1</td><td>David Cantrell (DCANTRELL)</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/cd7a8800-e2f0-11f0-ae5a-e614955b6ce0" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-01-18T17:24:00Z</td><td>openbsd</td><td>5.12.5</td><td>Chris Williams (BINGOS)</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/8580ee28-f492-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-01-27T21:08:00Z</td><td>solaris</td><td>5.12.5</td><td>Chris Williams (BINGOS)</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/44e4f2a4-fbc4-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
 <tr class="cpan-fail"><td>2025-12-25T07:59:00Z</td><td>freebsd</td><td>5.8.9</td><td>Slaven Rezi&#x107;</td><td></td>
 				<td><a href="https://www.cpantesters.org/cpan/report/ab34ed6a-e167-11f0-969f-044c6e8775ea" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-01-29T08:39:00Z</td><td>solaris</td><td>5.12.2</td><td>Chris Williams (BINGOS)</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/0bcc7a84-fcee-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2025-12-27T06:18:00Z</td><td>linux</td><td>5.12.5</td><td>David Cantrell (DCANTRELL)</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/db13b374-e2eb-11f0-8350-9a5a945b6ce0" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2025-12-25T07:59:00Z</td><td>freebsd</td><td>5.10.1</td><td>Slaven Rezi&#x107;</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/9e268dd6-e167-11f0-969f-044c6e8775ea" target="_blank">View</a></td></tr>
 <tr class="cpan-fail"><td>2025-12-24T11:56:00Z</td><td>linux</td><td>5.12.2</td><td>Andreas J. K&ouml;nig (ANDK)</td><td></td>
 				<td><a href="https://www.cpantesters.org/cpan/report/864168b0-e0bf-11f0-9a0a-c0756923dcc6" target="_blank">View</a></td></tr>
 <tr class="cpan-fail"><td>2026-01-30T02:09:00Z</td><td>solaris</td><td>5.12.0</td><td>Chris Williams (BINGOS)</td><td></td>
 				<td><a href="https://www.cpantesters.org/cpan/report/c1353bb2-fd80-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
-<tr class="cpan-fail"><td>2025-12-25T07:59:00Z</td><td>freebsd</td><td>5.10.1</td><td>Slaven Rezi&#x107;</td><td></td>
-				<td><a href="https://www.cpantesters.org/cpan/report/9e268dd6-e167-11f0-969f-044c6e8775ea" target="_blank">View</a></td></tr>
-<tr class="cpan-fail"><td>2026-01-28T23:58:00Z</td><td>solaris</td><td>5.12.3</td><td>Chris Williams (BINGOS)</td><td></td>
-				<td><a href="https://www.cpantesters.org/cpan/report/4676a5ea-fca5-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
-<tr class="cpan-fail"><td>2026-01-28T12:47:00Z</td><td>solaris</td><td>5.12.4</td><td>Chris Williams (BINGOS)</td><td></td>
-				<td><a href="https://www.cpantesters.org/cpan/report/7c45cfec-fc47-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
-<tr class="cpan-fail"><td>2026-01-18T17:24:00Z</td><td>openbsd</td><td>5.12.5</td><td>Chris Williams (BINGOS)</td><td></td>
-				<td><a href="https://www.cpantesters.org/cpan/report/8580ee28-f492-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
-<tr class="cpan-fail"><td>2025-12-27T06:18:00Z</td><td>linux</td><td>5.12.5</td><td>David Cantrell (DCANTRELL)</td><td></td>
-				<td><a href="https://www.cpantesters.org/cpan/report/db13b374-e2eb-11f0-8350-9a5a945b6ce0" target="_blank">View</a></td></tr>
-<tr class="cpan-fail"><td>2025-12-27T06:53:00Z</td><td>linux</td><td>5.10.1</td><td>David Cantrell (DCANTRELL)</td><td></td>
-				<td><a href="https://www.cpantesters.org/cpan/report/cd7a8800-e2f0-11f0-ae5a-e614955b6ce0" target="_blank">View</a></td></tr>
-<tr class="cpan-fail"><td>2026-01-29T08:39:00Z</td><td>solaris</td><td>5.12.2</td><td>Chris Williams (BINGOS)</td><td></td>
-				<td><a href="https://www.cpantesters.org/cpan/report/0bcc7a84-fcee-11f0-a3bc-a055f9c4ba34" target="_blank">View</a></td></tr>
 </tbody></table>
 <footer>
 	<p>Project: <a href="https://github.com/nigelhorne/Params-Validate-Strict">Params-Validate-Strict</a></p>
-	<p><em>Last updated: 2026-01-31 14:35:58 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/68152d796a0a1885bfc2a0e7b7c2596e383d378a">commit <code>68152d7</code></a></em></p>
+	<p><em>Last updated: 2026-01-31 17:00:01 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/ba0b6b056e5b92e24bb9e69faf80d6b472806631">commit <code>ba0b6b0</code></a></em></p>
 </footer>
 
 </body>
