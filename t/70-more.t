@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::Most;
+
 use lib 't/lib';
 use TestLogger;
 
