@@ -1528,7 +1528,7 @@ sub validate_strict
 							_error($logger, "$rule_description: 'can' rule for Parameter '$key must be either a scalar or an arrayref");
 						}
 					} else {
-						_error($logger, "$rule_description: Parameter '$key' has meaningless can value $rule_value");
+						_error($logger, "$rule_description: Parameter '$key' has meaningless can value '$rule_value' for parameter type $rules->{type}");
 					}
 				} elsif($rule_name eq 'element_type') {
 					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
