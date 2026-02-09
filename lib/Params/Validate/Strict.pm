@@ -1500,7 +1500,7 @@ sub validate_strict
 					}
 					if($rules->{'type'} eq 'object') {
 						if(!$value->isa($rule_value)) {
-							_error($logger, "$rule_description: Parameter '$key' must be a '$rule_value' object");
+							_error($logger, "$rule_description: Parameter '$key' must be a '$rule_value' object got a " . (ref($value) ? ref($value) : $value) . ' object instead');
 							$invalid_args{$key} = 1;
 						}
 					} else {
