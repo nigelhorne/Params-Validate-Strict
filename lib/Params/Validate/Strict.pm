@@ -126,7 +126,9 @@ Overrides the default message when something doesn't validate.
 =item * C<unknown_parameter_handler>
 
 This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
-It must be one of C<die> (the default), C<warn>, or C<ignore>.
+It must be one of C<die>, C<warn>, or C<ignore>.
+
+It defaults to C<die> unless C<carp_on_warn> is given, in which case it defaults to C<warn>.
 
 =item * C<logger>
 

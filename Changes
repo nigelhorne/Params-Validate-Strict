@@ -1,5 +1,8 @@
 Revision history for Params-Validate-Strict
 
+0.30
+	Added carp_on_warn support
+
 0.29	Sat Jan 31 16:29:42 EST 2026
 	Document "can" and "optional" as a code ref a bit more
 	Added nullable as a synonym for optional

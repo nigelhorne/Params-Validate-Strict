@@ -94,7 +94,9 @@ It takes optional arguments:
 - `unknown_parameter_handler`
 
     This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
-    It must be one of `die` (the default), `warn`, or `ignore`.
+    It must be one of `die`, `warn`, or `ignore`.
+
+    It defaults to `die` unless `carp_on_warn` is given, in which case it defaults to `warn`.
 
 - `logger`
 
