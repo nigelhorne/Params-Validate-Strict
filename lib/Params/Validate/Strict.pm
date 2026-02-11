@@ -930,9 +930,16 @@ sub validate_strict
 
 	my $schema = $params->{'schema'} || $params->{'members'};
 	my $args = $params->{'args'} || $params->{'input'};
-	my $unknown_parameter_handler = $params->{'unknown_parameter_handler'} || 'die';
 	my $logger = $params->{'logger'};
 	my $custom_types = $params->{'custom_types'};
+	my $unknown_parameter_handler = $params->{'unknown_parameter_handler'};
+	if(!defined($unknown_parameter_handler)) {
+		if($params->{'carp_on_warn'}) {
+			$unknown_parameter_handler = 'warn';
+		} else {
+			$unknown_parameter_handler = 'die';
+		}
+	}
 
 	# Check if schema and args are references to hashes
 	if(ref($schema) ne 'HASH') {
