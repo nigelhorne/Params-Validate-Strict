@@ -943,6 +943,8 @@ sub validate_strict
 		}
 	}
 
+	return $args if(!defined($schema));	# No schema, allow all arguments
+
 	# Check if schema and args are references to hashes
 	if(ref($schema) ne 'HASH') {
 		_error($logger, 'validate_strict: schema must be a hash reference');
@@ -1111,6 +1113,11 @@ sub validate_strict
 
 				if((ref($rule_value) eq 'CODE') && ($rule_name ne 'validate') && ($rule_name ne 'callback') && ($rule_name ne 'validator')) {
 					$rule_value = &{$rule_value}($value, $args);
+				}
+
+				# Better OOP, the routine has been given an object rather than a scalar
+				if(Scalar::Util::blessed($rule_value) && $rule_value->can('as_string')) {
+					$rule_value = $rule_value->as_string();
 				}
 
 				if($rule_name eq 'type') {
