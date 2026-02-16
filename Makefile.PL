@@ -46,7 +46,6 @@ WriteMakefile(
 		'Test::Most' => 0,
 		'Test::Needs' => 0,
 		'Test::Warnings' => 0,
-		'WWW::RT::CPAN' => 0,
 	}, dist => $dist,
 	clean => { FILES => 'Params-Validate-Strict-*' },	# Clean up distribution files
 	META_MERGE => {	# https://perldoc.perl.org/CPAN::Meta::Spec
