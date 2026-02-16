@@ -65,6 +65,10 @@
 			background-color: #eee;
 			color: #666;
 		}
+		tr.cpan-na td {
+			background-color: #f77f50;
+			color: #666;
+		}
 		.new-failure {
 			background: #c00;
 			color: #fff;
@@ -94,6 +98,35 @@
 		.notice.perl-version-cliff a:hover {
 			text-decoration: none;
 		}
+		.notice.locale-cliff {
+			border-left: 4px solid #d97706;
+			background: #fffbeb;
+			padding: 0.5em 1em;
+		}
+		.notice.rt-issues {
+			background: #fff6e5;
+			border-left: 4px solid #d9822b;
+		}
+		table.root-causes {
+			border-collapse: collapse;
+			width: 100%;
+			margin-bottom: 1.5em;
+		}
+		table.root-causes th,
+		table.root-causes td {
+			border: 1px solid #ccc;
+			padding: 8px;
+			vertical-align: top;
+		}
+		table.root-causes tr.high {
+			background-color: #dfd;
+		}
+		table.root-causes tr.med {
+			background-color: #ffd;
+		}
+		table.root-causes tr.low {
+			background-color: #fdd;
+		}
 	</style>
 </head>
 <body>
@@ -101,7 +134,7 @@
 	<a href="https://github.com/nigelhorne/Params-Validate-Strict">
 		<img src="https://img.shields.io/github/stars/nigelhorne/Params-Validate-Strict?style=social" alt="GitHub stars">
 	</a>
-	<img src="https://img.shields.io/badge/coverage-77%25-yellow" alt="Coverage badge">
+	<img src="https://img.shields.io/badge/coverage-76%25-yellow" alt="Coverage badge">
 </div>
 <h1>Params::Validate::Strict</h1><h2>Coverage Report</h2>
 <table data-sort-col="0" data-sort-order="asc">
@@ -120,9 +153,9 @@
 
 <tbody>
 
-<tr class="med"><td><a href="blib-lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">blib/lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/d1a9b8ff56793b1c90eb63f78ecb8820f370a3b0/blib/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="76.8,77.1,77.0,76.8,77.4,76.9,77.1,77.0,76.7,76.8"></canvas></td><td>80.6</td><td>76.9</td><td>65.5</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">77.1%</span></td><td class="positive" title="Previous: 76.8%">&#9650; 0.3%</td></tr>
-<tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">1 files</td><td colspan="3">Avg: 77%, Low: 0</td></tr>
-<tr class="med nosort"><td><strong>Total</strong></td><td>80.6</td><td>76.9</td><td>65.5</td><td>100.0</td><td colspan="2"><strong>77.1</strong></td></tr>
+<tr class="med"><td><a href="blib-lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">blib/lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/b7302daced9986555d751b9953846f2105b0e6ec/blib/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="77.1,77.0,76.8,77.4,76.9,77.1,77.0,76.7,76.8,77.1"></canvas></td><td>80.7</td><td>76.7</td><td>64.3</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">76.9%</span></td><td class="negative" title="Previous: 77.1%">&#9660; 0.2%</td></tr>
+<tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">1 files</td><td colspan="3">Avg: 76%, Low: 0</td></tr>
+<tr class="med nosort"><td><strong>Total</strong></td><td>80.7</td><td>76.7</td><td>64.3</td><td>100.0</td><td colspan="2"><strong>76.9</strong></td></tr>
 </tbody></table>
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
 	<div>
@@ -169,8 +202,7 @@ function linearRegression(data) {
 	}));
 }
 
-const dataPoints = [ { x: "2025-12-23T20:18:41-05:00", y: 77.3231622746186, delta: 0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/a89d94d", label: "2025-12-23T20:18:41-05:00", pointBackgroundColor: "gray", comment: "Try to increase the test coverage" },
-{ x: "2025-12-31T21:35:09-05:00", y: 77.3231622746186, delta: 0.0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/37dd7d4", label: "2025-12-31T21:35:09-05:00", pointBackgroundColor: "gray", comment: "Document \"can\" a bit more" },
+const dataPoints = [ { x: "2025-12-31T21:35:09-05:00", y: 77.3231622746186, delta: 0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/37dd7d4", label: "2025-12-31T21:35:09-05:00", pointBackgroundColor: "gray", comment: "Document \"can\" a bit more" },
 { x: "2025-12-31T21:35:36-05:00", y: 76.8377253814147, delta: -0.5, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/b8e41f0", label: "2025-12-31T21:35:36-05:00", pointBackgroundColor: "red", comment: "Added to changelog" },
 { x: "2026-01-14T11:31:34-05:00", y: 77.0934256055363, delta: 0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/2e9e990", label: "2026-01-14T11:31:34-05:00", pointBackgroundColor: "green", comment: "Added nullable" },
 { x: "2026-01-15T08:01:29-05:00", y: 77.0242214532872, delta: -0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/4241f98", label: "2026-01-15T08:01:29-05:00", pointBackgroundColor: "red", comment: "New script needs IPC::Run3" },
@@ -178,7 +210,8 @@ const dataPoints = [ { x: "2025-12-23T20:18:41-05:00", y: 77.3231622746186, delt
 { x: "2026-01-31T08:30:02-05:00", y: 76.8166089965398, delta: -0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/40a58ec", label: "2026-01-31T08:30:02-05:00", pointBackgroundColor: "red", comment: "Added more support for older perls" },
 { x: "2026-01-31T11:46:19-05:00", y: 76.9550173010381, delta: 0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/ba0b6b0", label: "2026-01-31T11:46:19-05:00", pointBackgroundColor: "green", comment: "Defined the styles" },
 { x: "2026-01-31T16:32:12-05:00", y: 77.0934256055363, delta: 0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/8ac9fb9", label: "2026-01-31T16:32:12-05:00", pointBackgroundColor: "green", comment: "Release 0.29" },
-{ x: "2026-02-01T09:28:23-05:00", y: 76.8166089965398, delta: -0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/fab6d3c", label: "2026-02-01T09:28:23-05:00", pointBackgroundColor: "red", comment: "Added confidence scoring" } ];
+{ x: "2026-02-01T09:28:23-05:00", y: 76.8166089965398, delta: -0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/fab6d3c", label: "2026-02-01T09:28:23-05:00", pointBackgroundColor: "red", comment: "Added confidence scoring" },
+{ x: "2026-02-08T10:52:56-05:00", y: 77.0934256055363, delta: 0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/d1a9b8f", label: "2026-02-08T10:52:56-05:00", pointBackgroundColor: "green", comment: "More helpful error message" } ];
 
 const regressionPoints = linearRegression(dataPoints);
 // Try to register the zoom plugin (handles different UMD builds)
@@ -430,36 +463,70 @@ function refresh(){
 </script>
 
 <p><center>Use mouse wheel or pinch to zoom; drag to pan</center></p>
+<p>No issues active on <a href="https://rt.cpan.org/Public/Dist/Display.html?Name=Params-Validate-Strict">RT</a></p>
 <h2>CPAN Testers Failures for Params-Validate-Strict 0.29</h2>
 <p class="notice perl-version-cliff">
 Fails on Perl &leq; 5.8.9; passes on Perl &geq; 5.10.1. 
 <a href="https://perldoc.perl.org/perl5100delta" target="_blank">See perldelta for this release</a>
-<br><span class="coverage-badge badge-bad" title="0 fails, 0 passes">None confidence</span></p>
+ <span class="coverage-badge badge-bad" title="0 fails, 0 passes">None confidence</span></p>
+<h3>Failure Summary</h3>
+<ul>
+<li><b>Perl 5.8.x</b>: 1 failures</li>
+<p><em>100% of failures occur on Perl 5.8.x</em></p>
+<li><b>freebsd</b>: 1 failures</li>
+<li><b>5.8 / freebsd</b>: 1 failures</li>
+</ul>
+<h3>Likely Root Causes</h3>
+<table class="root-causes">
+<thead>
+<tr>
+	<th>Cause</th>
+	<th>Confidence</th>
+	<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+
+<tr class="high">
+	<td halign="center"><strong>Perl version regression (Perl &lt; 5.10.1) (<a href="https://perldoc.perl.org/perldelta5.10.1" target="_blank">perldelta</a>)</strong></td>
+	<td halign="center">Strong (100%)</td>
+	<td halign="center"><ul><li>All failures on Perl &leq; 5.8.9</li><li>All passes on Perl &geq; 5.10.1</li></ul></td>
+</tr>
+
+</tbody>
+</table>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 	const toggleFail = document.getElementById('toggleFail');
 	const toggleUnknown = document.getElementById('toggleUnknown');
+	const toggleNA = document.getElementById('toggleNA');
 	const toggleNew = document.getElementById('toggleNew');
 
 	function update() {
-		if (toggleFail) {
-			document.querySelectorAll('tr.cpan-fail')
-				.forEach(r => r.style.display = toggleFail.checked ? '' : 'none');
-		}
-		if (toggleUnknown) {
-			document.querySelectorAll('tr.cpan-unknown')
-				.forEach(r => r.style.display = toggleUnknown.checked ? '' : 'none');
-		}
-		if (toggleNew) {
-			document.querySelectorAll('tr').forEach(row => {
-				const cell = row.querySelector('.new-failure');
-				if (!cell) return;
-				row.style.display = toggleNew.checked ? '' : 'none';
-			});
-		}
+		document.querySelectorAll('tr').forEach(row => {
+			// Skip header rows
+			if (row.querySelector('th')) return;
+
+			// Determine row status
+			const isFail = row.classList.contains('cpan-fail');
+			const isUnknown = row.classList.contains('cpan-unknown');
+			const isNA = row.classList.contains('cpan-na');
+			const isNew = !!row.querySelector('.new-failure');
+
+			// Decide whether to show the row
+			let show = true;
+
+			if (toggleFail && !toggleFail.checked && isFail) show = false;
+			if (toggleUnknown && !toggleUnknown.checked && isUnknown) show = false;
+			if (toggleNA && !toggleNA.checked && isNA) show = false;
+			if (toggleNew && toggleNew.checked && !isNew) show = false;
+
+			row.style.display = show ? '' : 'none';
+		});
 	}
 
-	[toggleFail, toggleUnknown, toggleNew].forEach(cb => {
+	[toggleFail, toggleUnknown, toggleNA, toggleNew].forEach(cb => {
 		if (cb) cb.addEventListener('change', update);
 	});
 
@@ -482,6 +549,11 @@ document.addEventListener("DOMContentLoaded", () => {
 		UNKNOWN
 	</label>
 	<label style="margin-left: 1em;">
+		<input type="checkbox" id="toggleNA">
+		NA
+	</label>
+	<label style="margin-left: 1em;">
+	<label style="margin-left: 1em;">
 		<input type="checkbox" id="toggleNew">
 		NEW only
 	</label>
@@ -502,7 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	<th class="sortable" onclick="sortTable(this, 3)">
 		<span class="label">Reporter</span> <span class="arrow">&#x25B2;</span>
 	</th>
-	<th class="sortable" onclick="sortTable(this, 4)">
+	<th class="sortable" onclick="sortTable(this, 4)" title="Marks failures that did not occur in the previous release. The same OS, Perl version, architecture, and platform were passing before.">
 		<span class="label">New</span> <span class="arrow">&#x25B2;</span>
 	</th>
 	<th>Report</th>
@@ -515,7 +587,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </tbody></table>
 <footer>
 	<p>Project: <a href="https://github.com/nigelhorne/Params-Validate-Strict">Params-Validate-Strict</a></p>
-	<p><em>Last updated: 2026-02-08 15:56:42 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/d1a9b8ff56793b1c90eb63f78ecb8820f370a3b0">commit <code>d1a9b8f</code></a></em></p>
+	<p><em>Last updated: 2026-02-16 20:17:59 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/b7302daced9986555d751b9953846f2105b0e6ec">commit <code>b7302da</code></a></em></p>
 </footer>
 
 </body>
