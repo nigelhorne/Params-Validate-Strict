@@ -1014,7 +1014,15 @@ sub validate_strict
 	my %invalid_args;
 	foreach my $key (keys %{$schema}) {
 		my $rules = $schema->{$key};
-		my $value = ($are_positional_args == 1) ? @{$args}[$rules->{'position'}] : $args->{$key};
+		my $value;
+		if($are_positional_args == 1) {
+			if(ref($args) ne 'ARRAY') {
+				_error($logger, "::validate_strict: position $rules->{position} given for '$key', but args isn't an array");
+			}
+			$value = @{$args}[$rules->{'position'}];
+		} else {
+			$value = $args->{$key};
+		}
 
 		if(!defined($rules)) {	# Allow anything
 			$validated_args{$key} = $value;
