@@ -5,6 +5,7 @@ Revision history for Params-Validate-Strict
 	In support of better OOP, a value can now be an object, if that understands 'as_string()'
 	If no schema is given allow all arguments
 	Better error message when a positional argument makes no sense
+	Pass $args and $schema to a callback
 
 0.29	Sat Jan 31 16:29:42 EST 2026
 	Document "can" and "optional" as a code ref a bit more
