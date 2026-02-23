@@ -4,7 +4,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 # VERSION
 
-Version 0.29
+Version 0.30
 
 # SYNOPSIS
 
@@ -350,7 +350,30 @@ The schema can define the following rules for each parameter:
 - `callback`
 
     A code reference to a subroutine that performs custom validation logic.
-    The subroutine should accept the parameter value as an argument and return true if the value is valid, false otherwise.
+    The subroutine should accept the parameter value, the argument list and the schema as arguments and return true if the value is valid, false otherwise.
+
+    Use this to test more complex examples:
+
+        my $schema = {
+          even_number => {
+            type => 'integer',
+            callback => sub { $_[0] % 2 == 0 }
+        };
+
+        # Specify the arguments for a routine which has a second, optional argument, which, if given, must be less than or equal to the first
+        my $schema = {
+          first => {
+            type => 'integer'
+          }, second => {
+            type => 'integer',
+            optional => 1,
+            callback => sub {
+              my($value, $args) = @_;
+              # The 'defined' is needed in case 'second' is evaluated before 'first'
+              return (defined($args->{first}) && $value <= $args->{first}) ? 1 : 0
+            }
+          }
+        };
 
 - `optional`
 

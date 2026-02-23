@@ -22,11 +22,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.29
+Version 0.30
 
 =cut
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 =head1 SYNOPSIS
 
@@ -986,7 +986,7 @@ sub validate_strict
 	if(exists($params->{'args'}) && (!defined($args))) {
 		$args = {};
 	} elsif((ref($args) ne 'HASH') && (ref($args) ne 'ARRAY')) {
-		_error($logger, "$schema_description: args must be a hash or array reference");
+		_error($logger, $error_msg || "$schema_description: args must be a hash or array reference");
 	}
 
 	if(ref($args) eq 'HASH') {
@@ -2098,7 +2098,7 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
 =over 4
 
-=item * Test coverage report: L<https://nigelhorne.github.io/Params-Validate-Strict/coverage/>
+=item * L<Test Dashboard|https://nigelhorne.github.io/Params-Validate-Strict/coverage/>
 
 =item * L<Data::Processor>
 

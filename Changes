@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.30
+0.30	Sun Feb 22 21:03:42 EST 2026
 	Added carp_on_warn support
 	In support of better OOP, a value can now be an object, if that understands 'as_string()'
 	If no schema is given allow all arguments
