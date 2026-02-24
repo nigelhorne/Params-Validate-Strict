@@ -1214,7 +1214,7 @@ sub validate_strict
 							next;	# Skip if bool is undefined
 						}
 						if(defined(my $b = $Readonly::Values::Boolean::booleans{$value})) {
-							$value = int($b);	# Coerce to integer
+							$value = $b;
 						} else {
 							if($rules->{'error_msg'}) {
 								_error($logger, $rules->{'error_msg'});
