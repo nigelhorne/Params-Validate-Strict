@@ -10,6 +10,7 @@ use Exporter qw(import);	# Required for @EXPORT_OK
 use Encode qw(decode_utf8);
 use List::Util 1.33 qw(any);	# Required for memberof validation
 use Params::Get 0.13;
+use Readonly::Values::Boolean;
 use Scalar::Util;
 use Unicode::GCString;
 
@@ -1212,19 +1213,15 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if bool is undefined
 						}
-						if(($value eq 'true') || ($value eq 'on') || ($value eq 'yes')) {
-							$value = 1;
-						} elsif(($value eq 'false') || ($value eq 'off') || ($value eq 'no')) {
-							$value = 0;
-						}
-						if(($value ne '1') && ($value ne '0')) {	# Do string compare
+						if(defined(my $b = $Readonly::Values::Boolean::booleans{$value})) {
+							$value = int($b);	# Coerce to integer
+						} else {
 							if($rules->{'error_msg'}) {
 								_error($logger, $rules->{'error_msg'});
 							} else {
 								_error($logger, "$rule_description: Parameter '$key' ($value) must be a boolean");
 							}
 						}
-						$value = int($value);	# Coerce to integer
 					} elsif($type eq 'coderef') {
 						if(!defined($value)) {
 							next;	# Skip if code is undefined
@@ -1690,6 +1687,7 @@ sub validate_strict
 						_error($logger, "$rule_description: Parameter '$key': 'validate' only supports coderef, not " . ref($rule_value) // $rule_value);
 					}
 				} elsif ($rule_name eq 'callback') {
+					# Custom validation code
 					unless (defined &$rule_value) {
 						_error($logger, "$rule_description: callback for '$key' must be a code reference");
 					}

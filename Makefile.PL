@@ -28,6 +28,7 @@ WriteMakefile(
 		'ExtUtils::MakeMaker' => 6.64,	# Minimum version for TEST_REQUIRES
 		'List::Util' => 1.33,	# Minimum version for any()
 		'Params::Get' => 0.13,
+		'Readonly::Values::Boolean' => 0,
 		'Scalar::Util' => 0,
 		'Unicode::GCString' => 0,
 		'strict' => 0,

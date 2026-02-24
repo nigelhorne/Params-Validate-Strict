@@ -8,6 +8,7 @@ requires 'Exporter';
 requires 'ExtUtils::MakeMaker', '6.64';
 requires 'List::Util', '1.33';
 requires 'Params::Get', '0.13';
+requires 'Readonly::Values::Boolean';
 requires 'Scalar::Util';
 requires 'Unicode::GCString';
 requires 'strict';
