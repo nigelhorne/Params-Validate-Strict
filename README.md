@@ -318,7 +318,7 @@ The schema can define the following rules for each parameter:
     This flag has no effect on numeric types (`integer`, `number`, `float`) as numbers
     do not have case.
 
-- `min`
+- `min`/`minimum`
 
     The minimum length (for strings in characters not bytes), value (for numbers) or number of keys (for hashrefs).
 
@@ -557,7 +557,7 @@ The schema can define the following rules for each parameter:
           matches => qr/^\d{10}$/
         }
 
-    The `transform` function is applied to the value before any validation checks (`min`, `max`,
+    The `transform` function is applied to the value before any validation checks (`min`/`minimum`, `max`,
     `matches`, `callback`, etc.), ensuring that validation rules are checked against the cleaned data.
 
     Transformations work with all parameter types including nested structures:
@@ -992,7 +992,7 @@ Nigel Horne, `<njh at nigelhorne.com>`
 
 # SEE ALSO
 
-- Test coverage report: [https://nigelhorne.github.io/Params-Validate-Strict/coverage/](https://nigelhorne.github.io/Params-Validate-Strict/coverage/)
+- [Test Dashboard](https://nigelhorne.github.io/Params-Validate-Strict/coverage/)
 - [Data::Processor](https://metacpan.org/pod/Data%3A%3AProcessor)
 - [Params::Get](https://metacpan.org/pod/Params%3A%3AGet)
 - [Params::Smart](https://metacpan.org/pod/Params%3A%3ASmart)

@@ -355,7 +355,7 @@ the validated output.
 This flag has no effect on numeric types (C<integer>, C<number>, C<float>) as numbers
 do not have case.
 
-=item * C<min>
+=item * C<min>/C<minimum>
 
 The minimum length (for strings in characters not bytes), value (for numbers) or number of keys (for hashrefs).
 
@@ -594,7 +594,7 @@ sanitizing user input, and converting between data formats.
     matches => qr/^\d{10}$/
   }
 
-The C<transform> function is applied to the value before any validation checks (C<min>, C<max>,
+The C<transform> function is applied to the value before any validation checks (C<min>/C<minimum>, C<max>,
 C<matches>, C<callback>, etc.), ensuring that validation rules are checked against the cleaned data.
 
 Transformations work with all parameter types including nested structures:
@@ -1125,14 +1125,14 @@ sub validate_strict
 
 		# Validate based on rules
 		if(ref($rules) eq 'HASH') {
-			if(defined(my $min = $rules->{'min'}) && defined(my $max = $rules->{'max'})) {
+			if(defined(my $min = $rules->{'min'} // $rules->{'minimum'}) && defined(my $max = $rules->{'max'})) {
 				if($min > $max) {
 					_error($logger, "validate_strict($key): min must be <= max ($min > $max)");
 				}
 			}
 
 			if($rules->{'memberof'}) {
-				if(defined(my $min = $rules->{'min'})) {
+				if(defined(my $min = $rules->{'min'} // $rules->{'minimum'})) {
 					_error($logger, "validate_strict($key): min ($min) makes no sense with memberof");
 				}
 				if(defined(my $max = $rules->{'max'})) {
@@ -1258,13 +1258,13 @@ sub validate_strict
 					} else {
 						_error($logger, "$rule_description: Unknown type '$type'");
 					}
-				} elsif($rule_name eq 'min') {
+				} elsif(($rule_name eq 'min') || ($rule_name eq 'minimum')) {
 					if(!defined($rules->{'type'})) {
 						_error($logger, "$rule_description: Don't know type of '$key' to determine its minimum value $rule_value");
 					}
 					my $type = lc($rules->{'type'});
-					if(exists($custom_types->{$type}->{'min'})) {
-						$rule_value = $custom_types->{$type}->{'min'};
+					if(exists($custom_types->{$type}->{'min'}) || exists($custom_types->{$type}->{minimum})) {
+						$rule_value = $custom_types->{$type}->{'min'} // $custom_types->{$type}->{minumum};
 						$type = $custom_types->{$type}->{'type'};
 					}
 					if(($type eq 'string') || ($type eq 'str')) {
