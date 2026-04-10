@@ -380,6 +380,10 @@ this integer value defines which position the argument will be in.
 If this is set for all arguments,
 C<validate_strict> will return a reference to an array, rather than a reference to a hash.
 
+=item * C<regex>
+
+Synonym of matches
+
 =item * C<description>
 
 The description of the rule
@@ -489,8 +493,7 @@ You can validate nested hashrefs and arrayrefs using the C<schema> property:
                     min => 1 # At least one hobby
                 }
             }
-        },
-        metadata => {
+        }, metadata => {
             type => 'hashref',
             schema => {
                 created => { type => 'string' },
@@ -1421,7 +1424,7 @@ sub validate_strict
 					} else {
 						_error($logger, "$rule_description: Parameter '$key' of type '$type' has meaningless max value $rule_value");
 					}
-				} elsif($rule_name eq 'matches') {
+				} elsif(($rule_name eq 'matches') || ($rule_name eq 'regex')) {
 					if(!defined($value)) {
 						next;	# Skip if string is undefined
 					}
@@ -2025,6 +2028,7 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
         max: ℕ₁;
         optional: 𝔹;
         matches: REGEX;
+        regex: REGEX;
         nomatch: REGEX;
         memberof: seq VALUE;
         notmemberof: seq VALUE;

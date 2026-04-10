@@ -3,6 +3,7 @@ Revision history for Params-Validate-Strict
 0.31
 	Use Readonly::Values::Boolean
 	Allow minimum as a synonym of min
+	Added regex as a synonym of matches
 
 0.30	Sun Feb 22 21:03:42 EST 2026
 	Added carp_on_warn support

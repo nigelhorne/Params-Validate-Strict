@@ -343,6 +343,10 @@ The schema can define the following rules for each parameter:
     If this is set for all arguments,
     `validate_strict` will return a reference to an array, rather than a reference to a hash.
 
+- `regex`
+
+    Synonym of matches
+
 - `description`
 
     The description of the rule
@@ -452,8 +456,7 @@ The schema can define the following rules for each parameter:
                         min => 1 # At least one hobby
                     }
                 }
-            },
-            metadata => {
+            }, metadata => {
                 type => 'hashref',
                 schema => {
                     created => { type => 'string' },
@@ -923,6 +926,7 @@ Nigel Horne, `<njh at nigelhorne.com>`
         max: ℕ₁;
         optional: 𝔹;
         matches: REGEX;
+        regex: REGEX;
         nomatch: REGEX;
         memberof: seq VALUE;
         notmemberof: seq VALUE;
