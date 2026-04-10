@@ -1663,7 +1663,7 @@ sub validate_strict
 							_error($logger, "$rule_description: nested schema: Parameter '$value' must be an arrayref");
 						}
 					} elsif($rules->{'type'} eq 'hashref') {
-						if(ref($value) eq 'HASH') {
+						if(ref($rule_value) eq 'HASH') {
 							# Apply nested defaults before validation
 							my $nested_with_defaults = _apply_nested_defaults($value, $rule_value);
 							if(scalar keys(%{$value})) {
