@@ -1,7 +1,6 @@
 package Params::Validate::Strict;
 
 # FIXME: {max} doesn't play ball with non-ascii strings
-# TODO: Add support for union types in schema definitions, e.g. type => ['string', 'arrayref'] to allow a parameter to accept more than one type.
 
 use strict;
 use warnings;
@@ -209,6 +208,22 @@ A type can be an arrayref when a parameter could have different types (e.g. a st
       { type => 'integer', 'min' => 1 },	# UID that isn't root
     ]
   };
+
+As a shorthand, C<type> itself may be an arrayref of type name strings (a I<union type>)
+when all other constraints are shared between the alternatives:
+
+  $schema = {
+    data => { type => ['string', 'arrayref'] },
+    id   => { type => ['string', 'integer'], optional => 1 },
+  };
+
+This is equivalent to the full array-of-rules form but more concise.
+Every other key in the rule hash (C<optional>, C<min>, C<max>, C<matches>, etc.)
+is inherited by each candidate type and validated independently against it.
+Type names are tried left-to-right; the first match wins and its coercion
+(e.g. numeric types) is propagated back to the caller.
+If the value fails all candidate types, validation croaks with a message
+listing the union members.
 
 =item * C<can>
 
@@ -1127,6 +1142,21 @@ sub validate_strict
 			_error($logger, "$rule_description: Required parameter '$key' is missing");
 		}
 
+		# Normalise union type shorthand: { type => ['string', 'integer'], ... }
+		# into the array-of-rules form that the ARRAY handler below already supports.
+		# Each candidate type inherits all other constraints from the parent rule
+		# (min, max, matches, optional, etc.) so they are each fully validated.
+		# Must run after optional/transform handling above but before rule dispatch below.
+		if(ref($rules) eq 'HASH' && ref($rules->{'type'}) eq 'ARRAY') {
+			my %base = %{$rules};
+			my @type_list = @{delete $base{'type'}};
+			if(!@type_list) {
+				_error($logger, "$rule_description: Parameter '$key': union type list must not be empty");
+			}
+			# Expand into one full rule hash per candidate type
+			$rules = [ map { { %base, type => $_ } } @type_list ];
+		}
+
 		# Validate based on rules
 		if(ref($rules) eq 'HASH') {
 			if(defined(my $min = $rules->{'min'} // $rules->{'minimum'}) && defined(my $max = $rules->{'max'})) {
@@ -1717,7 +1747,9 @@ sub validate_strict
 			}
 		} elsif(ref($rules) eq 'ARRAY') {
 			if(scalar(@{$rules})) {
-				# An argument can be one of several different type
+				# An argument can be one of several different types.
+				# This path handles both explicit array-of-rules schemas and the
+				# normalised form of union type shorthand (type => ['a', 'b', ...]).
 				my $rc = 0;
 				my @types;
 				foreach my $rule(@{$rules}) {
@@ -1730,10 +1762,14 @@ sub validate_strict
 						next;
 					}
 					push @types, $rule->{'type'};
+					my $result;
 					eval {
-						validate_strict({ input => { $key => $value }, schema => { $key => $rule }, logger => undef, custom_types => $custom_types });
+						$result = validate_strict({ input => { $key => $value }, schema => { $key => $rule }, logger => undef, custom_types => $custom_types });
 					};
 					if(!$@) {
+						# Capture coercion performed by the successful sub-validation
+						# (e.g. integer/number coercion) so the outer scope sees it.
+						$value = $result->{$key} if(defined($result));
 						$rc = 1;
 						last;
 					}
@@ -2019,12 +2055,14 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
     [PARAM_NAME, VALUE, TYPE_NAME, CONSTRAINT_VALUE]
 
-    ValidationRule ::= SimpleType | ComplexRule
+    ValidationRule ::= SimpleType | ComplexRule | UnionType
 
     SimpleType ::= string | integer | number | arrayref | hashref | coderef | object
 
+    UnionType ::= seq SimpleType    -- at least two members; written as type => ['a', 'b']
+
     ComplexRule == [
-        type: TYPE_NAME;
+        type: SimpleType | UnionType;
         min: ℕ₁;
         max: ℕ₁;
         optional: 𝔹;
@@ -2157,7 +2195,9 @@ L<http://deps.cpantesters.org/?module=Params::Validate::Strict>
 
 Copyright 2025-2026 Nigel Horne.
 
-This program is released under the following licence: GPL2
+Usage is subject to GPL2 licence terms.
+If you use it,
+please let me know.
 
 =cut
 

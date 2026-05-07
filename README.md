@@ -172,6 +172,22 @@ The schema can define the following rules for each parameter:
           ]
         };
 
+    As a shorthand, `type` itself may be an arrayref of type name strings (a _union type_)
+    when all other constraints are shared between the alternatives:
+
+        $schema = {
+          data => { type => ['string', 'arrayref'] },
+          id   => { type => ['string', 'integer'], optional => 1 },
+        };
+
+    This is equivalent to the full array-of-rules form but more concise.
+    Every other key in the rule hash (`optional`, `min`, `max`, `matches`, etc.)
+    is inherited by each candidate type and validated independently against it.
+    Type names are tried left-to-right; the first match wins and its coercion
+    (e.g. numeric types) is propagated back to the caller.
+    If the value fails all candidate types, validation croaks with a message
+    listing the union members.
+
 - `can`
 
     The parameter must be an object that understands the method `can`.
@@ -916,12 +932,14 @@ Nigel Horne, `<njh at nigelhorne.com>`
 
     [PARAM_NAME, VALUE, TYPE_NAME, CONSTRAINT_VALUE]
 
-    ValidationRule ::= SimpleType | ComplexRule
+    ValidationRule ::= SimpleType | ComplexRule | UnionType
 
     SimpleType ::= string | integer | number | arrayref | hashref | coderef | object
 
+    UnionType ::= seq SimpleType    -- at least two members; written as type => ['a', 'b']
+
     ComplexRule == [
-        type: TYPE_NAME;
+        type: SimpleType | UnionType;
         min: ℕ₁;
         max: ℕ₁;
         optional: 𝔹;
@@ -1040,4 +1058,6 @@ You can also look for information at:
 
 Copyright 2025-2026 Nigel Horne.
 
-This program is released under the following licence: GPL2
+Usage is subject to GPL2 licence terms.
+If you use it,
+please let me know.

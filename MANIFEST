@@ -37,6 +37,7 @@ t/pod.t
 t/positional.t
 t/prereq.t
 t/strict.t
+t/t_union_type.t
 t/transform.t
 t/validate.t
 t/vars.t
