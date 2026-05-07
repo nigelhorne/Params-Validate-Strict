@@ -23,6 +23,7 @@ t/custom_validation.t
 t/default.t
 t/eof.t
 t/eol.t
+t/function.t
 t/get.t
 t/lib/Test/Logger.pm
 t/lib/TestLogger.pm
