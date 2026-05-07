@@ -40,5 +40,6 @@ t/prereq.t
 t/strict.t
 t/t_union_type.t
 t/transform.t
+t/unit.t
 t/validate.t
 t/vars.t
