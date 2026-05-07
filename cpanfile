@@ -17,6 +17,7 @@ requires 'warnings';
 on 'configure' => sub {
 	requires 'ExtUtils::MakeMaker', '6.64';
 };
+
 on 'test' => sub {
 	requires 'File::Glob';
 	requires 'File::Slurp';
@@ -28,10 +29,12 @@ on 'test' => sub {
 	requires 'Readonly';
 	requires 'Test::Compile';
 	requires 'Test::DescribeMe';
+	requires 'Test::Mockingbird';
 	requires 'Test::Most';
 	requires 'Test::Needs';
 	requires 'Test::Warnings';
 };
+
 on 'develop' => sub {
 	requires 'Devel::Cover';
 	requires 'Perl::Critic';
