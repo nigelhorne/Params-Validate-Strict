@@ -1,6 +1,7 @@
 package Params::Validate::Strict;
 
 # FIXME: {max} doesn't play ball with non-ascii strings
+# TODO: Add support for union types in schema definitions, e.g. type => ['string', 'arrayref'] to allow a parameter to accept more than one type.
 
 use strict;
 use warnings;
