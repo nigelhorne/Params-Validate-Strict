@@ -1058,6 +1058,6 @@ You can also look for information at:
 
 Copyright 2025-2026 Nigel Horne.
 
-Usage is subject to GPL2 licence terms.
+This program is released under the following licence: GPL2
 If you use it,
 please let me know.

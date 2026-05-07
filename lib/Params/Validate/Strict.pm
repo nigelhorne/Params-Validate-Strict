@@ -1661,6 +1661,8 @@ sub validate_strict
 					}
 				} elsif($rule_name eq 'optional') {
 					# Already handled at the beginning of the loop
+				} elsif($rule_name eq 'nullable') {
+					# Already handled at the beginning of the loop (same as optional)
 				} elsif($rule_name eq 'default') {
 					# Handled earlier
 				} elsif($rule_name eq 'error_msg') {
@@ -1697,7 +1699,7 @@ sub validate_strict
 						if(ref($rule_value) eq 'HASH') {
 							# Apply nested defaults before validation
 							my $nested_with_defaults = _apply_nested_defaults($value, $rule_value);
-							if(scalar keys(%{$value})) {
+							if(scalar keys(%{$nested_with_defaults})) {
 								if(my $new_args = validate_strict({ input => $nested_with_defaults, schema => $rule_value, custom_types => $custom_types })) {
 									$value = $new_args;
 								} else {
@@ -2195,7 +2197,7 @@ L<http://deps.cpantesters.org/?module=Params::Validate::Strict>
 
 Copyright 2025-2026 Nigel Horne.
 
-Usage is subject to GPL2 licence terms.
+This program is released under the following licence: GPL2
 If you use it,
 please let me know.
 
