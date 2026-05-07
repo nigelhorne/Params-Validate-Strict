@@ -10,7 +10,8 @@ use warnings;
 use Test::Most;
 use Encode     qw(encode);		# for byte-string tests
 use Scalar::Util qw(blessed looks_like_number);
-use List::Util 1.33 qw(any);
+use List::Util 1.33;	# version check; called as List::Util::any() below to avoid
+			# clashing with Test::Deep's any() which Test::Most loads
 
 # ── Load the module under test ────────────────────────────────────────────────
 BEGIN { use_ok('Params::Validate::Strict', 'validate_strict') }
@@ -155,7 +156,7 @@ subtest 'Scalar::Util::blessed: can check dispatches correctly' => sub {
 subtest 'List::Util::any: memberof uses any() under the hood' => sub {
 	my @roles = qw(admin viewer editor);
 	# Directly verify List::Util::any agrees with the memberof outcome
-	ok(any { $_ eq 'viewer' } @roles, 'any() finds viewer in list');
+	ok(List::Util::any(sub { $_ eq 'viewer' }, @roles), 'List::Util::any() finds viewer in list');
 	my $r = validate_strict(
 		schema => { role => { type => 'string', memberof => \@roles } },
 		input  => { role => 'viewer' },
@@ -165,7 +166,7 @@ subtest 'List::Util::any: memberof uses any() under the hood' => sub {
 
 subtest 'List::Util::any: numeric memberof uses == not eq' => sub {
 	my @levels = (1, 2, 3, 4, 5);
-	ok(any { $_ == 3 } @levels, 'any() with == finds 3 in list');
+	ok(List::Util::any(sub { $_ == 3 }, @levels), 'List::Util::any() with == finds 3 in list');
 	my $r = validate_strict(
 		schema => { lvl => { type => 'integer', memberof => \@levels } },
 		input  => { lvl => '3' },
@@ -175,7 +176,7 @@ subtest 'List::Util::any: numeric memberof uses == not eq' => sub {
 
 subtest 'List::Util::any: notmemberof uses any() for blacklist check' => sub {
 	my @banned = qw(admin root system);
-	ok(any { $_ eq 'admin' } @banned, 'any() finds admin in blacklist');
+	ok(List::Util::any(sub { $_ eq 'admin' }, @banned), 'List::Util::any() finds admin in blacklist');
 	throws_ok {
 		validate_strict(
 			schema => { user => { type => 'string', notmemberof => \@banned } },
