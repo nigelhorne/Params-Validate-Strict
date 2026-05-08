@@ -134,7 +134,7 @@
 	<a href="https://github.com/nigelhorne/Params-Validate-Strict">
 		<img src="https://img.shields.io/github/stars/nigelhorne/Params-Validate-Strict?style=social" alt="GitHub stars">
 	</a>
-	<img src="https://img.shields.io/badge/coverage-82%25-yellow" alt="Coverage badge">
+	<img src="https://img.shields.io/badge/coverage-83%25-yellow" alt="Coverage badge">
 </div>
 <h1>Params::Validate::Strict</h1><h2>Coverage Report</h2>
 <table data-sort-col="0" data-sort-order="asc">
@@ -153,9 +153,9 @@
 
 <tbody>
 
-<tr class="med"><td><a href="blib-lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">blib/lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/d441f5ae144c0dcb7d51d9d1966bf51f97e6e024/blib/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="76.6,77.0,76.5,76.0,76.8,76.2,76.8,81.9,76.5,80.9"></canvas></td><td>84.4</td><td>83.3</td><td>70.3</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">82.0%</span></td><td class="positive" title="Previous: 80.9%">&#9650; 1.1%</td></tr>
-<tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">1 files</td><td colspan="3">Avg: 82%, Low: 0</td></tr>
-<tr class="high nosort"><td><strong>Total</strong></td><td>84.4</td><td>83.3</td><td>70.3</td><td>100.0</td><td colspan="2"><strong>82.0</strong></td></tr>
+<tr class="med"><td><a href="lib-Params-Validate-Strict-pm.html" title="View coverage line by line" target="_blank">lib/Params/Validate/Strict.pm</a> <a href="https://github.com/nigelhorne/Params-Validate-Strict/blob/a2c8fb413bf3c91ad40de56e2cacd85a58de9e51/lib/Params/Validate/Strict.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="77.0,76.5,76.0,76.8,76.2,76.8,81.9,76.5,80.9,82.0"></canvas></td><td>85.2</td><td>84.6</td><td>74.3</td><td>100.0</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">83.4%</span></td><td class="positive" title="Previous (sparkline): 80.9%">&#9650; 1.1%</td></tr>
+<tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">1 files</td><td colspan="3">Avg: 83%, Low: 0</td></tr>
+<tr class="high nosort"><td><strong>Total</strong></td><td>85.2</td><td>84.6</td><td>74.3</td><td>100.0</td><td colspan="2"><strong>83.4</strong></td></tr>
 </tbody></table>
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
 	<div>
@@ -172,12 +172,11 @@
 		<button id="resetZoomBtn" type="button">Reset Zoom</button>
 	</div>
 </div>
-
 <canvas id="coverageTrend" width="600" height="300"></canvas>
 <!-- Zoom controls for the trend chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Add chartjs-plugin-zoom (required for wheel/pinch/drag zoom & pan) -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.1.1/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom\@2.1.1/dist/chartjs-plugin-zoom.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 <script>
 function linearRegression(data) {
@@ -190,7 +189,7 @@ function linearRegression(data) {
 	const sumXY = xs.reduce((acc, val, i) => acc + val * ys[i], 0);
 	const sumX2 = xs.reduce((acc, val) => acc + val * val, 0);
 
-	if (n < 2 || (n * sumX2 - sumX * sumX) === 0) {
+	if(n < 2 || (n * sumX2 - sumX * sumX) === 0) {
 		return [];
 	}
 	const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
@@ -202,24 +201,24 @@ function linearRegression(data) {
 	}));
 }
 
-const dataPoints = [ { x: "2026-02-20T14:47:55-05:00", y: 76.4625850340136, delta: 0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/4d0ac71", label: "2026-02-20T14:47:55-05:00", pointBackgroundColor: "gray", comment: "Better error message when a positional argument makes no sense" },
-{ x: "2026-02-20T16:07:21-05:00", y: 76.3265306122449, delta: -0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/d543804", label: "2026-02-20T16:07:21-05:00", pointBackgroundColor: "red", comment: "Pass $args and $schema to a callback" },
-{ x: "2026-02-22T21:07:48-05:00", y: 76.6463000678887, delta: 0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/faebc34", label: "2026-02-22T21:07:48-05:00", pointBackgroundColor: "green", comment: "Release 0.30" },
-{ x: "2026-02-24T08:26:28-05:00", y: 77.0446735395189, delta: 0.4, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/08cb50e", label: "2026-02-24T08:26:28-05:00", pointBackgroundColor: "green", comment: "With Readonly::Values::Boolean there is no need to cooerce to an integer" },
-{ x: "2026-03-27T10:05:45-04:00", y: 76.530612244898, delta: -0.5, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/974a0b9", label: "2026-03-27T10:05:45-04:00", pointBackgroundColor: "red", comment: "Allow minimum as a synonym of min" },
-{ x: "2026-04-10T11:04:31-04:00", y: 76.0353021045485, delta: -0.5, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/61f9921", label: "2026-04-10T11:04:31-04:00", pointBackgroundColor: "red", comment: "Added regex as a synonym of matches" },
-{ x: "2026-04-21T11:23:54-04:00", y: 76.1710794297352, delta: 0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/e00aba0", label: "2026-04-21T11:23:54-04:00", pointBackgroundColor: "green", comment: "Test unicode" },
-{ x: "2026-05-07T08:07:19-04:00", y: 76.510522742702, delta: 0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/1ed759e", label: "2026-05-07T08:07:19-04:00", pointBackgroundColor: "green", comment: "Added TODO" },
-{ x: "2026-05-07T13:54:46-04:00", y: 80.9109176155392, delta: 4.4, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/7304d85", label: "2026-05-07T13:54:46-04:00", pointBackgroundColor: "green", comment: "Updated cpanfile" },
-{ x: "2026-05-07T19:09:37-04:00", y: 81.9156061620897, delta: 1.0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/1d4779e", label: "2026-05-07T19:09:37-04:00", pointBackgroundColor: "green", comment: "Added black box unit level testing" } ];
 
+const dataPoints = [ { x: "2026-02-20T16:07:21-05:00", y: 76.3265306122449, delta: 0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/d5438043bbeeeb5b1d62bbb1675e95dd08c4fead", label: "2026-02-20T16:07:21-05:00", pointBackgroundColor: "gray", comment: "Pass $args and $schema to a callback" },
+{ x: "2026-02-22T21:07:48-05:00", y: 76.6463000678887, delta: 0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/faebc34a018ccab40090cde2c8cdcc99afcc840e", label: "2026-02-22T21:07:48-05:00", pointBackgroundColor: "green", comment: "Release 0.30" },
+{ x: "2026-02-24T08:26:28-05:00", y: 77.0446735395189, delta: 0.4, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/08cb50e3aee7e386da11e6cdff0d7334b232cdf2", label: "2026-02-24T08:26:28-05:00", pointBackgroundColor: "green", comment: "With Readonly::Values::Boolean there is no need to cooerce to an integer" },
+{ x: "2026-03-27T10:05:45-04:00", y: 76.530612244898, delta: -0.5, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/974a0b99d71748af124e3a86f1a250d040bcac8d", label: "2026-03-27T10:05:45-04:00", pointBackgroundColor: "red", comment: "Allow minimum as a synonym of min" },
+{ x: "2026-04-10T11:04:31-04:00", y: 76.0353021045485, delta: -0.5, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/61f99213ae96e3bbc709a38f833ea7cbb390e439", label: "2026-04-10T11:04:31-04:00", pointBackgroundColor: "red", comment: "Added regex as a synonym of matches" },
+{ x: "2026-04-21T11:23:54-04:00", y: 76.1710794297352, delta: 0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/e00aba0e2d2e06107e319cb5f8ec5d1b6ef3f142", label: "2026-04-21T11:23:54-04:00", pointBackgroundColor: "green", comment: "Test unicode" },
+{ x: "2026-05-07T08:07:19-04:00", y: 76.510522742702, delta: 0.3, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/1ed759e36d199bc86899ce16808f98143a4c34f6", label: "2026-05-07T08:07:19-04:00", pointBackgroundColor: "green", comment: "Added TODO" },
+{ x: "2026-05-07T13:54:46-04:00", y: 80.9109176155392, delta: 4.4, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/7304d85d51a969820c6d64e4efe1e76f0cd104ee", label: "2026-05-07T13:54:46-04:00", pointBackgroundColor: "green", comment: "Updated cpanfile" },
+{ x: "2026-05-07T19:09:37-04:00", y: 81.9156061620897, delta: 1.0, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/1d4779e159f333d4dd67b5071ed79c475c9269d2", label: "2026-05-07T19:09:37-04:00", pointBackgroundColor: "green", comment: "Added black box unit level testing" },
+{ x: "2026-05-07T19:36:52-04:00", y: 82.0066889632107, delta: 0.1, url: "https://github.com/nigelhorne/Params-Validate-Strict/commit/d441f5ae144c0dcb7d51d9d1966bf51f97e6e024", label: "2026-05-07T19:36:52-04:00", pointBackgroundColor: "green", comment: "Fix prototyping error" } ];
 const regressionPoints = linearRegression(dataPoints);
 // Try to register the zoom plugin (handles different UMD builds)
 (function registerZoomPlugin(){
 	try {
 		const candidates = ['chartjsPluginZoom','ChartZoom','zoomPlugin','chartjs_plugin_zoom','ChartjsPluginZoom','chartjsPluginZoom'];
-		for (const name of candidates) {
-			if (window[name]) {
+		for(const name of candidates) {
+			if(window[name]) {
 				try { Chart.register(window[name]); console.log('Registered zoom plugin:', name); return; } catch(e) { console.warn('zoom register failed for', name, e); }
 			}
 		}
@@ -304,7 +303,7 @@ const chart = new Chart(ctx, {
 			}
 		}, onClick: (e) => {
 			const points = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
-			if (points.length) {
+			if(points.length) {
 				const url = chart.data.datasets[0].data[points[0].index].url;
 				window.open(url, '_blank');
 			}
@@ -321,10 +320,10 @@ document.getElementById('toggleTrend').addEventListener('change', function(e) {
 
 // Reset Zoom button handler (calls plugin API if available)
 const resetBtn = document.getElementById('resetZoomBtn');
-if (resetBtn) {
+if(resetBtn) {
 	resetBtn.addEventListener('click', function() {
 		try {
-			if (chart && typeof chart.resetZoom === 'function') {
+			if(chart && typeof chart.resetZoom === 'function') {
 				chart.resetZoom();
 			} else {
 				console.warn('resetZoom not available; zoom plugin may not be registered.');
@@ -337,7 +336,7 @@ if (resetBtn) {
 
 function sortTable(th, colIndex) {
 	const table = th.closest("table");
-	if (!table || !table.tBodies.length) return;
+	if(!table || !table.tBodies.length) return;
 
 	const tbody = table.tBodies[0];
 	const rows = Array.from(tbody.rows);
@@ -355,7 +354,7 @@ function sortTable(th, colIndex) {
 		let x = a.cells[colIndex]?.innerText.trim() || "";
 		let y = b.cells[colIndex]?.innerText.trim() || "";
 
-		if (isNumeric) {
+		if(isNumeric) {
 			x = Date.parse(x) || 0;
 			y = Date.parse(y) || 0;
 		} else {
@@ -363,8 +362,8 @@ function sortTable(th, colIndex) {
 			y = y.toLowerCase();
 		}
 
-		if (x < y) return asc ? -1 : 1;
-		if (x > y) return asc ? 1 : -1;
+		if(x < y) return asc ? -1 : 1;
+		if(x > y) return asc ? 1 : -1;
 		return 0;
 	});
 
@@ -373,11 +372,11 @@ function sortTable(th, colIndex) {
 
 	// Update arrows
 	const headers = table.tHead.rows[0].cells;
-	for (let i = 0; i < headers.length; i++) {
+	for(let i = 0; i < headers.length; i++) {
 		const arrow = headers[i].querySelector(".arrow");
-		if (!arrow) continue;
+		if(!arrow) continue;
 
-		if (i === colIndex) {
+		if(i === colIndex) {
 			arrow.textContent = asc ? "▲" : "▼";
 			arrow.classList.add("active");
 		} else {
@@ -395,14 +394,14 @@ function sortTable(th, colIndex) {
 // The table has been set up sorted in ascending order on the filename; reflect that in the GUI
 document.addEventListener("DOMContentLoaded", () => {
 	const table = document.querySelector("table");
-	if (!table) return;
+	if(!table) return;
 
 	const headers = table.tHead.rows[0].cells;
-	for (let i = 0; i < headers.length; i++) {
+	for(let i = 0; i < headers.length; i++) {
 		const arrow = headers[i].querySelector(".arrow");
-		if (!arrow) continue;
+		if(!arrow) continue;
 
-		if (i === 0) {
+		if(i === 0) {
 			arrow.textContent = "▲";
 			arrow.classList.add("active");
 		} else {
@@ -415,7 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
 	document.querySelectorAll("canvas.sparkline").forEach(canvas => {
 		const raw = canvas.getAttribute("data-points");
-		if (!raw) return;
+		if(!raw) return;
 		const points = raw.split(",").map(v => parseFloat(v));
 
 		new Chart(canvas.getContext("2d"), {
@@ -469,7 +468,7 @@ function refresh(){
 Fails on Perl &leq; 5.8.9; passes on Perl &geq; 5.10.0. 
 <a href="https://perldoc.perl.org/perl5100delta" target="_blank">See perldelta for this release</a>
  <span class="coverage-badge badge-bad" title="0 fails, 7 passes">Weak confidence</span></p>
-<h3>Failure Summary</h3>
+<h3>Failure Summary (all reports)</h3>
 <ul>
 <li><b>Perl 5.8.x</b>: 1 failures</li>
 <p><em>100% of failures occur on Perl 5.8.x</em></p>
@@ -488,7 +487,7 @@ Fails on Perl &leq; 5.8.9; passes on Perl &geq; 5.10.0.
 <tbody>
 
 <tr class="high">
-	<td halign="center"><strong>Perl version regression (Perl &lt; 5.10.0) (<a href="https://perldoc.perl.org/perldelta5.10.0" target="_blank">perldelta</a>)</strong></td>
+	<td halign="center"><strong>Perl version regression (Perl &lt; 5.10.0) (<a href="https://perldoc.perl.org/perl5100delta" target="_blank">perldelta</a>)</strong></td>
 	<td halign="center">Strong (100%)</td>
 	<td halign="center"><ul><li>All failures on Perl &leq; 5.8.9</li><li>All passes on Perl &geq; 5.10.0</li></ul></td>
 </tr>
@@ -506,7 +505,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	function update() {
 		document.querySelectorAll('tr').forEach(row => {
 			// Skip header rows
-			if (row.querySelector('th')) return;
+			if(row.querySelector('th')) return;
 
 			// Determine row status
 			const isFail = row.classList.contains('cpan-fail');
@@ -517,24 +516,24 @@ document.addEventListener("DOMContentLoaded", function () {
 			// Decide whether to show the row
 			let show = true;
 
-			if (toggleFail && !toggleFail.checked && isFail) show = false;
-			if (toggleUnknown && !toggleUnknown.checked && isUnknown) show = false;
-			if (toggleNA && !toggleNA.checked && isNA) show = false;
-			if (toggleNew && toggleNew.checked && !isNew) show = false;
+			if(toggleFail && !toggleFail.checked && isFail) show = false;
+			if(toggleUnknown && !toggleUnknown.checked && isUnknown) show = false;
+			if(toggleNA && !toggleNA.checked && isNA) show = false;
+			if(toggleNew && toggleNew.checked && !isNew) show = false;
 
 			row.style.display = show ? '' : 'none';
 		});
 	}
 
 	[toggleFail, toggleUnknown, toggleNA, toggleNew].forEach(cb => {
-		if (cb) cb.addEventListener('change', update);
+		if(cb) cb.addEventListener('change', update);
 	});
 
 	update();
 });
 document.addEventListener("DOMContentLoaded", () => {
 	const th = document.querySelector("table.sortable-table th");
-	if (th) sortTable(th, 0);
+	if(th) sortTable(th, 0);
 });
 </script>
 
@@ -552,7 +551,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		<input type="checkbox" id="toggleNA">
 		NA
 	</label>
-	<label style="margin-left: 1em;">
 	<label style="margin-left: 1em;">
 		<input type="checkbox" id="toggleNew">
 		NEW only
@@ -582,12 +580,41 @@ document.addEventListener("DOMContentLoaded", () => {
 </thead>
 <tbody>
 
-<tr class="cpan-fail"><td>2026-02-26T06:48:00Z</td><td>freebsd</td><td>5.8.9</td><td>Slaven Rezi&#x107;</td><td></td>
-				<td><a href="https://www.cpantesters.org/cpan/report/1b21a4f8-12df-11f1-98e8-80f56d8775ea" target="_blank">View</a></td></tr>
+<p><em>1 report(s) on Perl &leq; 5.8.9 omitted — expected failures, see version cliff notice above.</em></p>
 </tbody></table>
+<h2>Mutation Report</h2>
+<h3>Mutation Summary</h3>
+<ul>
+<li><b>Score</b>: 100%</li>
+<li><b>Total</b>: 0</li>
+<li><b>Killed</b>: 
+0
+</li>
+<li><b>Survived</b>: 
+0
+</li>
+</ul>
+<h3>Mutation Files</h3>
+
+<table border='1' cellpadding='5'>
+
+<tr><th>File</th><th>Total</th><th>Killed</th><th>Survivors</th><th>Score%</th><th>Complexity</th><th title="TER1=Statement, TER2=Branch, TER3=LCSAJ Path">TER1 / TER2 / TER3</th></tr>
+
+</table>
+
+<h2>Structural Coverage (Approximate)</h2>
+<div class='summary'>
+Statement Coverage: 85.21% (559 / 656)<br>
+Branch Coverage: 84.59% (494 / 584)<br>
+<em>Approximate LCSAJ derived from branch and statement coverage.</em>
+</div>
+<h2>Executive Summary</h2>
+<div class='summary'>
+Tests execute 85.21% of the code, but detect only 100% of injected faults.
+</div>
 <footer>
 	<p>Project: <a href="https://github.com/nigelhorne/Params-Validate-Strict">Params-Validate-Strict</a></p>
-	<p><em>Last updated: 2026-05-07 23:41:11 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/d441f5ae144c0dcb7d51d9d1966bf51f97e6e024">commit <code>d441f5a</code></a></em></p>
+	<p><em>Last updated: 2026-05-08 11:38:20 - <a href="https://github.com/nigelhorne/Params-Validate-Strict/commit/a2c8fb413bf3c91ad40de56e2cacd85a58de9e51">commit <code>a2c8fb4</code></a></em></p>
 </footer>
 
 </body>
