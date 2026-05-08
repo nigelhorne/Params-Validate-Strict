@@ -1196,7 +1196,7 @@ sub validate_strict
 						unless((ref($value) eq '') || (defined($value) && length($value))) {	# Allow undef for optional strings
 							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a string");
 						}
-					} elsif($type eq 'integer') {
+					} elsif(($type eq 'integer') || ($type eq 'int')) {
 						if(!defined($value)) {
 							next;	# Skip if number is undefined
 						}
@@ -1208,7 +1208,7 @@ sub validate_strict
 							}
 						}
 						$value = int($value); # Coerce to integer
-					} elsif(($type eq 'number') || ($type eq 'float')) {
+					} elsif(($type eq 'number') || ($type eq 'float') || ($type eq 'num') || ($type eq 'double')) {
 						if(!defined($value)) {
 							next;	# Skip if number is undefined
 						}
