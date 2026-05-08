@@ -1127,6 +1127,7 @@ sub validate_strict
 				if(exists($rules->{'default'})) {
 					# Populate missing optional parameters with the specified output values
 					$validated_args{$key} = $rules->{'default'};
+					next;	# default wins; do not fall through to the schema branch
 				}
 
 				if($rules->{'schema'}) {
@@ -1177,7 +1178,12 @@ sub validate_strict
 			foreach my $rule_name (keys %$rules) {
 				my $rule_value = $rules->{$rule_name};
 
-				if((ref($rule_value) eq 'CODE') && ($rule_name ne 'validate') && ($rule_name ne 'callback') && ($rule_name ne 'validator')) {
+				if((ref($rule_value) eq 'CODE')
+					&& ($rule_name ne 'validate')
+					&& ($rule_name ne 'callback')
+					&& ($rule_name ne 'validator')
+					&& ($rule_name ne 'transform')	# already applied before this loop
+					&& ($rule_name ne 'optional')) {	# already applied before this loop
 					$rule_value = &{$rule_value}($value, $args);
 				}
 
@@ -1688,7 +1694,22 @@ sub validate_strict
 					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
 						if(ref($value) eq 'ARRAY') {
 							foreach my $member(@{$value}) {
-								if(!validate_strict({ input => { $key => $member }, schema => { $key => $rule_value }, custom_types => $custom_types })) {
+								# Distinguish two schema forms:
+								# (a) Rule hash   — has a top-level 'type' key, e.g. { type=>'string', matches=>qr/.../ }
+								#     → validate each element against that rule directly.
+								# (b) Field-schema hash — keys are field names whose values are rule hashes,
+								#     e.g. { name=>{type=>'string'}, age=>{type=>'integer'} }
+								#     → validate each hashref element against the field schema directly.
+								my $is_field_schema = (ref($rule_value) eq 'HASH') && !exists($rule_value->{'type'});
+								my %inner = (custom_types => $custom_types);
+								if($is_field_schema) {
+									$inner{input}  = $member;
+									$inner{schema} = $rule_value;
+								} else {
+									$inner{input}  = { $key => $member };
+									$inner{schema} = { $key => $rule_value };
+								}
+								if(!validate_strict(\%inner)) {
 									$invalid_args{$key} = 1;
 								}
 							}
@@ -2197,7 +2218,7 @@ L<http://deps.cpantesters.org/?module=Params::Validate::Strict>
 
 Copyright 2025-2026 Nigel Horne.
 
-This program is released under the following licence: GPL2
+This program is released under the following licence: GPL2.
 If you use it,
 please let me know.
 
