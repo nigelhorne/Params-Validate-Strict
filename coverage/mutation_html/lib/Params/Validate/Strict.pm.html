@@ -244,8 +244,8 @@ pre details.mutant-details ul {
 <div class="nav"><a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 85.21%<br>
-TER2 (Branch): 84.59%<br>
+TER1 (Statement): 85.37%<br>
+TER2 (Branch): 84.93%<br>
 TER3 (LCSAJ): 100.0% (40/40)<br>
 Approximate LCSAJ segments: 585<br>
 </div>
@@ -954,7 +954,7 @@ Approximate LCSAJ segments: 585<br>
 </span><span class="">  662: 
 </span><span class="">  663: =item * C&lt;validator&gt;
 </span><span class="">  664: 
-</span><span class="">  665: A synonym of Cvalidate&gt;, for compatibility with L&lt;Data::Processor&gt;.
+</span><span class="">  665: A synonym of C&lt;validate&gt;, for compatibility with L&lt;Data::Processor&gt;.
 </span><span class="">  666: 
 </span><span class="">  667: =item * C&lt;cross_validation&gt;
 </span><span class="">  668: 
@@ -1659,8 +1659,14 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1332: 							next;	# Skip if array is undefined
 </span><span class=""> 1333: 						}
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1334: 						if(ref($value) ne &#39;ARRAY&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1335: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1336: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1335: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span>
+					<details class="mutant-details">
+					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
+					<ul>
+				<li><b>COND_INV_1335_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
+</li></ul></details>
+<span class=""> 1336: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
 </span><span class=""> 1337: 							} else {
 </span><span class=""> 1338: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be an arrayref, not &quot; . ref($value));
 </span><span class=""> 1339: 							}
