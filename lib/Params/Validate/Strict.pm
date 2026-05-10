@@ -662,7 +662,7 @@ Many validators also allow a code ref to be passed so that you can create your o
 
 =item * C<validator>
 
-A synonym of Cvalidate>, for compatibility with L<Data::Processor>.
+A synonym of C<validate>, for compatibility with L<Data::Processor>.
 
 =item * C<cross_validation>
 

@@ -625,7 +625,7 @@ The schema can define the following rules for each parameter:
 
 - `validator`
 
-    A synonym of Cvalidate>, for compatibility with [Data::Processor](https://metacpan.org/pod/Data%3A%3AProcessor).
+    A synonym of `validate`, for compatibility with [Data::Processor](https://metacpan.org/pod/Data%3A%3AProcessor).
 
 - `cross_validation`
 

@@ -18,7 +18,7 @@ subtest 'union type: arrayref accepted' => sub {
 		input  => { x => [1,2,3] },
 		schema => { x => { type => ['string', 'arrayref'] } },
 	) };
-	ok(!$@, "no error");
+	ok(!$@, 'no error');
 	is_deeply($r->{x}, [1,2,3], 'arrayref preserved');
 };
 
