@@ -29,7 +29,7 @@ on 'test' => sub {
 	requires 'Readonly';
 	requires 'Test::Compile';
 	requires 'Test::DescribeMe';
-	requires 'Test::Mockingbird';
+	requires 'Test::Mockingbird', '0.10';
 	requires 'Test::Most';
 	requires 'Test::Needs';
 	requires 'Test::Warnings';

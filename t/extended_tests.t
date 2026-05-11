@@ -1147,4 +1147,72 @@ subtest 'arrayref schema: cross_validation receives normalised result' => sub {
 	is($seen->{b}, 7, 'cross_validation sees coerced integer b');
 };
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Mutant-survivor tests  (from ATG mutation report)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# COND_INV_1317: if(ref($custom_type->{'transform'}) eq 'CODE') in element_type
+# handler.  If inverted to 'unless', a non-coderef transform would be called as
+# code and the error branch would never fire for an invalid transform.
+subtest 'element_type: custom type with non-coderef transform → croaks' => sub {
+	throws_ok {
+		validate_strict(
+			schema       => { tags => { type => 'arrayref', element_type => 'bad_xform' } },
+			input        => { tags => ['hello', 'world'] },
+			custom_types => { bad_xform => { type => 'string', transform => 'not_a_coderef' } },
+		)
+	} qr/transforms must be a code ref/,
+	  'element_type custom type with non-coderef transform croaks at the right point';
+};
+
+# COND_INV_1418: if(exists($custom_types->{$type}->{'max'})) in the max handler.
+# If inverted to 'unless', the custom type's max override would be skipped when
+# the custom type DOES have a max, so the schema's (larger) max would be used
+# and a too-long value would slip through.
+subtest 'max: custom type max overrides schema max (COND_INV_1418)' => sub {
+	# custom type caps at 3; schema says 10 — custom type must win
+	throws_ok {
+		validate_strict(
+			schema       => { s => { type => 'short_str', max => 10 } },
+			input        => { s => 'hello' },	# length 5 > custom max 3
+			custom_types => { short_str => { type => 'string', max => 3 } },
+		)
+	} qr/too long/, 'custom type max (3) overrides schema max (10) — string of length 5 rejected';
+
+	# Sanity: a string within the custom type's max still passes
+	lives_ok {
+		validate_strict(
+			schema       => { s => { type => 'short_str', max => 10 } },
+			input        => { s => 'hi' },	# length 2 <= custom max 3
+			custom_types => { short_str => { type => 'string', max => 3 } },
+		)
+	} 'string within custom type max accepted';
+};
+
+# COND_INV_1459: if($rules->{'error_msg'}) in the string max error branch.
+# If inverted to 'unless', the custom message would be used when error_msg is
+# ABSENT and the default message would appear when it IS set — exactly backwards.
+subtest 'max: custom error_msg used when string exceeds max (COND_INV_1459)' => sub {
+	throws_ok {
+		validate_strict(
+			schema => { s => {
+				type      => 'string',
+				max       => 3,
+				error_msg => 'Custom: string too long',
+			} },
+			input  => { s => 'toolong' },
+		)
+	} qr/Custom: string too long/,
+	  'custom error_msg (not default) used for string max violation';
+
+	# Also verify the DEFAULT message fires when no error_msg is set,
+	# confirming the branch is reached and not silently short-circuited.
+	throws_ok {
+		validate_strict(
+			schema => { s => { type => 'string', max => 3 } },
+			input  => { s => 'toolong' },
+		)
+	} qr/too long/, 'default error message fires when no error_msg set';
+};
+
 done_testing;
