@@ -2152,7 +2152,10 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
         matches: REGEX;
         regex: REGEX;
         nomatch: REGEX;
-        memberof: seq VALUE;
+	memberof: seq VALUE;
+        enum: seq VALUE;
+        values: seq VALUE;
+        notmemberof: seq VALUE;
         notmemberof: seq VALUE;
         callback: FUNCTION;
         isa: TYPE_NAME;
@@ -2167,8 +2170,8 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
     ∀ rule: ComplexRule •
       rule.min ≤ rule.max ∧
-      ¬(rule.memberof ∧ rule.min) ∧
-      ¬(rule.memberof ∧ rule.max) ∧
+      ¬((rule.memberof ∨ rule.enum ∨ rule.values) ∧ rule.min) ∧
+      ¬((rule.memberof ∨ rule.enum ∨ rule.values) ∧ rule.max) ∧
       ¬(rule.notmemberof ∧ rule.min) ∧
       ¬(rule.notmemberof ∧ rule.max)
 
