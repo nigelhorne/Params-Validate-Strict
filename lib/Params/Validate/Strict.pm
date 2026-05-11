@@ -2,6 +2,11 @@ package Params::Validate::Strict;
 
 # FIXME: {max} doesn't play ball with non-ascii strings
 
+# TODO: accept 'enum' as a synonym for 'memberof' in parameter schemas.
+# TODO: accept input schema as an arrayref of parameter hashrefs as an
+# alternative to the current named-parameter hashref format, to match
+# the positional/mixed calling conventions used by some CPAN modules.
+
 use strict;
 use warnings;
 
