@@ -244,8 +244,8 @@ pre details.mutant-details ul {
 <div class="nav"><a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 85.71%<br>
-TER2 (Branch): 85.19%<br>
+TER1 (Statement): 85.57%<br>
+TER2 (Branch): 84.85%<br>
 TER3 (LCSAJ): 100.0% (45/45)<br>
 Approximate LCSAJ segments: 595<br>
 </div>
@@ -1731,8 +1731,14 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1404: 								next;
 </span><span class=""> 1405: 							}
 </span><span class=""> 1406: 						} else {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1407: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1408: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1407: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span>
+					<details class="mutant-details">
+					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
+					<ul>
+				<li><b>COND_INV_1407_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
+</li></ul></details>
+<span class=""> 1408: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
 </span><span class=""> 1409: 							} else {
 </span><span class=""> 1410: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a number&quot;);
 </span><span class=""> 1411: 							}
@@ -2491,141 +2497,144 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 2152:         matches: REGEX;
 </span><span class=""> 2153:         regex: REGEX;
 </span><span class=""> 2154:         nomatch: REGEX;
-</span><span class=""> 2155:         memberof: seq VALUE;
-</span><span class=""> 2156:         notmemberof: seq VALUE;
-</span><span class=""> 2157:         callback: FUNCTION;
-</span><span class=""> 2158:         isa: TYPE_NAME;
-</span><span class=""> 2159:         can: METHOD_NAME
-</span><span class=""> 2160:     ]
-</span><span class=""> 2161: 
-</span><span class=""> 2162:     Schema == PARAM_NAME &acirc;&#135;&cedil; ValidationRule
-</span><span class=""> 2163: 
-</span><span class=""> 2164:     Arguments == PARAM_NAME &acirc;&#135;&cedil; VALUE
-</span><span class=""> 2165: 
-</span><span class=""> 2166:     ValidatedResult == PARAM_NAME &acirc;&#135;&cedil; VALUE
-</span><span class=""> 2167: 
-</span><span class=""> 2168:     &acirc;&#136;&#128; rule: ComplexRule &acirc;&#128;&cent;
-</span><span class=""> 2169:       rule.min &acirc;&#137;&curren; rule.max &acirc;&#136;&sect;
-</span><span class=""> 2170:       &Acirc;&not;(rule.memberof &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
-</span><span class=""> 2171:       &Acirc;&not;(rule.memberof &acirc;&#136;&sect; rule.max) &acirc;&#136;&sect;
-</span><span class=""> 2172:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
-</span><span class=""> 2173:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.max)
-</span><span class=""> 2174: 
-</span><span class=""> 2175:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
-</span><span class=""> 2176:       dom(validate_strict(schema, args)) &acirc;&#138;&#134; dom(schema) &acirc;&#136;&ordf; dom(args)
+</span><span class=""> 2155: 	memberof: seq VALUE;
+</span><span class=""> 2156:         enum: seq VALUE;
+</span><span class=""> 2157:         values: seq VALUE;
+</span><span class=""> 2158:         notmemberof: seq VALUE;
+</span><span class=""> 2159:         notmemberof: seq VALUE;
+</span><span class=""> 2160:         callback: FUNCTION;
+</span><span class=""> 2161:         isa: TYPE_NAME;
+</span><span class=""> 2162:         can: METHOD_NAME
+</span><span class=""> 2163:     ]
+</span><span class=""> 2164: 
+</span><span class=""> 2165:     Schema == PARAM_NAME &acirc;&#135;&cedil; ValidationRule
+</span><span class=""> 2166: 
+</span><span class=""> 2167:     Arguments == PARAM_NAME &acirc;&#135;&cedil; VALUE
+</span><span class=""> 2168: 
+</span><span class=""> 2169:     ValidatedResult == PARAM_NAME &acirc;&#135;&cedil; VALUE
+</span><span class=""> 2170: 
+</span><span class=""> 2171:     &acirc;&#136;&#128; rule: ComplexRule &acirc;&#128;&cent;
+</span><span class=""> 2172:       rule.min &acirc;&#137;&curren; rule.max &acirc;&#136;&sect;
+</span><span class=""> 2173:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
+</span><span class=""> 2174:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.max) &acirc;&#136;&sect;
+</span><span class=""> 2175:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
+</span><span class=""> 2176:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.max)
 </span><span class=""> 2177: 
-</span><span class=""> 2178:     validate_strict: Schema &Atilde;&#151; Arguments &acirc;&#134;&#146; ValidatedResult
-</span><span class=""> 2179: 
-</span><span class=""> 2180:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
-</span><span class=""> 2181:       let result == validate_strict(schema, args) &acirc;&#128;&cent;
-</span><span class=""> 2182:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#136;&copy; dom(args) &acirc;&#128;&cent;
-</span><span class=""> 2183:           name &acirc;&#136;&#136; dom(result) &acirc;&#135;&#146;
-</span><span class=""> 2184:           type_matches(result(name), schema(name))) &acirc;&#136;&sect;
-</span><span class=""> 2185:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#128;&cent;
-</span><span class=""> 2186:           &Acirc;&not;optional(schema(name)) &acirc;&#135;&#146; name &acirc;&#136;&#136; dom(args))
-</span><span class=""> 2187: 
-</span><span class=""> 2188:     type_matches: VALUE &Atilde;&#151; ValidationRule &acirc;&#134;&#146; &eth;&#157;&#148;&sup1;
-</span><span class=""> 2189: 
-</span><span class=""> 2190: =head1 EXAMPLE
-</span><span class=""> 2191: 
-</span><span class=""> 2192:     use Params::Get;
-</span><span class=""> 2193:     use Params::Validate::Strict;
+</span><span class=""> 2178:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
+</span><span class=""> 2179:       dom(validate_strict(schema, args)) &acirc;&#138;&#134; dom(schema) &acirc;&#136;&ordf; dom(args)
+</span><span class=""> 2180: 
+</span><span class=""> 2181:     validate_strict: Schema &Atilde;&#151; Arguments &acirc;&#134;&#146; ValidatedResult
+</span><span class=""> 2182: 
+</span><span class=""> 2183:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
+</span><span class=""> 2184:       let result == validate_strict(schema, args) &acirc;&#128;&cent;
+</span><span class=""> 2185:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#136;&copy; dom(args) &acirc;&#128;&cent;
+</span><span class=""> 2186:           name &acirc;&#136;&#136; dom(result) &acirc;&#135;&#146;
+</span><span class=""> 2187:           type_matches(result(name), schema(name))) &acirc;&#136;&sect;
+</span><span class=""> 2188:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#128;&cent;
+</span><span class=""> 2189:           &Acirc;&not;optional(schema(name)) &acirc;&#135;&#146; name &acirc;&#136;&#136; dom(args))
+</span><span class=""> 2190: 
+</span><span class=""> 2191:     type_matches: VALUE &Atilde;&#151; ValidationRule &acirc;&#134;&#146; &eth;&#157;&#148;&sup1;
+</span><span class=""> 2192: 
+</span><span class=""> 2193: =head1 EXAMPLE
 </span><span class=""> 2194: 
-</span><span class=""> 2195:     sub where_am_i
-</span><span class=""> 2196:     {
-</span><span class=""> 2197:         my $params = Params::Validate::Strict::validate_strict({
-</span><span class=""> 2198:             args =&gt; Params::Get::get_params(undef, \@_),
-</span><span class=""> 2199: 	    description =&gt; &#39;Print a string of latitude and longitude&#39;,
-</span><span class=""> 2200: 	    error_msg =&gt; &#39;Latitude is a number between +/- 90, longitude is a number between +/- 180&#39;,
-</span><span class=""> 2201:             members =&gt; {
-</span><span class=""> 2202:                 &#39;latitude&#39; =&gt; {
-</span><span class=""> 2203:                     type =&gt; &#39;number&#39;,
-</span><span class=""> 2204:                     min =&gt; -90,
-</span><span class=""> 2205:                     max =&gt; 90
-</span><span class=""> 2206:                 }, &#39;longitude&#39; =&gt; {
-</span><span class=""> 2207:                     type =&gt; &#39;number&#39;,
-</span><span class=""> 2208:                     min =&gt; -180,
-</span><span class=""> 2209:                     max =&gt; 180
-</span><span class=""> 2210:                 }
-</span><span class=""> 2211:             }
-</span><span class=""> 2212:         });
-</span><span class=""> 2213: 
-</span><span class=""> 2214:         print &#39;You are at &#39;, $params-&gt;{&#39;latitude&#39;}, &#39;, &#39;, $params-&gt;{&#39;longitude&#39;}, &quot;\n&quot;;
-</span><span class=""> 2215:     }
+</span><span class=""> 2195:     use Params::Get;
+</span><span class=""> 2196:     use Params::Validate::Strict;
+</span><span class=""> 2197: 
+</span><span class=""> 2198:     sub where_am_i
+</span><span class=""> 2199:     {
+</span><span class=""> 2200:         my $params = Params::Validate::Strict::validate_strict({
+</span><span class=""> 2201:             args =&gt; Params::Get::get_params(undef, \@_),
+</span><span class=""> 2202: 	    description =&gt; &#39;Print a string of latitude and longitude&#39;,
+</span><span class=""> 2203: 	    error_msg =&gt; &#39;Latitude is a number between +/- 90, longitude is a number between +/- 180&#39;,
+</span><span class=""> 2204:             members =&gt; {
+</span><span class=""> 2205:                 &#39;latitude&#39; =&gt; {
+</span><span class=""> 2206:                     type =&gt; &#39;number&#39;,
+</span><span class=""> 2207:                     min =&gt; -90,
+</span><span class=""> 2208:                     max =&gt; 90
+</span><span class=""> 2209:                 }, &#39;longitude&#39; =&gt; {
+</span><span class=""> 2210:                     type =&gt; &#39;number&#39;,
+</span><span class=""> 2211:                     min =&gt; -180,
+</span><span class=""> 2212:                     max =&gt; 180
+</span><span class=""> 2213:                 }
+</span><span class=""> 2214:             }
+</span><span class=""> 2215:         });
 </span><span class=""> 2216: 
-</span><span class=""> 2217:     where_am_i({ latitude =&gt; 3.14, longitude =&gt; -155 });
-</span><span class=""> 2218: 
-</span><span class=""> 2219: =head1 BUGS
-</span><span class=""> 2220: 
-</span><span class=""> 2221: =head1 SEE ALSO
-</span><span class=""> 2222: 
-</span><span class=""> 2223: =over 4
-</span><span class=""> 2224: 
-</span><span class=""> 2225: =item * L&lt;Test Dashboard|https://nigelhorne.github.io/Params-Validate-Strict/coverage/&gt;
-</span><span class=""> 2226: 
-</span><span class=""> 2227: =item * L&lt;Data::Processor&gt;
-</span><span class=""> 2228: 
-</span><span class=""> 2229: =item * L&lt;Params::Get&gt;
-</span><span class=""> 2230: 
-</span><span class=""> 2231: =item * L&lt;Params::Smart&gt;
-</span><span class=""> 2232: 
-</span><span class=""> 2233: =item * L&lt;Params::Validate&gt;
-</span><span class=""> 2234: 
-</span><span class=""> 2235: =item * L&lt;Return::Set&gt;
-</span><span class=""> 2236: 
-</span><span class=""> 2237: =item * L&lt;App::Test::Generator&gt;
-</span><span class=""> 2238: 
-</span><span class=""> 2239: =back
-</span><span class=""> 2240: 
-</span><span class=""> 2241: =head1 SUPPORT
-</span><span class=""> 2242: 
-</span><span class=""> 2243: This module is provided as-is without any warranty.
-</span><span class=""> 2244: 
-</span><span class=""> 2245: Please report any bugs or feature requests to C&lt;bug-params-validate-strict at rt.cpan.org&gt;,
-</span><span class=""> 2246: or through the web interface at
-</span><span class=""> 2247: L&lt;http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params-Validate-Strict&gt;.
-</span><span class=""> 2248: I will be notified, and then you&#39;ll
-</span><span class=""> 2249: automatically be notified of progress on your bug as I make changes.
-</span><span class=""> 2250: 
-</span><span class=""> 2251: You can find documentation for this module with the perldoc command.
-</span><span class=""> 2252: 
-</span><span class=""> 2253:     perldoc Params::Validate::Strict
-</span><span class=""> 2254: 
-</span><span class=""> 2255: You can also look for information at:
-</span><span class=""> 2256: 
-</span><span class=""> 2257: =over 4
-</span><span class=""> 2258: 
-</span><span class=""> 2259: =item * MetaCPAN
-</span><span class=""> 2260: 
-</span><span class=""> 2261: L&lt;https://metacpan.org/dist/Params-Validate-Strict&gt;
-</span><span class=""> 2262: 
-</span><span class=""> 2263: =item * RT: CPAN&#39;s request tracker
-</span><span class=""> 2264: 
-</span><span class=""> 2265: L&lt;https://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate-Strict&gt;
-</span><span class=""> 2266: 
-</span><span class=""> 2267: =item * CPAN Testers&#39; Matrix
-</span><span class=""> 2268: 
-</span><span class=""> 2269: L&lt;http://matrix.cpantesters.org/?dist=Params-Validate-Strict&gt;
-</span><span class=""> 2270: 
-</span><span class=""> 2271: =item * CPAN Testers Dependencies
-</span><span class=""> 2272: 
-</span><span class=""> 2273: L&lt;http://deps.cpantesters.org/?module=Params::Validate::Strict&gt;
-</span><span class=""> 2274: 
-</span><span class=""> 2275: =back
-</span><span class=""> 2276: 
-</span><span class=""> 2277: =head1 LICENSE AND COPYRIGHT
-</span><span class=""> 2278: 
-</span><span class=""> 2279: Copyright 2025-2026 Nigel Horne.
-</span><span class=""> 2280: 
-</span><span class=""> 2281: This program is released under the following licence: GPL2.
-</span><span class=""> 2282: If you use it,
-</span><span class=""> 2283: please let me know.
-</span><span class=""> 2284: 
-</span><span class=""> 2285: =cut
-</span><span class=""> 2286: 
-</span><span class=""> 2287: 1;
-</span><span class=""> 2288: 
-</span><span class=""> 2289: __END__
+</span><span class=""> 2217:         print &#39;You are at &#39;, $params-&gt;{&#39;latitude&#39;}, &#39;, &#39;, $params-&gt;{&#39;longitude&#39;}, &quot;\n&quot;;
+</span><span class=""> 2218:     }
+</span><span class=""> 2219: 
+</span><span class=""> 2220:     where_am_i({ latitude =&gt; 3.14, longitude =&gt; -155 });
+</span><span class=""> 2221: 
+</span><span class=""> 2222: =head1 BUGS
+</span><span class=""> 2223: 
+</span><span class=""> 2224: =head1 SEE ALSO
+</span><span class=""> 2225: 
+</span><span class=""> 2226: =over 4
+</span><span class=""> 2227: 
+</span><span class=""> 2228: =item * L&lt;Test Dashboard|https://nigelhorne.github.io/Params-Validate-Strict/coverage/&gt;
+</span><span class=""> 2229: 
+</span><span class=""> 2230: =item * L&lt;Data::Processor&gt;
+</span><span class=""> 2231: 
+</span><span class=""> 2232: =item * L&lt;Params::Get&gt;
+</span><span class=""> 2233: 
+</span><span class=""> 2234: =item * L&lt;Params::Smart&gt;
+</span><span class=""> 2235: 
+</span><span class=""> 2236: =item * L&lt;Params::Validate&gt;
+</span><span class=""> 2237: 
+</span><span class=""> 2238: =item * L&lt;Return::Set&gt;
+</span><span class=""> 2239: 
+</span><span class=""> 2240: =item * L&lt;App::Test::Generator&gt;
+</span><span class=""> 2241: 
+</span><span class=""> 2242: =back
+</span><span class=""> 2243: 
+</span><span class=""> 2244: =head1 SUPPORT
+</span><span class=""> 2245: 
+</span><span class=""> 2246: This module is provided as-is without any warranty.
+</span><span class=""> 2247: 
+</span><span class=""> 2248: Please report any bugs or feature requests to C&lt;bug-params-validate-strict at rt.cpan.org&gt;,
+</span><span class=""> 2249: or through the web interface at
+</span><span class=""> 2250: L&lt;http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params-Validate-Strict&gt;.
+</span><span class=""> 2251: I will be notified, and then you&#39;ll
+</span><span class=""> 2252: automatically be notified of progress on your bug as I make changes.
+</span><span class=""> 2253: 
+</span><span class=""> 2254: You can find documentation for this module with the perldoc command.
+</span><span class=""> 2255: 
+</span><span class=""> 2256:     perldoc Params::Validate::Strict
+</span><span class=""> 2257: 
+</span><span class=""> 2258: You can also look for information at:
+</span><span class=""> 2259: 
+</span><span class=""> 2260: =over 4
+</span><span class=""> 2261: 
+</span><span class=""> 2262: =item * MetaCPAN
+</span><span class=""> 2263: 
+</span><span class=""> 2264: L&lt;https://metacpan.org/dist/Params-Validate-Strict&gt;
+</span><span class=""> 2265: 
+</span><span class=""> 2266: =item * RT: CPAN&#39;s request tracker
+</span><span class=""> 2267: 
+</span><span class=""> 2268: L&lt;https://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate-Strict&gt;
+</span><span class=""> 2269: 
+</span><span class=""> 2270: =item * CPAN Testers&#39; Matrix
+</span><span class=""> 2271: 
+</span><span class=""> 2272: L&lt;http://matrix.cpantesters.org/?dist=Params-Validate-Strict&gt;
+</span><span class=""> 2273: 
+</span><span class=""> 2274: =item * CPAN Testers Dependencies
+</span><span class=""> 2275: 
+</span><span class=""> 2276: L&lt;http://deps.cpantesters.org/?module=Params::Validate::Strict&gt;
+</span><span class=""> 2277: 
+</span><span class=""> 2278: =back
+</span><span class=""> 2279: 
+</span><span class=""> 2280: =head1 LICENSE AND COPYRIGHT
+</span><span class=""> 2281: 
+</span><span class=""> 2282: Copyright 2025-2026 Nigel Horne.
+</span><span class=""> 2283: 
+</span><span class=""> 2284: This program is released under the following licence: GPL2.
+</span><span class=""> 2285: If you use it,
+</span><span class=""> 2286: please let me know.
+</span><span class=""> 2287: 
+</span><span class=""> 2288: =cut
+</span><span class=""> 2289: 
+</span><span class=""> 2290: 1;
+</span><span class=""> 2291: 
+</span><span class=""> 2292: __END__
 </span></pre>
 
 <script>
