@@ -158,7 +158,7 @@ Custom types allow you to define validation rules once and reuse them throughout
 making your validation logic more maintainable and readable.
 
 Each custom type is defined as a hash reference containing the same validation rules available for regular parameters
-(C<type>, C<min>, C<max>, C<matches>, C<memberof>, C<enum>, C<notmemberof>, C<callback>, etc.).
+(C<type>, C<min>, C<max>, C<matches>, C<memberof>, C<values>, C<enum>, C<notmemberof>, C<callback>, etc.).
 
   my $custom_types = {
     email => {
@@ -300,6 +300,10 @@ serve conflicting purposes - C<memberof> defines an explicit whitelist while C<m
 define ranges.
 
 =item * C<enum>
+
+Same as C<memberof>.
+
+=item * C<values>
 
 Same as C<memberof>.
 
@@ -1193,12 +1197,12 @@ sub validate_strict
 			}
 
 			# memberof and its synonym enum cannot be combined with min or max
-			if($rules->{'memberof'} || $rules->{'enum'}) {
+			if($rules->{'memberof'} || $rules->{'enum'} || $rules->{'values'}) {
 				if(defined(my $min = $rules->{'min'} // $rules->{'minimum'})) {
-					_error($logger, "validate_strict($key): min ($min) makes no sense with memberof/enum");
+					_error($logger, "validate_strict($key): min ($min) makes no sense with memberof/enum/values");
 				}
 				if(defined(my $max = $rules->{'max'})) {
-					_error($logger, "validate_strict($key): max ($max) makes no sense with memberof/enum");
+					_error($logger, "validate_strict($key): max ($max) makes no sense with memberof/enum/values");
 				}
 			}
 
@@ -1541,7 +1545,7 @@ sub validate_strict
 						}
 						$invalid_args{$key} = 1;
 					}
-				} elsif(($rule_name eq 'memberof') || ($rule_name eq 'enum')) {
+				} elsif(($rule_name eq 'memberof') || ($rule_name eq 'enum') || $rules->{'values'}) {
 					if(!defined($value)) {
 						next;	# Skip if string is undefined
 					}

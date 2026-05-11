@@ -1419,4 +1419,39 @@ subtest 'enum + max → "makes no sense" error' => sub {
 	} qr/makes no sense with memberof/, 'enum combined with max croaks';
 };
 
+subtest 'values: synonym for memberof — valid member accepted' => sub {
+	my $r = validate_strict(
+		schema => { colour => { type => 'string', values => [qw(red green blue)] } },
+		input  => { colour => 'green' },
+	);
+	is($r->{colour}, 'green', 'values: valid member accepted');
+};
+
+subtest 'values: synonym for memberof — non-member rejected' => sub {
+	throws_ok {
+		validate_strict(
+			schema => { colour => { type => 'string', values => [qw(red green blue)] } },
+			input  => { colour => 'purple' },
+		)
+	} qr/must be one of/, 'values: non-member rejected';
+};
+
+subtest 'values + min → "makes no sense" error' => sub {
+	throws_ok {
+		validate_strict(
+			schema => { n => { type => 'integer', values => [1, 2, 3], min => 1 } },
+			input  => { n => 2 },
+		)
+	} qr/makes no sense with memberof/, 'values combined with min croaks';
+};
+
+subtest 'values + max → "makes no sense" error' => sub {
+	throws_ok {
+		validate_strict(
+			schema => { n => { type => 'integer', values => [1, 2, 3], max => 3 } },
+			input  => { n => 2 },
+		)
+	} qr/makes no sense with memberof/, 'values combined with max croaks';
+};
+
 done_testing;

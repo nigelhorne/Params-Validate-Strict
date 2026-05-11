@@ -1,5 +1,30 @@
 Revision history for Params-Validate-Strict
 
+0.32
+
+  [Enhancements]
+  - Schema now accepts an arrayref of parameter hashrefs as an alternative
+    to the named-parameter hashref format:
+
+      schema => [
+        { name => 'username', type => 'string', min => 3 },
+        { name => 'age',      type => 'integer', min => 0 },
+      ]
+
+    The arrayref is normalised to the standard hashref form before any
+    further processing.  All existing rules (optional, default, transform,
+    schema, relationships, cross_validation, positional position, etc.)
+    continue to work unchanged.  Particularly useful for modules that use
+    positional or mixed calling conventions.  Duplicate names and missing
+    'name' keys are caught and reported.  The members wrapper also accepts
+    arrayref form.
+
+  - 'enum' is now fully synonymous with 'memberof': the min/max
+    incompatibility guard (which previously only checked 'memberof') now
+    also fires when 'enum' is combined with min or max.
+
+  - 'values' added as a synomym for 'memberof'
+
 0.31	Fri May  8 08:03:03 EDT 2026
 
   [Enhancements]

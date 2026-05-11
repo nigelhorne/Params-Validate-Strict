@@ -892,6 +892,22 @@ subtest 'validate_strict: memberof — valid member' => sub {
 	is($r->{status}, 'draft', 'memberof: valid member accepted');
 };
 
+subtest 'validate_strict: enum — valid member' => sub {
+	my $r = _vs({
+		schema => { status => { type => 'string', enum => [qw(draft published)] } },
+		input  => { status => 'draft' },
+	});
+	is($r->{status}, 'draft', 'enum: valid member accepted');
+};
+
+subtest 'validate_strict: values — valid member' => sub {
+	my $r = _vs({
+		schema => { status => { type => 'string', values => [qw(draft published)] } },
+		input  => { status => 'draft' },
+	});
+	is($r->{status}, 'draft', 'values: valid member accepted');
+};
+
 subtest 'validate_strict: memberof — not a member → croaks' => sub {
 	_vs_throws(
 		{ schema => { status => { type => 'string', memberof => [qw(draft published)] } },

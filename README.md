@@ -125,7 +125,7 @@ It takes optional arguments:
     making your validation logic more maintainable and readable.
 
     Each custom type is defined as a hash reference containing the same validation rules available for regular parameters
-    (`type`, `min`, `max`, `matches`, `memberof`, `enum`, `notmemberof`, `callback`, etc.).
+    (`type`, `min`, `max`, `matches`, `memberof`, `values`, `enum`, `notmemberof`, `callback`, etc.).
 
         my $custom_types = {
           email => {
@@ -263,6 +263,10 @@ The schema can define the following rules for each parameter:
     define ranges.
 
 - `enum`
+
+    Same as `memberof`.
+
+- `values`
 
     Same as `memberof`.
 
