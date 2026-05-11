@@ -2,11 +2,6 @@ package Params::Validate::Strict;
 
 # FIXME: {max} doesn't play ball with non-ascii strings
 
-# TODO: accept 'enum' as a synonym for 'memberof' in parameter schemas.
-# TODO: accept input schema as an arrayref of parameter hashrefs as an
-# alternative to the current named-parameter hashref format, to match
-# the positional/mixed calling conventions used by some CPAN modules.
-
 use strict;
 use warnings;
 
@@ -28,11 +23,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.31
+Version 0.32
 
 =cut
 
-our $VERSION = '0.31';
+our $VERSION = '0.32';
 
 =head1 SYNOPSIS
 
@@ -97,6 +92,22 @@ This function takes two mandatory arguments:
 
 A reference to a hash that defines the validation rules for each parameter.
 The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
+
+As an alternative the schema may be supplied as an B<arrayref of parameter
+hashrefs>, where every element describes one parameter and carries a mandatory
+C<name> key:
+
+  $schema = [
+    { name => 'username', type => 'string', min => 3, max => 50 },
+    { name => 'age',      type => 'integer', min => 0, max => 150 },
+    { name => 'role',     type => 'string', optional => 1, default => 'user' },
+  ];
+
+The arrayref form is normalised to the standard hashref form before any further
+processing.  It is particularly useful when declaration order matters (e.g.
+for positional or mixed calling conventions used by some CPAN modules).  The
+C<name> key is consumed during normalisation and does not appear as a
+validation rule.
 
 For some sort of compatibility with L<Data::Processor>,
 it is possible to wrap the schema within a hash like this:
@@ -993,6 +1004,12 @@ sub validate_strict
 
 	return $args if(!defined($schema));	# No schema, allow all arguments
 
+	# Accept arrayref schema: [{ name=>'param', type=>'...', ... }, ...]
+	# Normalise to the standard named-parameter hashref form before further processing.
+	if(ref($schema) eq 'ARRAY') {
+		$schema = _schema_from_arrayref($schema, $logger);
+	}
+
 	# Check if schema and args are references to hashes
 	if(ref($schema) ne 'HASH') {
 		_error($logger, 'validate_strict: schema must be a hash reference');
@@ -1006,6 +1023,10 @@ sub validate_strict
 		$schema_description = $schema->{'description'};
 		$error_msg = $schema->{'error_msg'};
 		$schema = $schema->{'members'};
+		# The members value may also be in arrayref form
+		if(ref($schema) eq 'ARRAY') {
+			$schema = _schema_from_arrayref($schema, $logger);
+		}
 	}
 
 	if(exists($params->{'args'}) && (!defined($args))) {
@@ -1171,12 +1192,13 @@ sub validate_strict
 				}
 			}
 
-			if($rules->{'memberof'}) {
+			# memberof and its synonym enum cannot be combined with min or max
+			if($rules->{'memberof'} || $rules->{'enum'}) {
 				if(defined(my $min = $rules->{'min'} // $rules->{'minimum'})) {
-					_error($logger, "validate_strict($key): min ($min) makes no sense with memberof");
+					_error($logger, "validate_strict($key): min ($min) makes no sense with memberof/enum");
 				}
 				if(defined(my $max = $rules->{'max'})) {
-					_error($logger, "validate_strict($key): max ($max) makes no sense with memberof");
+					_error($logger, "validate_strict($key): max ($max) makes no sense with memberof/enum");
 				}
 			}
 
@@ -1854,6 +1876,35 @@ sub validate_strict
 		return \@rc;
 	}
 	return \%validated_args;
+}
+
+# _schema_from_arrayref($arrayref, $logger)
+#
+# Normalise an arrayref schema:
+#   [ { name => 'param', type => 'string', ... }, ... ]
+# to the standard named-parameter hashref form:
+#   { param => { type => 'string', ... }, ... }
+#
+# The 'name' key is consumed during conversion and does not become a rule.
+# Croaks if any element is not a hashref, is missing 'name', or if a name
+# appears more than once.
+sub _schema_from_arrayref
+{
+	my ($arrayref, $logger) = @_;
+
+	my %schema;
+	foreach my $spec (@{$arrayref}) {
+		_error($logger, "validate_strict: each arrayref schema element must be a hashref")
+			unless ref($spec) eq 'HASH';
+		_error($logger, "validate_strict: arrayref schema element must have a 'name' key")
+			unless exists($spec->{'name'});
+		my %rule = %{$spec};
+		my $name = delete $rule{'name'};
+		_error($logger, "validate_strict: duplicate parameter '$name' in arrayref schema")
+			if exists($schema{$name});
+		$schema{$name} = \%rule;
+	}
+	return \%schema;
 }
 
 # Return number of visible characters not number of bytes

@@ -1073,4 +1073,78 @@ subtest 'input immutability: nested hashref not modified during schema validatio
 	is($inner->{age}, '30', 'original nested hashref age still a string after validation');
 };
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Arrayref schema  edge cases  (new in 0.32)
+# ══════════════════════════════════════════════════════════════════════════════
+
+subtest 'arrayref schema: non-hashref element → croaks' => sub {
+	throws_ok {
+		validate_strict(schema => ['not_a_hashref'], input => {})
+	} qr/must be a hashref/, 'non-hashref element in arrayref schema croaks';
+};
+
+subtest 'arrayref schema: element missing "name" key → croaks' => sub {
+	throws_ok {
+		validate_strict(schema => [ { type => 'string' } ], input => {})
+	} qr/must have a 'name' key/, 'arrayref schema element without name key croaks';
+};
+
+subtest 'arrayref schema: duplicate name → croaks' => sub {
+	throws_ok {
+		validate_strict(
+			schema => [
+				{ name => 'x', type => 'string'  },
+				{ name => 'x', type => 'integer' },	# duplicate
+			],
+			input => { x => 'hello' },
+		)
+	} qr/duplicate parameter 'x'/, 'duplicate name in arrayref schema croaks';
+};
+
+subtest 'arrayref schema: empty arrayref → valid, returns empty hashref' => sub {
+	my $r = validate_strict(schema => [], input => {});
+	is(ref($r), 'HASH', 'empty arrayref schema returns hashref');
+	is(scalar keys %$r, 0, 'result is empty');
+};
+
+subtest 'arrayref schema: "name" key not propagated as a validation rule' => sub {
+	# After normalisation the 'name' key must be absent from the rule hash,
+	# otherwise it would be seen as an unknown rule and croak.
+	lives_ok {
+		validate_strict(
+			schema => [ { name => 'x', type => 'string' } ],
+			input  => { x => 'hello' },
+		)
+	} '"name" key consumed during normalisation, not passed to rule dispatch';
+};
+
+subtest 'arrayref schema: transform, matches, and optional all work' => sub {
+	my $r = validate_strict(
+		schema => [
+			{ name => 'tag',  type => 'string', transform => sub { lc $_[0] },
+			                                    matches   => qr/^[a-z]+$/ },
+			{ name => 'note', type => 'string', optional  => 1, default => 'none' },
+		],
+		input => { tag => 'HELLO' },
+	);
+	is($r->{tag},  'hello', 'transform applied and pattern passed');
+	is($r->{note}, 'none',  'default for absent optional applied');
+};
+
+subtest 'arrayref schema: cross_validation receives normalised result' => sub {
+	my $seen;
+	validate_strict(
+		schema => [
+			{ name => 'a', type => 'integer' },
+			{ name => 'b', type => 'integer' },
+		],
+		input => { a => '3', b => '7' },
+		cross_validation => {
+			capture => sub { $seen = $_[0]; undef },
+		},
+	);
+	is($seen->{a}, 3, 'cross_validation sees coerced integer a');
+	is($seen->{b}, 7, 'cross_validation sees coerced integer b');
+};
+
 done_testing;

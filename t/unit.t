@@ -1300,4 +1300,123 @@ subtest 'members alias: accepted alongside input' => sub {
 	is($r->{x}, 'world', '"members" accepted as alias for "schema"');
 };
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Arrayref schema format  (new in 0.32)
+# ══════════════════════════════════════════════════════════════════════════════
+
+subtest 'arrayref schema: normalised to hashref — basic types and coercion work' => sub {
+	my $r = validate_strict(
+		schema => [
+			{ name => 'username', type => 'string',  min => 3, max => 20 },
+			{ name => 'age',      type => 'integer', min => 0, max => 150 },
+		],
+		input => { username => 'Alice', age => '30' },
+	);
+	is($r->{username}, 'Alice', 'string field returned unchanged');
+	is($r->{age},       30,     'integer field coerced from string');
+};
+
+subtest 'arrayref schema: optional + default applied correctly' => sub {
+	my $r = validate_strict(
+		schema => [
+			{ name => 'name', type => 'string' },
+			{ name => 'role', type => 'string', optional => 1, default => 'user' },
+		],
+		input => { name => 'Bob' },
+	);
+	is($r->{name}, 'Bob',  'required field returned');
+	is($r->{role}, 'user', 'default applied for absent optional field');
+};
+
+subtest 'arrayref schema: constraint enforced (max violated)' => sub {
+	throws_ok {
+		validate_strict(
+			schema => [ { name => 'score', type => 'integer', min => 0, max => 100 } ],
+			input  => { score => 150 },
+		)
+	} qr/must be no more than 100/, 'max constraint enforced via arrayref schema';
+};
+
+subtest 'arrayref schema: equivalent result to hashref schema' => sub {
+	my $hash_schema = { n => { type => 'integer', min => 1 }, s => { type => 'string' } };
+	my $arr_schema  = [
+		{ name => 'n', type => 'integer', min => 1 },
+		{ name => 's', type => 'string'  },
+	];
+	my $input = { n => '5', s => 'hello' };
+	my $r1 = validate_strict(schema => $hash_schema, input => $input);
+	my $r2 = validate_strict(schema => $arr_schema,  input => $input);
+	is_deeply($r1, $r2, 'arrayref and hashref schemas produce identical results');
+};
+
+subtest 'arrayref schema: members wrapper also accepts arrayref form' => sub {
+	my $r = validate_strict(
+		schema => {
+			description => 'Wrapped arrayref members',
+			members     => [
+				{ name => 'x', type => 'integer' },
+			],
+		},
+		input => { x => '7' },
+	);
+	is($r->{x}, 7, 'arrayref inside members wrapper normalised correctly');
+};
+
+subtest 'arrayref schema: missing required field still croaks' => sub {
+	throws_ok {
+		validate_strict(
+			schema => [ { name => 'required_field', type => 'string' } ],
+			input  => {},
+		)
+	} qr/Required parameter 'required_field' is missing/, 'missing required field croaks with arrayref schema';
+};
+
+subtest 'arrayref schema: unknown_parameter_handler honoured' => sub {
+	throws_ok {
+		validate_strict(
+			schema => [ { name => 'x', type => 'string' } ],
+			input  => { x => 'hi', extra => 'unexpected' },
+		)
+	} qr/Unknown parameter 'extra'/, 'unknown parameter still croaks with arrayref schema';
+};
+
+# ══════════════════════════════════════════════════════════════════════════════
+# enum synonym  (complete as of 0.32: min/max incompatibility now also enforced)
+# ══════════════════════════════════════════════════════════════════════════════
+
+subtest 'enum: synonym for memberof — valid member accepted' => sub {
+	my $r = validate_strict(
+		schema => { status => { type => 'string', enum => [qw(draft published archived)] } },
+		input  => { status => 'draft' },
+	);
+	is($r->{status}, 'draft', 'enum: valid member accepted');
+};
+
+subtest 'enum: synonym for memberof — non-member rejected' => sub {
+	throws_ok {
+		validate_strict(
+			schema => { status => { type => 'string', enum => [qw(draft published)] } },
+			input  => { status => 'deleted' },
+		)
+	} qr/must be one of/, 'enum: non-member rejected';
+};
+
+subtest 'enum + min → "makes no sense" error' => sub {
+	throws_ok {
+		validate_strict(
+			schema => { n => { type => 'integer', enum => [1, 2, 3], min => 1 } },
+			input  => { n => 2 },
+		)
+	} qr/makes no sense with memberof/, 'enum combined with min croaks';
+};
+
+subtest 'enum + max → "makes no sense" error' => sub {
+	throws_ok {
+		validate_strict(
+			schema => { n => { type => 'integer', enum => [1, 2, 3], max => 3 } },
+			input  => { n => 2 },
+		)
+	} qr/makes no sense with memberof/, 'enum combined with max croaks';
+};
+
 done_testing;

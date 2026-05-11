@@ -4,7 +4,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 # VERSION
 
-Version 0.31
+Version 0.32
 
 # SYNOPSIS
 
@@ -63,6 +63,22 @@ This function takes two mandatory arguments:
 
     A reference to a hash that defines the validation rules for each parameter.
     The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
+
+    As an alternative the schema may be supplied as an **arrayref of parameter
+    hashrefs**, where every element describes one parameter and carries a mandatory
+    `name` key:
+
+        $schema = [
+          { name => 'username', type => 'string', min => 3, max => 50 },
+          { name => 'age',      type => 'integer', min => 0, max => 150 },
+          { name => 'role',     type => 'string', optional => 1, default => 'user' },
+        ];
+
+    The arrayref form is normalised to the standard hashref form before any further
+    processing.  It is particularly useful when declaration order matters (e.g.
+    for positional or mixed calling conventions used by some CPAN modules).  The
+    `name` key is consumed during normalisation and does not appear as a
+    validation rule.
 
     For some sort of compatibility with [Data::Processor](https://metacpan.org/pod/Data%3A%3AProcessor),
     it is possible to wrap the schema within a hash like this:
