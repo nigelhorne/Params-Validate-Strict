@@ -25,6 +25,10 @@ Revision history for Params-Validate-Strict
 
   - 'values' added as a synomym for 'memberof'
 
+  [Bug Fixes]
+  - In the case of position parameters, an input value of 0, could set an output value of undef.
+    Fixed by using exists() in the return loop
+
 0.31	Fri May  8 08:03:03 EDT 2026
 
   [Enhancements]

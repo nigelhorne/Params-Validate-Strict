@@ -475,6 +475,15 @@ The code will be called with two arguments: the value of the parameter and hash 
 
   my $result = validate_strict(schema => $schema, input => { make_optional => 1 });
 
+If the parameter is not optional, it can be passed an undef value, which will not flag an error.
+This is by design.
+So this will not say that the required parameter 's' is missing.
+
+    validate_strict(
+        schema => { s => { type => 'string' } },
+        input  => { s => undef },
+    );
+
 =item * C<default>
 
 Populate missing optional parameters with the specified value.
@@ -644,8 +653,7 @@ Transformations work with all parameter types including nested structures:
       name => {
         type => 'string',
         transform => sub { trim($_[0]) }
-      },
-      email => {
+      }, email => {
         type => 'string',
         transform => sub { lc(trim($_[0])) }
       }
@@ -1170,6 +1178,7 @@ sub validate_strict
 			}
 		} elsif((ref($args) eq 'HASH') && !exists($args->{$key})) {
 			# The parameter is required
+			# Use exists rather than defined, so that an undefined value can be passed, but the key is there
 			_error($logger, "$rule_description: Required parameter '$key' is missing");
 		}
 
@@ -1301,7 +1310,7 @@ sub validate_strict
 							if($rules->{'error_msg'}) {
 								_error($logger, $rules->{'error_msg'});
 							} else {
-								_error($logger, "$rule_description: Parameter '$key' must be a coderef");
+								_error($logger, "$rule_description: Parameter '$key' must be a coderef, not a ref to " . ref($value));
 							}
 						}
 					} elsif($type eq 'object') {
@@ -1545,7 +1554,7 @@ sub validate_strict
 						}
 						$invalid_args{$key} = 1;
 					}
-				} elsif(($rule_name eq 'memberof') || ($rule_name eq 'enum') || $rules->{'values'}) {
+				} elsif(($rule_name eq 'memberof') || ($rule_name eq 'enum') || ($rule_name eq 'values')) {
 					if(!defined($value)) {
 						next;	# Skip if string is undefined
 					}
@@ -1869,7 +1878,11 @@ sub validate_strict
 	if($are_positional_args == 1) {
 		my @rc;
 		foreach my $key (keys %{$schema}) {
-			if(my $value = delete $validated_args{$key}) {
+			# Use exists() rather than if(my $value = ...) so that falsy but
+			# valid coerced values (integer 0, empty string, undef from an
+			# absent optional) are not silently dropped from the return array.
+			if(exists $validated_args{$key}) {
+				my $value = delete $validated_args{$key};
 				my $position = $schema->{$key}->{'position'};
 				if(defined($rc[$position])) {
 					_error($logger, "$schema_description: $key: position $position appears twice");
@@ -2155,7 +2168,6 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 	memberof: seq VALUE;
         enum: seq VALUE;
         values: seq VALUE;
-        notmemberof: seq VALUE;
         notmemberof: seq VALUE;
         callback: FUNCTION;
         isa: TYPE_NAME;

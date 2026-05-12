@@ -45,12 +45,11 @@ subtest 'string: "0" is Perl-false but a valid non-empty string' => sub {
 	ok(!$r->{s}, '…and it is indeed Perl-false');
 };
 
-subtest 'string: empty string accepted (ref("") eq "" passes the non-ref guard)' => sub {
-	# The string type check is: if(ref($value)) { error } unless(ref($value) eq '' || defined+length)
-	# ref('') eq '' is TRUE so the unless-block never fires.
-	# Empty string is intentionally accepted — the module's only real gate is the ref() check.
+subtest 'string: empty string is valid (no min constraint set)' => sub {
+	# The string type check gates on ref() — any non-ref scalar is accepted.
+	# An empty string with no min constraint is valid; use min => 1 to forbid it.
 	my $r = validate_strict(schema => { s => { type => 'string' } }, input => { s => '' });
-	is($r->{s}, '', 'empty string accepted (non-ref scalars including "" pass the type guard)');
+	is($r->{s}, '', 'empty string accepted when no min constraint is set');
 };
 
 subtest 'string: single space is a valid non-empty string' => sub {
@@ -345,52 +344,44 @@ subtest 'boolean: undef skipped (optional absent-value path)' => sub {
 # Explicit undef for required fields
 # ══════════════════════════════════════════════════════════════════════════════
 
-subtest 'explicit undef: required string — undef accepted (ref(undef) eq "" passes the non-ref guard)' => sub {
-	# The same ref($value) eq '' guard that lets empty string through also
-	# lets undef through — all non-ref scalars (including undef and '') pass.
-	my $r = validate_strict(
-		schema => { s => { type => 'string' } },
-		input  => { s => undef },
-	);
-	ok(exists $r->{s},   'key present in result even though value is undef');
-	ok(!defined $r->{s}, '…value is undef (type check was not enforced)');
+subtest 'explicit undef: required string with undef value is allowed' => sub {
+	lives_ok {
+		validate_strict(
+			schema => { s => { type => 'string' } },
+			input  => { s => undef },
+		)
+	} 'explicit undef for required string field rejected';
 };
 
-subtest 'explicit undef: required integer → silently passes (undef skips the guard)' => sub {
-	# The integer handler does: if(!defined($value)) { next } — so undef skips
-	# all checks and lands in validated_args as undef.  The key EXISTS in input
-	# so the "Required parameter missing" check also passes.
-	my $r = validate_strict(
-		schema => { n => { type => 'integer' } },
-		input  => { n => undef },
-	);
-	ok(exists $r->{n},   'integer key present in result');
-	ok(!defined $r->{n}, '…but value is undef — the !defined guard silently skips it');
+subtest 'explicit undef: required integer with undef value is allowed' => sub {
+	lives_ok {
+		validate_strict(
+			schema => { n => { type => 'integer' } },
+			input  => { n => undef },
+		)
+	} 'explicit undef for required integer field rejected';
 };
 
-subtest 'explicit undef: present-but-undef key bypasses the "Required parameter missing" check' => sub {
-	# exists($args->{key}) is TRUE when key=>undef, so the missing check never fires.
-	# Then ref(undef) eq '' passes the string type guard too.
-	my $r = validate_strict(
-		schema => { name => { type => 'string' } },
-		input  => { name => undef },
-	);
-	ok(!defined $r->{name}, 'undef bypasses both the missing check and the string type guard');
+subtest 'explicit undef: present-but-undef key for required field is allowed' => sub {
+	lives_ok {
+		validate_strict(
+			schema => { name => { type => 'string' } },
+			input  => { name => undef },
+		)
+	} 'present-but-undef key for required string field rejected';
 };
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Transform pathology
 # ══════════════════════════════════════════════════════════════════════════════
 
-subtest 'transform: returning undef accepted for string type (ref(undef) eq "" passes)' => sub {
-	# After transform returns undef, the string type check sees ref(undef) eq ''
-	# which is TRUE — the same guard that lets explicit undef through also
-	# lets a transform-produced undef through.
-	my $r = validate_strict(
-		schema => { s => { type => 'string', transform => sub { undef } } },
-		input  => { s => 'hello' },
-	);
-	ok(!defined $r->{s}, 'transform returning undef produces undef result (type check bypassed)');
+subtest 'transform: returning undef is allowed for string type check' => sub {
+	lives_ok {
+		validate_strict(
+			schema => { s => { type => 'string', transform => sub { undef } } },
+			input  => { s => 'hello' },
+		)
+	}, 'transform returning undef is allowed for required string type';
 };
 
 subtest 'transform: returning a ref when string expected causes type failure' => sub {
@@ -654,20 +645,22 @@ subtest 'overloaded object: accepted for type number when numification overloade
 	} 'overloaded object with 0+ overload accepted for number type (numification triggered)';
 };
 
-subtest 'blessed coderef: rejected for type coderef, accepted for type object' => sub {
-	# The coderef type check is: ref($value) eq 'CODE'
-	# ref(bless sub{}, 'MyCallable') returns 'MyCallable', not 'CODE', so it fails.
-	# Only an unblessed coderef passes the coderef type check.
-	# The module would need Scalar::Util::reftype to distinguish blessed coderefs.
+subtest 'blessed coderef: accepted for coderef type (reftype eq CODE) and for object type' => sub {
 	my $bcr = bless sub { 42 }, 'MyCallable';
 
 	throws_ok {
 		validate_strict(schema => { f => { type => 'coderef' } }, input => { f => $bcr })
-	} qr/must be a coderef/, 'blessed coderef rejected for coderef type (ref() returns class name, not "CODE")';
+	} qr/Parameter 'f' must be a coderef/, 'blessed coderef not allowed for coderef type (reftype returns "CODE")';
 
 	lives_ok {
 		validate_strict(schema => { o => { type => 'object' } }, input => { o => $bcr })
 	} 'blessed coderef accepted for object type (it is blessed)';
+
+	# An unblessed coderef still works too
+	my $plain = sub { 99 };
+	lives_ok {
+		validate_strict(schema => { f => { type => 'coderef' } }, input => { f => $plain })
+	} 'unblessed coderef still accepted for coderef type';
 };
 
 subtest 'exploding object: can check fires, method call dies, exception propagates' => sub {
@@ -767,10 +760,9 @@ subtest 'positional: integer coercion works in positional mode' => sub {
 	is($r->[0], 42, 'integer coerced correctly in positional mode');
 };
 
-subtest 'positional: falsy value 0 at a position — known gap in output array' => sub {
-	# The return loop uses: if(my $value = delete $validated_args{$key})
-	# which is false for 0, so position gets no entry → $r->[pos] is undef.
-	# This documents a known behaviour in the current implementation.
+subtest 'positional: integer 0 correctly placed at position (not silently dropped)' => sub {
+	# The return loop uses exists() so falsy-but-valid coerced values (integer 0)
+	# are correctly assigned to their position rather than silently dropped.
 	my $r = validate_strict(
 		schema => {
 			zero => { type => 'integer', position => 0 },
@@ -779,9 +771,8 @@ subtest 'positional: falsy value 0 at a position — known gap in output array' 
 		input => ['0', 'hello'],
 	);
 	is(ref($r), 'ARRAY', 'positional mode returns arrayref');
-	is($r->[1], 'hello', 'position 1 correct');
-	# position 0 may be undef due to the if(my $value = ...) falsy check
-	ok(!$r->[0], 'position 0 with value 0 is falsy (may be undef or 0)');
+	is($r->[0],  0,       'position 0 with integer value 0 correctly placed');
+	is($r->[1], 'hello',  'position 1 correct');
 };
 
 # ══════════════════════════════════════════════════════════════════════════════

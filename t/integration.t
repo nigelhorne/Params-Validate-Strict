@@ -631,18 +631,21 @@ subtest 'semantic rule: unknown semantic emits warning but does not croak' => su
 	ok(scalar @warnings > 0, 'unknown semantic emits a warning');
 };
 
-subtest 'nullable: distinct from optional — only accepts flag, not coderef' => sub {
+subtest 'nullable: absent param omitted from result; present param validated and returned' => sub {
 	# nullable => 1 sets $is_optional before the rule-dispatch loop.
-	# When the parameter is absent the optional path fires and exits early
-	# (before the loop runs), so the rule is never seen by the dispatcher.
-	# NOTE: passing a nullable parameter WITH a value currently triggers an
-	# "Unknown rule 'nullable'" error because the loop has no elsif for it —
-	# that is a known module bug; only the absent-value path is tested here.
-	my $r = validate_strict(
+	# The loop has an elsif for nullable so it is silently skipped when a
+	# value is present — both paths must work correctly.
+	my $r_absent = validate_strict(
 		schema => { x => { type => 'string', nullable => 1 } },
 		input  => {},
 	);
-	ok(!exists $r->{x}, 'nullable: absent param correctly omitted from result');
+	ok(!exists $r_absent->{x}, 'nullable: absent param correctly omitted from result');
+
+	my $r_present = validate_strict(
+		schema => { x => { type => 'string', nullable => 1 } },
+		input  => { x => 'hello' },
+	);
+	is($r_present->{x}, 'hello', 'nullable: present param validated and returned');
 };
 
 subtest 'position: mixed schema without position sets non-positional mode' => sub {
