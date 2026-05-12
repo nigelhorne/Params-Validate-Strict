@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Params/Validate/Strict.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c1">85.4%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c1">85.7%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -43,7 +43,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L1074">1074</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined(my $rules = $schema-&gt;{$key})) { }</td></tr>
 <tr><td class="h"><a id="L1075">1075</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rules eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"><a id="L1076">1076</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $rules-&gt;{&#39;position&#39;})</td></tr>
-<tr><td class="h"><a id="L1077">1077</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($are_positional_args == 1)</td></tr>
+<tr><td class="h"><a id="L1077">1077</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($are_positional_args == 1)</td></tr>
 <tr><td class="h"><a id="L1099">1099</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($are_positional_args == 1) { }</td></tr>
 <tr><td class="h"><a id="L1100">1100</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (ref $args ne &quot;ARRAY&quot;)</td></tr>
 <tr><td class="h"><a id="L1108">1108</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $rules)</td></tr>
@@ -237,7 +237,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L1641">1641</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($value-&gt;can($method))</td></tr>
 <tr><td class="h"><a id="L1647">1647</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($value-&gt;can($rule_value))</td></tr>
 <tr><td class="h"><a id="L1658">1658</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;) { }</td></tr>
-<tr><td class="h"><a id="L1661">1661</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($custom_type and $custom_type-&gt;{&#39;type&#39;})</td></tr>
+<tr><td class="h"><a id="L1661">1661</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($custom_type and $custom_type-&gt;{&#39;type&#39;})</td></tr>
 <tr><td class="h"><a id="L1665">1665</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($custom_type and $custom_type-&gt;{&#39;transform&#39;})</td></tr>
 <tr><td class="h"><a id="L1667">1667</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $custom_type-&gt;{&#39;transform&#39;} eq &#39;CODE&#39;) { }</td></tr>
 <tr><td class="h"><a id="L1674">1674</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($type eq &#39;string&#39; or $type eq &#39;Str&#39;) { }</td></tr>
@@ -253,8 +253,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L1726">1726</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($value &lt; 0 or $value &gt; 2147483647)</td></tr>
 <tr><td class="h"><a id="L1734">1734</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;type&#39;} eq &#39;hashref&#39;) { }</td></tr>
-<tr><td class="h"><a id="L1735">1735</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (ref $value eq &#39;ARRAY&#39;) { }</td></tr>
-<tr><td class="h"></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">elsif (defined $value) { }</td></tr>
+<tr><td class="h"><a id="L1735">1735</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $value eq &#39;ARRAY&#39;) { }</td></tr>
+<tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (defined $value) { }</td></tr>
 <tr><td class="h"><a id="L1745">1745</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($is_field_schema) { }</td></tr>
 <tr><td class="h"><a id="L1752">1752</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (validate_strict(\%inner))</td></tr>
 <tr><td class="h"><a id="L1760">1760</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (ref $rule_value eq &#39;HASH&#39;) { }</td></tr>

@@ -245,7 +245,7 @@ pre details.mutant-details ul {
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
 TER1 (Statement): 86.03%<br>
-TER2 (Branch): 85.35%<br>
+TER2 (Branch): 85.69%<br>
 TER3 (LCSAJ): 100.0% (45/45)<br>
 Approximate LCSAJ segments: 595<br>
 </div>
@@ -1699,14 +1699,8 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1372: 							next;	# Skip if array is undefined
 </span><span class=""> 1373: 						}
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1374: 						if(ref($value) ne &#39;ARRAY&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1375: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span>
-					<details class="mutant-details">
-					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
-					<ul>
-				<li><b>COND_INV_1375_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
-</li></ul></details>
-<span class=""> 1376: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1375: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1376: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
 </span><span class=""> 1377: 							} else {
 </span><span class=""> 1378: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be an arrayref, not &quot; . ref($value));
 </span><span class=""> 1379: 							}
