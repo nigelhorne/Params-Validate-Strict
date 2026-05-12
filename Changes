@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.32
+0.32	Mon May 11 20:34:23 EDT 2026
 
   [Enhancements]
   - Schema now accepts an arrayref of parameter hashrefs as an alternative

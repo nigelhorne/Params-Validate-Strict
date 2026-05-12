@@ -438,6 +438,15 @@ The schema can define the following rules for each parameter:
 
         my $result = validate_strict(schema => $schema, input => { make_optional => 1 });
 
+    If the parameter is not optional, it can be passed an undef value, which will not flag an error.
+    This is by design.
+    So this will not say that the required parameter 's' is missing:
+
+        validate_strict(
+            schema => { s => { type => 'string' } },
+            input  => { s => undef },
+        );
+
 - `default`
 
     Populate missing optional parameters with the specified value.
@@ -607,8 +616,7 @@ The schema can define the following rules for each parameter:
             name => {
               type => 'string',
               transform => sub { trim($_[0]) }
-            },
-            email => {
+            }, email => {
               type => 'string',
               transform => sub { lc(trim($_[0])) }
             }
@@ -969,7 +977,6 @@ Nigel Horne, `<njh at nigelhorne.com>`
         memberof: seq VALUE;
         enum: seq VALUE;
         values: seq VALUE;
-        notmemberof: seq VALUE;
         notmemberof: seq VALUE;
         callback: FUNCTION;
         isa: TYPE_NAME;

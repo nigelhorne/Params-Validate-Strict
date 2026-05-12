@@ -477,7 +477,7 @@ The code will be called with two arguments: the value of the parameter and hash 
 
 If the parameter is not optional, it can be passed an undef value, which will not flag an error.
 This is by design.
-So this will not say that the required parameter 's' is missing.
+So this will not say that the required parameter 's' is missing:
 
     validate_strict(
         schema => { s => { type => 'string' } },
