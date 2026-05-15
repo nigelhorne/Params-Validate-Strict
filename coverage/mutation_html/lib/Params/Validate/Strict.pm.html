@@ -244,10 +244,10 @@ pre details.mutant-details ul {
 <div class="nav"><a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 86.03%<br>
-TER2 (Branch): 85.69%<br>
+TER1 (Statement): 85.38%<br>
+TER2 (Branch): 85.05%<br>
 TER3 (LCSAJ): 100.0% (45/45)<br>
-Approximate LCSAJ segments: 595<br>
+Approximate LCSAJ segments: 603<br>
 </div>
 
     <div class="legend">
@@ -1383,7 +1383,7 @@ Approximate LCSAJ segments: 595<br>
 </span><span class=""> 1091: 		}
 </span><span class=""> 1092: 	}
 </span><span class=""> 1093: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1094 → 1096 → 1855</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1094 → 1096 → 0</span></span> 1094: 	my %validated_args;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1094 → 1096 → 1863</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1094 → 1096 → 0</span></span> 1094: 	my %validated_args;
 </span><span class=""> 1095: 	my %invalid_args;
 </span><span class=""> 1096: 	foreach my $key (keys %{$schema}) {
 </span><span class=""> 1097: 		my $rules = $schema-&gt;{$key};
@@ -1733,920 +1733,928 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1406: 							if($value &lt; $rule_value) {
 </span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1407: 								if($rules-&gt;{&#39;error_msg&#39;}) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1408: 									_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1409: 								} else {
-</span><span class=""> 1410: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be at least $rule_value&quot;);
-</span><span class=""> 1411: 								}
-</span><span class=""> 1412: 								$invalid_args{$key} = 1;
-</span><span class=""> 1413: 								next;
-</span><span class=""> 1414: 							}
-</span><span class=""> 1415: 						} else {
-</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1416: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1409: 								} elsif(($type eq &#39;integer&#39;) &amp;&amp; ($value == 0)) {
+</span><span class=""> 1410: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a positive number&quot;);
+</span><span class=""> 1411: 								} elsif(($type eq &#39;integer&#39;) &amp;&amp; ($value == 1)) {
+</span><span class=""> 1412: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a positive, non-zero number&quot;);
+</span><span class=""> 1413: 								} else {
+</span><span class=""> 1414: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be at least $rule_value&quot;);
+</span><span class=""> 1415: 								}
+</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1416: 								$invalid_args{$key} = 1;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
 					<ul>
 				<li><b>COND_INV_1416_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
 </li></ul></details>
-<span class=""> 1417: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1418: 							} else {
-</span><span class=""> 1419: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a number&quot;);
-</span><span class=""> 1420: 							}
-</span><span class=""> 1421: 							next;
-</span><span class=""> 1422: 						}
-</span><span class=""> 1423: 					} else {
-</span><span class=""> 1424: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; of type &#39;$type&#39; has meaningless min value $rule_value&quot;);
-</span><span class=""> 1425: 					}
-</span><span class=""> 1426: 				} elsif($rule_name eq &#39;max&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1427: 					if(!defined($rules-&gt;{&#39;type&#39;})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1428: 						_error($logger, &quot;$rule_description: Don&#39;t know type of &#39;$key&#39; to determine its maximum value $rule_value&quot;);
+<span class=""> 1417: 								next;
+</span><span class=""> 1418: 							}
+</span><span class=""> 1419: 						} else {
+</span><span class=""> 1420: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1421: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1422: 							} else {
+</span><span class=""> 1423: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a number&quot;);
+</span><span class=""> 1424: 							}
+</span><span class=""> 1425: 							next;
+</span><span class=""> 1426: 						}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1427: 					} else {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1428: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; of type &#39;$type&#39; has meaningless min value $rule_value&quot;);
 </span><span class=""> 1429: 					}
-</span><span class=""> 1430: 					my $type = lc($rules-&gt;{&#39;type&#39;});
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1431: 					if(exists($custom_types-&gt;{$type}-&gt;{&#39;max&#39;})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1432: 						$rule_value = $custom_types-&gt;{$type}-&gt;{&#39;max&#39;};
-</span><span class=""> 1433: 						$type = $custom_types-&gt;{$type}-&gt;{&#39;type&#39;};
-</span><span class=""> 1434: 					}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1435: 					if(($type eq &#39;string&#39;) || ($type eq &#39;str&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1436: 						if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1437: 							next;	# Skip if string is undefined
-</span><span class=""> 1438: 						}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1439: 						if(defined(my $len = _number_of_characters($value))) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1440: 							if($len &gt; $rule_value) {
-</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class=""> 1441: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;} || &quot;$rule_description: String parameter &#39;$key&#39; too long, ($len characters), must be no longer than $rule_value&quot;);
-</span><span class=""> 1442: 								$invalid_args{$key} = 1;
-</span><span class=""> 1443: 							}
-</span><span class=""> 1444: 						} else {
-</span><span class=""> 1445: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;} || &quot;$rule_description: &#39;$key&#39; can&#39;t be decoded&quot;);
-</span><span class=""> 1446: 							$invalid_args{$key} = 1;
-</span><span class=""> 1447: 						}
-</span><span class=""> 1448: 					} elsif($type eq &#39;arrayref&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1449: 						if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1450: 							next;	# Skip if string is undefined
+</span><span class=""> 1430: 				} elsif($rule_name eq &#39;max&#39;) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1431: 					if(!defined($rules-&gt;{&#39;type&#39;})) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1432: 						_error($logger, &quot;$rule_description: Don&#39;t know type of &#39;$key&#39; to determine its maximum value $rule_value&quot;);
+</span><span class=""> 1433: 					}
+</span><span class=""> 1434: 					my $type = lc($rules-&gt;{&#39;type&#39;});
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1435: 					if(exists($custom_types-&gt;{$type}-&gt;{&#39;max&#39;})) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1436: 						$rule_value = $custom_types-&gt;{$type}-&gt;{&#39;max&#39;};
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1437: 						$type = $custom_types-&gt;{$type}-&gt;{&#39;type&#39;};
+</span><span class=""> 1438: 					}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1439: 					if(($type eq &#39;string&#39;) || ($type eq &#39;str&#39;)) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1440: 						if(!defined($value)) {
+</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class=""> 1441: 							next;	# Skip if string is undefined
+</span><span class=""> 1442: 						}
+</span><span class=""> 1443: 						if(defined(my $len = _number_of_characters($value))) {
+</span><span class=""> 1444: 							if($len &gt; $rule_value) {
+</span><span class=""> 1445: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;} || &quot;$rule_description: String parameter &#39;$key&#39; too long, ($len characters), must be no longer than $rule_value&quot;);
+</span><span class=""> 1446: 								$invalid_args{$key} = 1;
+</span><span class=""> 1447: 							}
+</span><span class=""> 1448: 						} else {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1449: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;} || &quot;$rule_description: &#39;$key&#39; can&#39;t be decoded&quot;);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1450: 							$invalid_args{$key} = 1;
 </span><span class=""> 1451: 						}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1452: 						if(ref($value) ne &#39;ARRAY&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1453: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1452: 					} elsif($type eq &#39;arrayref&#39;) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1453: 						if(!defined($value)) {
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
 					<ul>
 				<li><b>COND_INV_1453_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
 </li></ul></details>
-<span class=""> 1454: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1455: 							} else {
-</span><span class=""> 1456: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be an arrayref, not &quot; . ref($value));
-</span><span class=""> 1457: 							}
-</span><span class=""> 1458: 						}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1459: 						if(scalar(@{$value}) &gt; $rule_value) {
-</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1460: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1461: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1462: 							} else {
-</span><span class=""> 1463: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must contain no more than $rule_value items&quot;);
-</span><span class=""> 1464: 							}
-</span><span class=""> 1465: 							$invalid_args{$key} = 1;
-</span><span class=""> 1466: 						}
-</span><span class=""> 1467: 					} elsif($type eq &#39;hashref&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1468: 						if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1469: 							next;	# Skip if hash is undefined
+<span class=""> 1454: 							next;	# Skip if string is undefined
+</span><span class=""> 1455: 						}
+</span><span class=""> 1456: 						if(ref($value) ne &#39;ARRAY&#39;) {
+</span><span class=""> 1457: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1458: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1459: 							} else {
+</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1460: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be an arrayref, not &quot; . ref($value));
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1461: 							}
+</span><span class=""> 1462: 						}
+</span><span class=""> 1463: 						if(scalar(@{$value}) &gt; $rule_value) {
+</span><span class=""> 1464: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1465: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1466: 							} else {
+</span><span class=""> 1467: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must contain no more than $rule_value items&quot;);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1468: 							}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1469: 							$invalid_args{$key} = 1;
 </span><span class=""> 1470: 						}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1471: 						if(scalar(keys(%{$value})) &gt; $rule_value) {
-</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1472: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1473: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1474: 							} else {
-</span><span class=""> 1475: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must contain no more than $rule_value keys&quot;);
-</span><span class=""> 1476: 							}
-</span><span class=""> 1477: 							$invalid_args{$key} = 1;
-</span><span class=""> 1478: 						}
-</span><span class=""> 1479: 					} elsif(($type eq &#39;integer&#39;) || ($type eq &#39;number&#39;) || ($type eq &#39;float&#39;)) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1480: 						if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1481: 							next;	# Skip if hash is undefined
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1471: 					} elsif($type eq &#39;hashref&#39;) {
+</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1472: 						if(!defined($value)) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1473: 							next;	# Skip if hash is undefined
+</span><span class=""> 1474: 						}
+</span><span class=""> 1475: 						if(scalar(keys(%{$value})) &gt; $rule_value) {
+</span><span class=""> 1476: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1477: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1478: 							} else {
+</span><span class=""> 1479: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must contain no more than $rule_value keys&quot;);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1480: 							}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1481: 							$invalid_args{$key} = 1;
 </span><span class=""> 1482: 						}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1483: 						if(Scalar::Util::looks_like_number($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1484: 							if($value &gt; $rule_value) {
-</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1485: 								if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1486: 									_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1487: 								} else {
-</span><span class=""> 1488: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be no more than $rule_value&quot;);
-</span><span class=""> 1489: 								}
-</span><span class=""> 1490: 								$invalid_args{$key} = 1;
-</span><span class=""> 1491: 								next;
-</span><span class=""> 1492: 							}
-</span><span class=""> 1493: 						} else {
-</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1494: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1483: 					} elsif(($type eq &#39;integer&#39;) || ($type eq &#39;number&#39;) || ($type eq &#39;float&#39;)) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1484: 						if(!defined($value)) {
+</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1485: 							next;	# Skip if hash is undefined
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1486: 						}
+</span><span class=""> 1487: 						if(Scalar::Util::looks_like_number($value)) {
+</span><span class=""> 1488: 							if($value &gt; $rule_value) {
+</span><span class=""> 1489: 								if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1490: 									_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1491: 								} elsif(($type eq &#39;integer&#39;) &amp;&amp; ($value == 0)) {
+</span><span class=""> 1492: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a negative number&quot;);
+</span><span class=""> 1493: 								} elsif(($type eq &#39;integer&#39;) &amp;&amp; ($value == -1)) {
+</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1494: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a negative, non-zero number&quot;);
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
 					<ul>
 				<li><b>COND_INV_1494_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
 </li></ul></details>
-<span class=""> 1495: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1496: 							} else {
-</span><span class=""> 1497: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a number&quot;);
-</span><span class=""> 1498: 							}
-</span><span class=""> 1499: 							next;
-</span><span class=""> 1500: 						}
-</span><span class=""> 1501: 					} else {
-</span><span class=""> 1502: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; of type &#39;$type&#39; has meaningless max value $rule_value&quot;);
-</span><span class=""> 1503: 					}
-</span><span class=""> 1504: 				} elsif(($rule_name eq &#39;matches&#39;) || ($rule_name eq &#39;regex&#39;)) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1505: 					if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1506: 						next;	# Skip if string is undefined
-</span><span class=""> 1507: 					}
-</span><span class=""> 1508: 					eval {
-</span><span class=""> 1509: 						my $re = (ref($rule_value) eq &#39;Regexp&#39;) ? $rule_value : qr/\Q$rule_value\E/;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1510: 						if(($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1511: 							my @matches = grep { $_ =~ $re } @{$value};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1512: 							if(scalar(@matches) != scalar(@{$value})) {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1513: 								if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1514: 									_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1515: 								} else {
-</span><span class=""> 1516: 									_error($logger, &quot;$rule_description: All members of parameter &#39;$key&#39; [&quot;, join(&#39;, &#39;, @{$value}), &quot;] must match pattern &#39;$rule_value&#39;&quot;);
-</span><span class=""> 1517: 								}
-</span><span class=""> 1518: 							}
-</span><span class=""> 1519: 						} elsif($value !~ $re) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1520: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1521: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1522: 							} else {
-</span><span class=""> 1523: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must match pattern &#39;$re&#39;&quot;);
-</span><span class=""> 1524: 							}
-</span><span class=""> 1525: 						}
-</span><span class=""> 1526: 						1;
-</span><span class=""> 1527: 					};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1528: 					if($@) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1529: 						if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1530: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1531: 						} else {
-</span><span class=""> 1532: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; regex &#39;$rule_value&#39; error: $@&quot;);
+<span class=""> 1495: 								} else {
+</span><span class=""> 1496: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be no more than $rule_value&quot;);
+</span><span class=""> 1497: 								}
+</span><span class=""> 1498: 								$invalid_args{$key} = 1;
+</span><span class=""> 1499: 								next;
+</span><span class=""> 1500: 							}
+</span><span class=""> 1501: 						} else {
+</span><span class=""> 1502: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1503: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1504: 							} else {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1505: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a number&quot;);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1506: 							}
+</span><span class=""> 1507: 							next;
+</span><span class=""> 1508: 						}
+</span><span class=""> 1509: 					} else {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1510: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; of type &#39;$type&#39; has meaningless max value $rule_value&quot;);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1511: 					}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1512: 				} elsif(($rule_name eq &#39;matches&#39;) || ($rule_name eq &#39;regex&#39;)) {
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1513: 					if(!defined($value)) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1514: 						next;	# Skip if string is undefined
+</span><span class=""> 1515: 					}
+</span><span class=""> 1516: 					eval {
+</span><span class=""> 1517: 						my $re = (ref($rule_value) eq &#39;Regexp&#39;) ? $rule_value : qr/\Q$rule_value\E/;
+</span><span class=""> 1518: 						if(($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;)) {
+</span><span class=""> 1519: 							my @matches = grep { $_ =~ $re } @{$value};
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1520: 							if(scalar(@matches) != scalar(@{$value})) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1521: 								if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1522: 									_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1523: 								} else {
+</span><span class=""> 1524: 									_error($logger, &quot;$rule_description: All members of parameter &#39;$key&#39; [&quot;, join(&#39;, &#39;, @{$value}), &quot;] must match pattern &#39;$rule_value&#39;&quot;);
+</span><span class=""> 1525: 								}
+</span><span class=""> 1526: 							}
+</span><span class=""> 1527: 						} elsif($value !~ $re) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1528: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1529: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1530: 							} else {
+</span><span class=""> 1531: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must match pattern &#39;$re&#39;&quot;);
+</span><span class=""> 1532: 							}
 </span><span class=""> 1533: 						}
-</span><span class=""> 1534: 						$invalid_args{$key} = 1;
-</span><span class=""> 1535: 					}
-</span><span class=""> 1536: 				} elsif($rule_name eq &#39;nomatch&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1537: 					if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1538: 						next;	# Skip if string is undefined
-</span><span class=""> 1539: 					}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1540: 					if(($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1541: 						my @matches = grep { /$rule_value/ } @{$value};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1542: 						if(scalar(@matches)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1543: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1544: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1545: 							} else {
-</span><span class=""> 1546: 								_error($logger, &quot;$rule_description: No member of parameter &#39;$key&#39; [&quot;, join(&#39;, &#39;, @{$value}), &quot;] must match pattern &#39;$rule_value&#39;&quot;);
-</span><span class=""> 1547: 							}
-</span><span class=""> 1548: 						}
-</span><span class=""> 1549: 					} elsif($value =~ $rule_value) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1550: 						if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1551: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1552: 						} else {
-</span><span class=""> 1553: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must not match pattern &#39;$rule_value&#39;&quot;);
-</span><span class=""> 1554: 						}
-</span><span class=""> 1555: 						$invalid_args{$key} = 1;
-</span><span class=""> 1556: 					}
-</span><span class=""> 1557: 				} elsif(($rule_name eq &#39;memberof&#39;) || ($rule_name eq &#39;enum&#39;) || ($rule_name eq &#39;values&#39;)) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1558: 					if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1559: 						next;	# Skip if string is undefined
-</span><span class=""> 1560: 					}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1561: 					if(ref($rule_value) eq &#39;ARRAY&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1562: 						my $ok = 1;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1563: 						if(($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;number&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;float&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1564: 							unless(List::Util::any { $_ == $value } @{$rule_value}) {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1565: 								$ok = 0;
-</span><span class=""> 1566: 							}
-</span><span class=""> 1567: 						} else {
-</span><span class=""> 1568: 							my $l = lc($value);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1569: 							unless(List::Util::any { (!defined($rules-&gt;{&#39;case_sensitive&#39;}) || ($rules-&gt;{&#39;case_sensitive&#39;} == 1)) ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1570: 								$ok = 0;
-</span><span class=""> 1571: 							}
-</span><span class=""> 1572: 						}
-</span><span class=""> 1573: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1574: 						if(!$ok) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1575: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1576: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1577: 							} else {
-</span><span class=""> 1578: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be one of &quot;, join(&#39;, &#39;, @{$rule_value}));
+</span><span class=""> 1534: 						1;
+</span><span class=""> 1535: 					};
+</span><span class=""> 1536: 					if($@) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1537: 						if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1538: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1539: 						} else {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1540: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; regex &#39;$rule_value&#39; error: $@&quot;);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1541: 						}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1542: 						$invalid_args{$key} = 1;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1543: 					}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1544: 				} elsif($rule_name eq &#39;nomatch&#39;) {
+</span><span class=""> 1545: 					if(!defined($value)) {
+</span><span class=""> 1546: 						next;	# Skip if string is undefined
+</span><span class=""> 1547: 					}
+</span><span class=""> 1548: 					if(($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;)) {
+</span><span class=""> 1549: 						my @matches = grep { /$rule_value/ } @{$value};
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1550: 						if(scalar(@matches)) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1551: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1552: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1553: 							} else {
+</span><span class=""> 1554: 								_error($logger, &quot;$rule_description: No member of parameter &#39;$key&#39; [&quot;, join(&#39;, &#39;, @{$value}), &quot;] must match pattern &#39;$rule_value&#39;&quot;);
+</span><span class=""> 1555: 							}
+</span><span class=""> 1556: 						}
+</span><span class=""> 1557: 					} elsif($value =~ $rule_value) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1558: 						if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1559: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1560: 						} else {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1561: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must not match pattern &#39;$rule_value&#39;&quot;);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1562: 						}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1563: 						$invalid_args{$key} = 1;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1564: 					}
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1565: 				} elsif(($rule_name eq &#39;memberof&#39;) || ($rule_name eq &#39;enum&#39;) || ($rule_name eq &#39;values&#39;)) {
+</span><span class=""> 1566: 					if(!defined($value)) {
+</span><span class=""> 1567: 						next;	# Skip if string is undefined
+</span><span class=""> 1568: 					}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1569: 					if(ref($rule_value) eq &#39;ARRAY&#39;) {
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1570: 						my $ok = 1;
+</span><span class=""> 1571: 						if(($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;number&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;float&#39;)) {
+</span><span class=""> 1572: 							unless(List::Util::any { $_ == $value } @{$rule_value}) {
+</span><span class=""> 1573: 								$ok = 0;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1574: 							}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1575: 						} else {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1576: 							my $l = lc($value);
+</span><span class=""> 1577: 							unless(List::Util::any { (!defined($rules-&gt;{&#39;case_sensitive&#39;}) || ($rules-&gt;{&#39;case_sensitive&#39;} == 1)) ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
+</span><span class=""> 1578: 								$ok = 0;
 </span><span class=""> 1579: 							}
-</span><span class=""> 1580: 							$invalid_args{$key} = 1;
-</span><span class=""> 1581: 						}
-</span><span class=""> 1582: 					} else {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1583: 						if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1584: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1585: 						} else {
-</span><span class=""> 1586: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; rule ($rule_value) must be an array reference&quot;);
-</span><span class=""> 1587: 						}
-</span><span class=""> 1588: 					}
-</span><span class=""> 1589: 				} elsif($rule_name eq &#39;notmemberof&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1590: 					if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1591: 						next;	# Skip if string is undefined
-</span><span class=""> 1592: 					}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1593: 					if(ref($rule_value) eq &#39;ARRAY&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1594: 						my $ok = 1;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1595: 						if(($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;number&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;float&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1596: 							if(List::Util::any { $_ == $value } @{$rule_value}) {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1597: 								$ok = 0;
-</span><span class=""> 1598: 							}
-</span><span class=""> 1599: 						} else {
-</span><span class=""> 1600: 							my $l = lc($value);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1601: 							if(List::Util::any { (!defined($rules-&gt;{&#39;case_sensitive&#39;}) || ($rules-&gt;{&#39;case_sensitive&#39;} == 1)) ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1602: 								$ok = 0;
-</span><span class=""> 1603: 							}
-</span><span class=""> 1604: 						}
-</span><span class=""> 1605: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1606: 						if(!$ok) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1607: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1608: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1609: 							} else {
-</span><span class=""> 1610: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must not be one of &quot;, join(&#39;, &#39;, @{$rule_value}));
+</span><span class=""> 1580: 						}
+</span><span class=""> 1581: 
+</span><span class=""> 1582: 						if(!$ok) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1583: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1584: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1585: 							} else {
+</span><span class=""> 1586: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be one of &quot;, join(&#39;, &#39;, @{$rule_value}));
+</span><span class=""> 1587: 							}
+</span><span class=""> 1588: 							$invalid_args{$key} = 1;
+</span><span class=""> 1589: 						}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1590: 					} else {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1591: 						if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1592: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1593: 						} else {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1594: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; rule ($rule_value) must be an array reference&quot;);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1595: 						}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1596: 					}
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1597: 				} elsif($rule_name eq &#39;notmemberof&#39;) {
+</span><span class=""> 1598: 					if(!defined($value)) {
+</span><span class=""> 1599: 						next;	# Skip if string is undefined
+</span><span class=""> 1600: 					}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1601: 					if(ref($rule_value) eq &#39;ARRAY&#39;) {
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1602: 						my $ok = 1;
+</span><span class=""> 1603: 						if(($rules-&gt;{&#39;type&#39;} eq &#39;integer&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;number&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;float&#39;)) {
+</span><span class=""> 1604: 							if(List::Util::any { $_ == $value } @{$rule_value}) {
+</span><span class=""> 1605: 								$ok = 0;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1606: 							}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1607: 						} else {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1608: 							my $l = lc($value);
+</span><span class=""> 1609: 							if(List::Util::any { (!defined($rules-&gt;{&#39;case_sensitive&#39;}) || ($rules-&gt;{&#39;case_sensitive&#39;} == 1)) ? $_ eq $value : lc($_) eq $l } @{$rule_value}) {
+</span><span class=""> 1610: 								$ok = 0;
 </span><span class=""> 1611: 							}
-</span><span class=""> 1612: 							$invalid_args{$key} = 1;
-</span><span class=""> 1613: 						}
-</span><span class=""> 1614: 					} else {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1615: 						if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1616: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1617: 						} else {
-</span><span class=""> 1618: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; rule ($rule_value) must be an array reference&quot;);
-</span><span class=""> 1619: 						}
-</span><span class=""> 1620: 					}
-</span><span class=""> 1621: 				} elsif($rule_name eq &#39;isa&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1622: 					if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1623: 						next;	# Skip if object not given
-</span><span class=""> 1624: 					}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1625: 					if($rules-&gt;{&#39;type&#39;} eq &#39;object&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1626: 						if(!$value-&gt;isa($rule_value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1627: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be a &#39;$rule_value&#39; object got a &quot; . (ref($value) ? ref($value) : $value) . &#39; object instead&#39;);
-</span><span class=""> 1628: 							$invalid_args{$key} = 1;
-</span><span class=""> 1629: 						}
-</span><span class=""> 1630: 					} else {
-</span><span class=""> 1631: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; has meaningless isa value $rule_value&quot;);
+</span><span class=""> 1612: 						}
+</span><span class=""> 1613: 
+</span><span class=""> 1614: 						if(!$ok) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1615: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1616: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1617: 							} else {
+</span><span class=""> 1618: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must not be one of &quot;, join(&#39;, &#39;, @{$rule_value}));
+</span><span class=""> 1619: 							}
+</span><span class=""> 1620: 							$invalid_args{$key} = 1;
+</span><span class=""> 1621: 						}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1622: 					} else {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1623: 						if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1624: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1625: 						} else {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1626: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; rule ($rule_value) must be an array reference&quot;);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1627: 						}
+</span><span class=""> 1628: 					}
+</span><span class=""> 1629: 				} elsif($rule_name eq &#39;isa&#39;) {
+</span><span class=""> 1630: 					if(!defined($value)) {
+</span><span class=""> 1631: 						next;	# Skip if object not given
 </span><span class=""> 1632: 					}
-</span><span class=""> 1633: 				} elsif($rule_name eq &#39;can&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1634: 					if(!defined($value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1635: 						next;	# Skip if object not given
-</span><span class=""> 1636: 					}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1637: 					if($rules-&gt;{&#39;type&#39;} eq &#39;object&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1638: 						if(ref($rule_value) eq &#39;ARRAY&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1639: 							# List of methods
-</span><span class=""> 1640: 							foreach my $method(@{$rule_value}) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1641: 								if(!$value-&gt;can($method)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1642: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be an object that understands the $method method&quot;);
-</span><span class=""> 1643: 									$invalid_args{$key} = 1;
-</span><span class=""> 1644: 								}
-</span><span class=""> 1645: 							}
-</span><span class=""> 1646: 						} elsif(!ref($rule_value)) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1647: 							if(!$value-&gt;can($rule_value)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1648: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be an object that understands the $rule_value method&quot;);
-</span><span class=""> 1649: 								$invalid_args{$key} = 1;
-</span><span class=""> 1650: 							}
-</span><span class=""> 1651: 						} else {
-</span><span class=""> 1652: 							_error($logger, &quot;$rule_description: &#39;can&#39; rule for Parameter &#39;$key must be either a scalar or an arrayref&quot;);
-</span><span class=""> 1653: 						}
-</span><span class=""> 1654: 					} else {
-</span><span class=""> 1655: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; has meaningless can value &#39;$rule_value&#39; for parameter type $rules-&gt;{type}&quot;);
-</span><span class=""> 1656: 					}
-</span><span class=""> 1657: 				} elsif($rule_name eq &#39;element_type&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1658: 					if(($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1659: 						my $type = $rule_value;
-</span><span class=""> 1660: 						my $custom_type = $custom_types-&gt;{$rule_value};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1661: 						if($custom_type &amp;&amp; $custom_type-&gt;{&#39;type&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1662: 							$type = $custom_type-&gt;{&#39;type&#39;};
-</span><span class=""> 1663: 						}
-</span><span class=""> 1664: 						foreach my $member(@{$value}) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1665: 							if($custom_type &amp;&amp; $custom_type-&gt;{&#39;transform&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1666: 								# The custom type has a transform embedded within it
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1667: 								if(ref($custom_type-&gt;{&#39;transform&#39;}) eq &#39;CODE&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1668: 									$member = &amp;{$custom_type-&gt;{&#39;transform&#39;}}($member);
-</span><span class=""> 1669: 								} else {
-</span><span class=""> 1670: 									_error($logger, &quot;$rule_description: transforms must be a code ref&quot;);
-</span><span class=""> 1671: 									last;
-</span><span class=""> 1672: 								}
-</span><span class=""> 1673: 							}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1674: 							if(($type eq &#39;string&#39;) || ($type eq &#39;Str&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1675: 								if(ref($member)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1676: 									if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1677: 										_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1678: 									} else {
-</span><span class=""> 1679: 										_error($logger, &quot;$key can only contain strings&quot;);
-</span><span class=""> 1680: 									}
-</span><span class=""> 1681: 									$invalid_args{$key} = 1;
-</span><span class=""> 1682: 								}
-</span><span class=""> 1683: 							} elsif($type eq &#39;integer&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1684: 								if(ref($member) || ($member =~ /\D/)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1685: 									if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1686: 										_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1687: 									} else {
-</span><span class=""> 1688: 										_error($logger, &quot;$key can only contain integers (found $member)&quot;);
-</span><span class=""> 1689: 									}
-</span><span class=""> 1690: 									$invalid_args{$key} = 1;
-</span><span class=""> 1691: 								}
-</span><span class=""> 1692: 							} elsif(($type eq &#39;number&#39;) || ($rule_value eq &#39;float&#39;)) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1693: 								if(ref($member) || ($member !~ /^[-+]?(\d*\.\d+|\d+\.?\d*)$/)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1694: 									if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1695: 										_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1696: 									} else {
-</span><span class=""> 1697: 										_error($logger, &quot;$key can only contain numbers (found $member)&quot;);
-</span><span class=""> 1698: 									}
-</span><span class=""> 1699: 									$invalid_args{$key} = 1;
-</span><span class=""> 1700: 								}
-</span><span class=""> 1701: 							} else {
-</span><span class=""> 1702: 								_error($logger, &quot;BUG: Add $type to element_type list&quot;);
-</span><span class=""> 1703: 							}
-</span><span class=""> 1704: 						}
-</span><span class=""> 1705: 					} else {
-</span><span class=""> 1706: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; has meaningless element_type value $rule_value&quot;);
-</span><span class=""> 1707: 					}
-</span><span class=""> 1708: 				} elsif($rule_name eq &#39;optional&#39;) {
-</span><span class=""> 1709: 					# Already handled at the beginning of the loop
-</span><span class=""> 1710: 				} elsif($rule_name eq &#39;nullable&#39;) {
-</span><span class=""> 1711: 					# Already handled at the beginning of the loop (same as optional)
-</span><span class=""> 1712: 				} elsif($rule_name eq &#39;default&#39;) {
-</span><span class=""> 1713: 					# Handled earlier
-</span><span class=""> 1714: 				} elsif($rule_name eq &#39;error_msg&#39;) {
-</span><span class=""> 1715: 					# Handled inline
-</span><span class=""> 1716: 				} elsif($rule_name eq &#39;transform&#39;) {
-</span><span class=""> 1717: 					# Handled before the loop
-</span><span class=""> 1718: 				} elsif($rule_name eq &#39;case_sensitive&#39;) {
-</span><span class=""> 1719: 					# Handled inline
-</span><span class=""> 1720: 				} elsif($rule_name eq &#39;description&#39;) {
-</span><span class=""> 1721: 					# A la, Data::Processor
-</span><span class=""> 1722: 				} elsif($rule_name =~ /^_/) {
-</span><span class=""> 1723: 					# Ignore internal/metadata fields from schema extraction
-</span><span class=""> 1724: 				} elsif($rule_name eq &#39;semantic&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1725: 					if($rule_value eq &#39;unix_timestamp&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1726: 						if($value &lt; 0 || $value &gt; 2147483647) {
-</span><p> <b> Mutants (Total: 7, Killed: 7, Survived: 0)</b><p><span class=""> 1727: 							error($logger, &#39;Invalid Unix timestamp: $value&#39;);
-</span><span class=""> 1728: 						}
-</span><span class=""> 1729: 					} else {
-</span><span class=""> 1730: 						_warn($logger, &quot;semantic type $rule_value is not yet supported&quot;);
-</span><span class=""> 1731: 					}
-</span><span class=""> 1732: 				} elsif($rule_name eq &#39;schema&#39;) {
-</span><span class=""> 1733: 					# Nested schema Run the given schema against each element of the array
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1734: 					if(($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1735: 						if(ref($value) eq &#39;ARRAY&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1736: 							foreach my $member(@{$value}) {
-</span><span class=""> 1737: 								# Distinguish two schema forms:
-</span><span class=""> 1738: 								# (a) Rule hash   &acirc;&#128;&#148; has a top-level &#39;type&#39; key, e.g. { type=&gt;&#39;string&#39;, matches=&gt;qr/.../ }
-</span><span class=""> 1739: 								#     &acirc;&#134;&#146; validate each element against that rule directly.
-</span><span class=""> 1740: 								# (b) Field-schema hash &acirc;&#128;&#148; keys are field names whose values are rule hashes,
-</span><span class=""> 1741: 								#     e.g. { name=&gt;{type=&gt;&#39;string&#39;}, age=&gt;{type=&gt;&#39;integer&#39;} }
-</span><span class=""> 1742: 								#     &acirc;&#134;&#146; validate each hashref element against the field schema directly.
-</span><span class=""> 1743: 								my $is_field_schema = (ref($rule_value) eq &#39;HASH&#39;) &amp;&amp; !exists($rule_value-&gt;{&#39;type&#39;});
-</span><span class=""> 1744: 								my %inner = (custom_types =&gt; $custom_types);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1745: 								if($is_field_schema) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1746: 									$inner{input}  = $member;
-</span><span class=""> 1747: 									$inner{schema} = $rule_value;
-</span><span class=""> 1748: 								} else {
-</span><span class=""> 1749: 									$inner{input}  = { $key =&gt; $member };
-</span><span class=""> 1750: 									$inner{schema} = { $key =&gt; $rule_value };
-</span><span class=""> 1751: 								}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1752: 								if(!validate_strict(\%inner)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1753: 									$invalid_args{$key} = 1;
-</span><span class=""> 1754: 								}
-</span><span class=""> 1755: 							}
-</span><span class=""> 1756: 						} elsif(defined($value)) {	# Allow undef for optional values
-</span><span class=""> 1757: 							_error($logger, &quot;$rule_description: nested schema: Parameter &#39;$value&#39; must be an arrayref&quot;);
-</span><span class=""> 1758: 						}
-</span><span class=""> 1759: 					} elsif($rules-&gt;{&#39;type&#39;} eq &#39;hashref&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1760: 						if(ref($rule_value) eq &#39;HASH&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1761: 							# Apply nested defaults before validation
-</span><span class=""> 1762: 							my $nested_with_defaults = _apply_nested_defaults($value, $rule_value);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1763: 							if(scalar keys(%{$nested_with_defaults})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1764: 								if(my $new_args = validate_strict({ input =&gt; $nested_with_defaults, schema =&gt; $rule_value, custom_types =&gt; $custom_types })) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1765: 									$value = $new_args;
-</span><span class=""> 1766: 								} else {
-</span><span class=""> 1767: 									$invalid_args{$key} = 1;
-</span><span class=""> 1768: 								}
-</span><span class=""> 1769: 							}
-</span><span class=""> 1770: 						} else {
-</span><span class=""> 1771: 							_error($logger, &quot;$rule_description: nested schema: Parameter &#39;$value&#39; must be an hashref&quot;);
-</span><span class=""> 1772: 						}
-</span><span class=""> 1773: 					} else {
-</span><span class=""> 1774: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;schema&#39; only supports arrayref and hashref, not $rules-&gt;{type}&quot;);
-</span><span class=""> 1775: 					}
-</span><span class=""> 1776: 				} elsif(($rule_name eq &#39;validate&#39;) || ($rule_name eq &#39;validator&#39;)) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1777: 					if(ref($rule_value) eq &#39;CODE&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1778: 						if(my $error = &amp;{$rule_value}($args)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1779: 							_error($logger, &quot;$rule_description: $key not valid: $error&quot;);
-</span><span class=""> 1780: 							$invalid_args{$key} = 1;
-</span><span class=""> 1781: 						}
-</span><span class=""> 1782: 					} else {
-</span><span class=""> 1783: 						# _error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;validate&#39; only supports coderef, not $value&quot;);
-</span><span class=""> 1784: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;validate&#39; only supports coderef, not &quot; . ref($rule_value) // $rule_value);
-</span><span class=""> 1785: 					}
-</span><span class=""> 1786: 				} elsif ($rule_name eq &#39;callback&#39;) {
-</span><span class=""> 1787: 					# Custom validation code
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1788: 					unless (defined &amp;$rule_value) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1789: 						_error($logger, &quot;$rule_description: callback for &#39;$key&#39; must be a code reference&quot;);
-</span><span class=""> 1790: 					}
-</span><span class=""> 1791: 					my $res = $rule_value-&gt;($value, $args, $schema);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1792: 					unless ($res) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1793: 						if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1794: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
-</span><span class=""> 1795: 						} else {
-</span><span class=""> 1796: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; failed custom validation&quot;);
-</span><span class=""> 1797: 						}
-</span><span class=""> 1798: 						$invalid_args{$key} = 1;
-</span><span class=""> 1799: 					}
-</span><span class=""> 1800: 				} elsif($rule_name eq &#39;position&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1801: 					if($rule_value =~ /\D/) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1802: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;position&#39; must be an integer&quot;);
-</span><span class=""> 1803: 					}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1804: 					if($rule_value &lt; 0) {
-</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class=""> 1805: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;position&#39; must be a positive integer, not $value&quot;);
-</span><span class=""> 1806: 					}
-</span><span class=""> 1807: 				} else {
-</span><span class=""> 1808: 					_error($logger, &quot;$rule_description: Unknown rule &#39;$rule_name&#39;&quot;);
-</span><span class=""> 1809: 				}
-</span><span class=""> 1810: 			}
-</span><span class=""> 1811: 		} elsif(ref($rules) eq &#39;ARRAY&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1812: 			if(scalar(@{$rules})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1813: 				# An argument can be one of several different types.
-</span><span class=""> 1814: 				# This path handles both explicit array-of-rules schemas and the
-</span><span class=""> 1815: 				# normalised form of union type shorthand (type =&gt; [&#39;a&#39;, &#39;b&#39;, ...]).
-</span><span class=""> 1816: 				my $rc = 0;
-</span><span class=""> 1817: 				my @types;
-</span><span class=""> 1818: 				foreach my $rule(@{$rules}) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1819: 					if(ref($rule) ne &#39;HASH&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1820: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; rules must be a hash reference&quot;);
-</span><span class=""> 1821: 						next;
-</span><span class=""> 1822: 					}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1823: 					if(!defined($rule-&gt;{&#39;type&#39;})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1824: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; is missing a type in an alternative&quot;);
-</span><span class=""> 1825: 						next;
-</span><span class=""> 1826: 					}
-</span><span class=""> 1827: 					push @types, $rule-&gt;{&#39;type&#39;};
-</span><span class=""> 1828: 					my $result;
-</span><span class=""> 1829: 					eval {
-</span><span class=""> 1830: 						$result = validate_strict({ input =&gt; { $key =&gt; $value }, schema =&gt; { $key =&gt; $rule }, logger =&gt; undef, custom_types =&gt; $custom_types });
-</span><span class=""> 1831: 					};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1832: 					if(!$@) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1833: 						# Capture coercion performed by the successful sub-validation
-</span><span class=""> 1834: 						# (e.g. integer/number coercion) so the outer scope sees it.
-</span><span class=""> 1835: 						$value = $result-&gt;{$key} if(defined($result));
-</span><span class=""> 1836: 						$rc = 1;
-</span><span class=""> 1837: 						last;
-</span><span class=""> 1838: 					}
-</span><span class=""> 1839: 				}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1840: 				if(!$rc) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1841: 					_error($logger, &quot;$rule_description: Parameter: &#39;$key&#39;: must be one of &quot; . join(&#39;, &#39;, @types));
-</span><span class=""> 1842: 					$invalid_args{$key} = 1;
-</span><span class=""> 1843: 				}
-</span><span class=""> 1844: 			} else {
-</span><span class=""> 1845: 				_error($logger, &quot;$rule_description: Parameter: &#39;$key&#39;: schema is empty arrayref&quot;);
-</span><span class=""> 1846: 			}
-</span><span class=""> 1847: 		} elsif(ref($rules)) {
-</span><span class=""> 1848: 			_error($logger, &#39;rules must be a hash reference or string&#39;);
-</span><span class=""> 1849: 		}
-</span><span class=""> 1850: 
-</span><span class=""> 1851: 		$validated_args{$key} = $value;
-</span><span class=""> 1852: 	}
-</span><span class=""> 1853: 
-</span><span class=""> 1854: 	# Validate parameter relationships
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1855 → 1855 → 1859</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1855 → 1855 → 0</span></span> 1855: 	if (my $relationships = $params-&gt;{&#39;relationships&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1856: 		_validate_relationships(\%validated_args, $relationships, $logger, $schema_description);
-</span><span class=""> 1857: 	}
+</span><span class=""> 1633: 					if($rules-&gt;{&#39;type&#39;} eq &#39;object&#39;) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1634: 						if(!$value-&gt;isa($rule_value)) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1635: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be a &#39;$rule_value&#39; object got a &quot; . (ref($value) ? ref($value) : $value) . &#39; object instead&#39;);
+</span><span class=""> 1636: 							$invalid_args{$key} = 1;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1637: 						}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1638: 					} else {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1639: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; has meaningless isa value $rule_value&quot;);
+</span><span class=""> 1640: 					}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1641: 				} elsif($rule_name eq &#39;can&#39;) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1642: 					if(!defined($value)) {
+</span><span class=""> 1643: 						next;	# Skip if object not given
+</span><span class=""> 1644: 					}
+</span><span class=""> 1645: 					if($rules-&gt;{&#39;type&#39;} eq &#39;object&#39;) {
+</span><span class=""> 1646: 						if(ref($rule_value) eq &#39;ARRAY&#39;) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1647: 							# List of methods
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1648: 							foreach my $method(@{$rule_value}) {
+</span><span class=""> 1649: 								if(!$value-&gt;can($method)) {
+</span><span class=""> 1650: 									_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be an object that understands the $method method&quot;);
+</span><span class=""> 1651: 									$invalid_args{$key} = 1;
+</span><span class=""> 1652: 								}
+</span><span class=""> 1653: 							}
+</span><span class=""> 1654: 						} elsif(!ref($rule_value)) {
+</span><span class=""> 1655: 							if(!$value-&gt;can($rule_value)) {
+</span><span class=""> 1656: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be an object that understands the $rule_value method&quot;);
+</span><span class=""> 1657: 								$invalid_args{$key} = 1;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1658: 							}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1659: 						} else {
+</span><span class=""> 1660: 							_error($logger, &quot;$rule_description: &#39;can&#39; rule for Parameter &#39;$key must be either a scalar or an arrayref&quot;);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1661: 						}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1662: 					} else {
+</span><span class=""> 1663: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; has meaningless can value &#39;$rule_value&#39; for parameter type $rules-&gt;{type}&quot;);
+</span><span class=""> 1664: 					}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1665: 				} elsif($rule_name eq &#39;element_type&#39;) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1666: 					if(($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;)) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1667: 						my $type = $rule_value;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1668: 						my $custom_type = $custom_types-&gt;{$rule_value};
+</span><span class=""> 1669: 						if($custom_type &amp;&amp; $custom_type-&gt;{&#39;type&#39;}) {
+</span><span class=""> 1670: 							$type = $custom_type-&gt;{&#39;type&#39;};
+</span><span class=""> 1671: 						}
+</span><span class=""> 1672: 						foreach my $member(@{$value}) {
+</span><span class=""> 1673: 							if($custom_type &amp;&amp; $custom_type-&gt;{&#39;transform&#39;}) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1674: 								# The custom type has a transform embedded within it
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1675: 								if(ref($custom_type-&gt;{&#39;transform&#39;}) eq &#39;CODE&#39;) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1676: 									$member = &amp;{$custom_type-&gt;{&#39;transform&#39;}}($member);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1677: 								} else {
+</span><span class=""> 1678: 									_error($logger, &quot;$rule_description: transforms must be a code ref&quot;);
+</span><span class=""> 1679: 									last;
+</span><span class=""> 1680: 								}
+</span><span class=""> 1681: 							}
+</span><span class=""> 1682: 							if(($type eq &#39;string&#39;) || ($type eq &#39;Str&#39;)) {
+</span><span class=""> 1683: 								if(ref($member)) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1684: 									if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1685: 										_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1686: 									} else {
+</span><span class=""> 1687: 										_error($logger, &quot;$key can only contain strings&quot;);
+</span><span class=""> 1688: 									}
+</span><span class=""> 1689: 									$invalid_args{$key} = 1;
+</span><span class=""> 1690: 								}
+</span><span class=""> 1691: 							} elsif($type eq &#39;integer&#39;) {
+</span><span class=""> 1692: 								if(ref($member) || ($member =~ /\D/)) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1693: 									if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1694: 										_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1695: 									} else {
+</span><span class=""> 1696: 										_error($logger, &quot;$key can only contain integers (found $member)&quot;);
+</span><span class=""> 1697: 									}
+</span><span class=""> 1698: 									$invalid_args{$key} = 1;
+</span><span class=""> 1699: 								}
+</span><span class=""> 1700: 							} elsif(($type eq &#39;number&#39;) || ($rule_value eq &#39;float&#39;)) {
+</span><span class=""> 1701: 								if(ref($member) || ($member !~ /^[-+]?(\d*\.\d+|\d+\.?\d*)$/)) {
+</span><span class=""> 1702: 									if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class=""> 1703: 										_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1704: 									} else {
+</span><span class=""> 1705: 										_error($logger, &quot;$key can only contain numbers (found $member)&quot;);
+</span><span class=""> 1706: 									}
+</span><span class=""> 1707: 									$invalid_args{$key} = 1;
+</span><span class=""> 1708: 								}
+</span><span class=""> 1709: 							} else {
+</span><span class=""> 1710: 								_error($logger, &quot;BUG: Add $type to element_type list&quot;);
+</span><span class=""> 1711: 							}
+</span><span class=""> 1712: 						}
+</span><span class=""> 1713: 					} else {
+</span><span class=""> 1714: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; has meaningless element_type value $rule_value&quot;);
+</span><span class=""> 1715: 					}
+</span><span class=""> 1716: 				} elsif($rule_name eq &#39;optional&#39;) {
+</span><span class=""> 1717: 					# Already handled at the beginning of the loop
+</span><span class=""> 1718: 				} elsif($rule_name eq &#39;nullable&#39;) {
+</span><span class=""> 1719: 					# Already handled at the beginning of the loop (same as optional)
+</span><span class=""> 1720: 				} elsif($rule_name eq &#39;default&#39;) {
+</span><span class=""> 1721: 					# Handled earlier
+</span><span class=""> 1722: 				} elsif($rule_name eq &#39;error_msg&#39;) {
+</span><span class=""> 1723: 					# Handled inline
+</span><span class=""> 1724: 				} elsif($rule_name eq &#39;transform&#39;) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1725: 					# Handled before the loop
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1726: 				} elsif($rule_name eq &#39;case_sensitive&#39;) {
+</span><p> <b> Mutants (Total: 7, Killed: 7, Survived: 0)</b><p><span class=""> 1727: 					# Handled inline
+</span><span class=""> 1728: 				} elsif($rule_name eq &#39;description&#39;) {
+</span><span class=""> 1729: 					# A la, Data::Processor
+</span><span class=""> 1730: 				} elsif($rule_name =~ /^_/) {
+</span><span class=""> 1731: 					# Ignore internal/metadata fields from schema extraction
+</span><span class=""> 1732: 				} elsif($rule_name eq &#39;semantic&#39;) {
+</span><span class=""> 1733: 					if($rule_value eq &#39;unix_timestamp&#39;) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1734: 						if($value &lt; 0 || $value &gt; 2147483647) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1735: 							error($logger, &#39;Invalid Unix timestamp: $value&#39;);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1736: 						}
+</span><span class=""> 1737: 					} else {
+</span><span class=""> 1738: 						_warn($logger, &quot;semantic type $rule_value is not yet supported&quot;);
+</span><span class=""> 1739: 					}
+</span><span class=""> 1740: 				} elsif($rule_name eq &#39;schema&#39;) {
+</span><span class=""> 1741: 					# Nested schema Run the given schema against each element of the array
+</span><span class=""> 1742: 					if(($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39;) || ($rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;)) {
+</span><span class=""> 1743: 						if(ref($value) eq &#39;ARRAY&#39;) {
+</span><span class=""> 1744: 							foreach my $member(@{$value}) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1745: 								# Distinguish two schema forms:
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1746: 								# (a) Rule hash   &acirc;&#128;&#148; has a top-level &#39;type&#39; key, e.g. { type=&gt;&#39;string&#39;, matches=&gt;qr/.../ }
+</span><span class=""> 1747: 								#     &acirc;&#134;&#146; validate each element against that rule directly.
+</span><span class=""> 1748: 								# (b) Field-schema hash &acirc;&#128;&#148; keys are field names whose values are rule hashes,
+</span><span class=""> 1749: 								#     e.g. { name=&gt;{type=&gt;&#39;string&#39;}, age=&gt;{type=&gt;&#39;integer&#39;} }
+</span><span class=""> 1750: 								#     &acirc;&#134;&#146; validate each hashref element against the field schema directly.
+</span><span class=""> 1751: 								my $is_field_schema = (ref($rule_value) eq &#39;HASH&#39;) &amp;&amp; !exists($rule_value-&gt;{&#39;type&#39;});
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1752: 								my %inner = (custom_types =&gt; $custom_types);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1753: 								if($is_field_schema) {
+</span><span class=""> 1754: 									$inner{input}  = $member;
+</span><span class=""> 1755: 									$inner{schema} = $rule_value;
+</span><span class=""> 1756: 								} else {
+</span><span class=""> 1757: 									$inner{input}  = { $key =&gt; $member };
+</span><span class=""> 1758: 									$inner{schema} = { $key =&gt; $rule_value };
+</span><span class=""> 1759: 								}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1760: 								if(!validate_strict(\%inner)) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1761: 									$invalid_args{$key} = 1;
+</span><span class=""> 1762: 								}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1763: 							}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1764: 						} elsif(defined($value)) {	# Allow undef for optional values
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1765: 							_error($logger, &quot;$rule_description: nested schema: Parameter &#39;$value&#39; must be an arrayref&quot;);
+</span><span class=""> 1766: 						}
+</span><span class=""> 1767: 					} elsif($rules-&gt;{&#39;type&#39;} eq &#39;hashref&#39;) {
+</span><span class=""> 1768: 						if(ref($rule_value) eq &#39;HASH&#39;) {
+</span><span class=""> 1769: 							# Apply nested defaults before validation
+</span><span class=""> 1770: 							my $nested_with_defaults = _apply_nested_defaults($value, $rule_value);
+</span><span class=""> 1771: 							if(scalar keys(%{$nested_with_defaults})) {
+</span><span class=""> 1772: 								if(my $new_args = validate_strict({ input =&gt; $nested_with_defaults, schema =&gt; $rule_value, custom_types =&gt; $custom_types })) {
+</span><span class=""> 1773: 									$value = $new_args;
+</span><span class=""> 1774: 								} else {
+</span><span class=""> 1775: 									$invalid_args{$key} = 1;
+</span><span class=""> 1776: 								}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1777: 							}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1778: 						} else {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1779: 							_error($logger, &quot;$rule_description: nested schema: Parameter &#39;$value&#39; must be an hashref&quot;);
+</span><span class=""> 1780: 						}
+</span><span class=""> 1781: 					} else {
+</span><span class=""> 1782: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;schema&#39; only supports arrayref and hashref, not $rules-&gt;{type}&quot;);
+</span><span class=""> 1783: 					}
+</span><span class=""> 1784: 				} elsif(($rule_name eq &#39;validate&#39;) || ($rule_name eq &#39;validator&#39;)) {
+</span><span class=""> 1785: 					if(ref($rule_value) eq &#39;CODE&#39;) {
+</span><span class=""> 1786: 						if(my $error = &amp;{$rule_value}($args)) {
+</span><span class=""> 1787: 							_error($logger, &quot;$rule_description: $key not valid: $error&quot;);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1788: 							$invalid_args{$key} = 1;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1789: 						}
+</span><span class=""> 1790: 					} else {
+</span><span class=""> 1791: 						# _error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;validate&#39; only supports coderef, not $value&quot;);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1792: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;validate&#39; only supports coderef, not &quot; . ref($rule_value) // $rule_value);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1793: 					}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1794: 				} elsif ($rule_name eq &#39;callback&#39;) {
+</span><span class=""> 1795: 					# Custom validation code
+</span><span class=""> 1796: 					unless (defined &amp;$rule_value) {
+</span><span class=""> 1797: 						_error($logger, &quot;$rule_description: callback for &#39;$key&#39; must be a code reference&quot;);
+</span><span class=""> 1798: 					}
+</span><span class=""> 1799: 					my $res = $rule_value-&gt;($value, $args, $schema);
+</span><span class=""> 1800: 					unless ($res) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1801: 						if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1802: 							_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class=""> 1803: 						} else {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1804: 							_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; failed custom validation&quot;);
+</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class=""> 1805: 						}
+</span><span class=""> 1806: 						$invalid_args{$key} = 1;
+</span><span class=""> 1807: 					}
+</span><span class=""> 1808: 				} elsif($rule_name eq &#39;position&#39;) {
+</span><span class=""> 1809: 					if($rule_value =~ /\D/) {
+</span><span class=""> 1810: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;position&#39; must be an integer&quot;);
+</span><span class=""> 1811: 					}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1812: 					if($rule_value &lt; 0) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1813: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39;: &#39;position&#39; must be a positive integer, not $value&quot;);
+</span><span class=""> 1814: 					}
+</span><span class=""> 1815: 				} else {
+</span><span class=""> 1816: 					_error($logger, &quot;$rule_description: Unknown rule &#39;$rule_name&#39;&quot;);
+</span><span class=""> 1817: 				}
+</span><span class=""> 1818: 			}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1819: 		} elsif(ref($rules) eq &#39;ARRAY&#39;) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1820: 			if(scalar(@{$rules})) {
+</span><span class=""> 1821: 				# An argument can be one of several different types.
+</span><span class=""> 1822: 				# This path handles both explicit array-of-rules schemas and the
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1823: 				# normalised form of union type shorthand (type =&gt; [&#39;a&#39;, &#39;b&#39;, ...]).
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1824: 				my $rc = 0;
+</span><span class=""> 1825: 				my @types;
+</span><span class=""> 1826: 				foreach my $rule(@{$rules}) {
+</span><span class=""> 1827: 					if(ref($rule) ne &#39;HASH&#39;) {
+</span><span class=""> 1828: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; rules must be a hash reference&quot;);
+</span><span class=""> 1829: 						next;
+</span><span class=""> 1830: 					}
+</span><span class=""> 1831: 					if(!defined($rule-&gt;{&#39;type&#39;})) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1832: 						_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; is missing a type in an alternative&quot;);
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1833: 						next;
+</span><span class=""> 1834: 					}
+</span><span class=""> 1835: 					push @types, $rule-&gt;{&#39;type&#39;};
+</span><span class=""> 1836: 					my $result;
+</span><span class=""> 1837: 					eval {
+</span><span class=""> 1838: 						$result = validate_strict({ input =&gt; { $key =&gt; $value }, schema =&gt; { $key =&gt; $rule }, logger =&gt; undef, custom_types =&gt; $custom_types });
+</span><span class=""> 1839: 					};
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1840: 					if(!$@) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1841: 						# Capture coercion performed by the successful sub-validation
+</span><span class=""> 1842: 						# (e.g. integer/number coercion) so the outer scope sees it.
+</span><span class=""> 1843: 						$value = $result-&gt;{$key} if(defined($result));
+</span><span class=""> 1844: 						$rc = 1;
+</span><span class=""> 1845: 						last;
+</span><span class=""> 1846: 					}
+</span><span class=""> 1847: 				}
+</span><span class=""> 1848: 				if(!$rc) {
+</span><span class=""> 1849: 					_error($logger, &quot;$rule_description: Parameter: &#39;$key&#39;: must be one of &quot; . join(&#39;, &#39;, @types));
+</span><span class=""> 1850: 					$invalid_args{$key} = 1;
+</span><span class=""> 1851: 				}
+</span><span class=""> 1852: 			} else {
+</span><span class=""> 1853: 				_error($logger, &quot;$rule_description: Parameter: &#39;$key&#39;: schema is empty arrayref&quot;);
+</span><span class=""> 1854: 			}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1855: 		} elsif(ref($rules)) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1856: 			_error($logger, &#39;rules must be a hash reference or string&#39;);
+</span><span class=""> 1857: 		}
 </span><span class=""> 1858: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1859 → 1859 → 1874</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1859 → 1859 → 0</span></span> 1859: 	if(my $cross_validation = $params-&gt;{&#39;cross_validation&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1860: 		foreach my $validator_name(keys %{$cross_validation}) {
-</span><span class=""> 1861: 			my $validator = $cross_validation-&gt;{$validator_name};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1862: 			if((!ref($validator)) || (ref($validator) ne &#39;CODE&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1863: 				_error($logger, &quot;$schema_description: cross_validation $validator is not a code snippet&quot;);
-</span><span class=""> 1864: 				next;
-</span><span class=""> 1865: 			}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1866: 			if(my $error = &amp;{$validator}(\%validated_args, $validator)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1867: 				_error($logger, $error);
-</span><span class=""> 1868: 				# We have no idea which parameters are still valid, so let&#39;s invalidate them all
-</span><span class=""> 1869: 				return;
-</span><span class=""> 1870: 			}
-</span><span class=""> 1871: 		}
-</span><span class=""> 1872: 	}
-</span><span class=""> 1873: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1874 → 1874 → 1878</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1874 → 1874 → 0</span></span> 1874: 	foreach my $key(keys %invalid_args) {
-</span><span class=""> 1875: 		delete $validated_args{$key};
-</span><span class=""> 1876: 	}
-</span><span class=""> 1877: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1878 → 1878 → 1895</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1878 → 1878 → 0</span></span> 1878: 	if($are_positional_args == 1) {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1879: 		my @rc;
-</span><span class=""> 1880: 		foreach my $key (keys %{$schema}) {
-</span><span class=""> 1881: 			# Use exists() rather than if(my $value = ...) so that falsy but
-</span><span class=""> 1882: 			# valid coerced values (integer 0, empty string, undef from an
-</span><span class=""> 1883: 			# absent optional) are not silently dropped from the return array.
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1884: 			if(exists $validated_args{$key}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1885: 				my $value = delete $validated_args{$key};
-</span><span class=""> 1886: 				my $position = $schema-&gt;{$key}-&gt;{&#39;position&#39;};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1887: 				if(defined($rc[$position])) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1888: 					_error($logger, &quot;$schema_description: $key: position $position appears twice&quot;);
-</span><span class=""> 1889: 				}
-</span><span class=""> 1890: 				$rc[$position] = $value;
-</span><span class=""> 1891: 			}
-</span><span class=""> 1892: 		}
-</span><span class=""> 1893: 		return \@rc;
-</span><span class=""> 1894: 	}
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1895 → 1895 → 0</span></span> 1895: 	return \%validated_args;
-</span><span class=""> 1896: }
-</span><span class=""> 1897: 
-</span><span class=""> 1898: # _schema_from_arrayref($arrayref, $logger)
-</span><span class=""> 1899: #
-</span><span class=""> 1900: # Normalise an arrayref schema:
-</span><span class=""> 1901: #   [ { name =&gt; &#39;param&#39;, type =&gt; &#39;string&#39;, ... }, ... ]
-</span><span class=""> 1902: # to the standard named-parameter hashref form:
-</span><span class=""> 1903: #   { param =&gt; { type =&gt; &#39;string&#39;, ... }, ... }
-</span><span class=""> 1904: #
-</span><span class=""> 1905: # The &#39;name&#39; key is consumed during conversion and does not become a rule.
-</span><span class=""> 1906: # Croaks if any element is not a hashref, is missing &#39;name&#39;, or if a name
-</span><span class=""> 1907: # appears more than once.
-</span><span class=""> 1908: sub _schema_from_arrayref
-</span><span class=""> 1909: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1910 → 1913 → 1924</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1910 → 1913 → 0</span></span> 1910: 	my ($arrayref, $logger) = @_;
-</span><span class=""> 1911: 
-</span><span class=""> 1912: 	my %schema;
-</span><span class=""> 1913: 	foreach my $spec (@{$arrayref}) {
-</span><span class=""> 1914: 		_error($logger, &quot;validate_strict: each arrayref schema element must be a hashref&quot;)
-</span><span class=""> 1915: 			unless ref($spec) eq &#39;HASH&#39;;
-</span><span class=""> 1916: 		_error($logger, &quot;validate_strict: arrayref schema element must have a &#39;name&#39; key&quot;)
-</span><span class=""> 1917: 			unless exists($spec-&gt;{&#39;name&#39;});
-</span><span class=""> 1918: 		my %rule = %{$spec};
-</span><span class=""> 1919: 		my $name = delete $rule{&#39;name&#39;};
-</span><span class=""> 1920: 		_error($logger, &quot;validate_strict: duplicate parameter &#39;$name&#39; in arrayref schema&quot;)
-</span><span class=""> 1921: 			if exists($schema{$name});
-</span><span class=""> 1922: 		$schema{$name} = \%rule;
-</span><span class=""> 1923: 	}
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1924 → 1924 → 0</span></span> 1924: 	return \%schema;
-</span><span class=""> 1925: }
-</span><span class=""> 1926: 
-</span><span class=""> 1927: # Return number of visible characters not number of bytes
-</span><span class=""> 1928: # Ensure string is decoded into Perl characters
-</span><span class=""> 1929: sub _number_of_characters
-</span><span class=""> 1930: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1931 → 1935 → 1939</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1931 → 1935 → 0</span></span> 1931: 	my $value = $_[0];
-</span><span class=""> 1932: 
-</span><span class=""> 1933: 	return if(!defined($value));
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1859: 		$validated_args{$key} = $value;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1860: 	}
+</span><span class=""> 1861: 
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1862: 	# Validate parameter relationships
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1863 → 1863 → 1867</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1863 → 1863 → 0</span></span> 1863: 	if (my $relationships = $params-&gt;{&#39;relationships&#39;}) {
+</span><span class=""> 1864: 		_validate_relationships(\%validated_args, $relationships, $logger, $schema_description);
+</span><span class=""> 1865: 	}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1866: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1867 → 1867 → 1882</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1867 → 1867 → 0</span></span> 1867: 	if(my $cross_validation = $params-&gt;{&#39;cross_validation&#39;}) {
+</span><span class=""> 1868: 		foreach my $validator_name(keys %{$cross_validation}) {
+</span><span class=""> 1869: 			my $validator = $cross_validation-&gt;{$validator_name};
+</span><span class=""> 1870: 			if((!ref($validator)) || (ref($validator) ne &#39;CODE&#39;)) {
+</span><span class=""> 1871: 				_error($logger, &quot;$schema_description: cross_validation $validator is not a code snippet&quot;);
+</span><span class=""> 1872: 				next;
+</span><span class=""> 1873: 			}
+</span><span class=""> 1874: 			if(my $error = &amp;{$validator}(\%validated_args, $validator)) {
+</span><span class=""> 1875: 				_error($logger, $error);
+</span><span class=""> 1876: 				# We have no idea which parameters are still valid, so let&#39;s invalidate them all
+</span><span class=""> 1877: 				return;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1878: 			}
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1879: 		}
+</span><span class=""> 1880: 	}
+</span><span class=""> 1881: 
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1882 → 1882 → 1886</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1882 → 1882 → 0</span></span> 1882: 	foreach my $key(keys %invalid_args) {
+</span><span class=""> 1883: 		delete $validated_args{$key};
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1884: 	}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1885: 
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1886 → 1886 → 1903</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1886 → 1886 → 0</span></span> 1886: 	if($are_positional_args == 1) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1887: 		my @rc;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1888: 		foreach my $key (keys %{$schema}) {
+</span><span class=""> 1889: 			# Use exists() rather than if(my $value = ...) so that falsy but
+</span><span class=""> 1890: 			# valid coerced values (integer 0, empty string, undef from an
+</span><span class=""> 1891: 			# absent optional) are not silently dropped from the return array.
+</span><span class=""> 1892: 			if(exists $validated_args{$key}) {
+</span><span class=""> 1893: 				my $value = delete $validated_args{$key};
+</span><span class=""> 1894: 				my $position = $schema-&gt;{$key}-&gt;{&#39;position&#39;};
+</span><span class=""> 1895: 				if(defined($rc[$position])) {
+</span><span class=""> 1896: 					_error($logger, &quot;$schema_description: $key: position $position appears twice&quot;);
+</span><span class=""> 1897: 				}
+</span><span class=""> 1898: 				$rc[$position] = $value;
+</span><span class=""> 1899: 			}
+</span><span class=""> 1900: 		}
+</span><span class=""> 1901: 		return \@rc;
+</span><span class=""> 1902: 	}
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1903 → 1903 → 0</span></span> 1903: 	return \%validated_args;
+</span><span class=""> 1904: }
+</span><span class=""> 1905: 
+</span><span class=""> 1906: # _schema_from_arrayref($arrayref, $logger)
+</span><span class=""> 1907: #
+</span><span class=""> 1908: # Normalise an arrayref schema:
+</span><span class=""> 1909: #   [ { name =&gt; &#39;param&#39;, type =&gt; &#39;string&#39;, ... }, ... ]
+</span><span class=""> 1910: # to the standard named-parameter hashref form:
+</span><span class=""> 1911: #   { param =&gt; { type =&gt; &#39;string&#39;, ... }, ... }
+</span><span class=""> 1912: #
+</span><span class=""> 1913: # The &#39;name&#39; key is consumed during conversion and does not become a rule.
+</span><span class=""> 1914: # Croaks if any element is not a hashref, is missing &#39;name&#39;, or if a name
+</span><span class=""> 1915: # appears more than once.
+</span><span class=""> 1916: sub _schema_from_arrayref
+</span><span class=""> 1917: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1918 → 1921 → 1932</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1918 → 1921 → 0</span></span> 1918: 	my ($arrayref, $logger) = @_;
+</span><span class=""> 1919: 
+</span><span class=""> 1920: 	my %schema;
+</span><span class=""> 1921: 	foreach my $spec (@{$arrayref}) {
+</span><span class=""> 1922: 		_error($logger, &quot;validate_strict: each arrayref schema element must be a hashref&quot;)
+</span><span class=""> 1923: 			unless ref($spec) eq &#39;HASH&#39;;
+</span><span class=""> 1924: 		_error($logger, &quot;validate_strict: arrayref schema element must have a &#39;name&#39; key&quot;)
+</span><span class=""> 1925: 			unless exists($spec-&gt;{&#39;name&#39;});
+</span><span class=""> 1926: 		my %rule = %{$spec};
+</span><span class=""> 1927: 		my $name = delete $rule{&#39;name&#39;};
+</span><span class=""> 1928: 		_error($logger, &quot;validate_strict: duplicate parameter &#39;$name&#39; in arrayref schema&quot;)
+</span><span class=""> 1929: 			if exists($schema{$name});
+</span><span class=""> 1930: 		$schema{$name} = \%rule;
+</span><span class=""> 1931: 	}
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1932 → 1932 → 0</span></span> 1932: 	return \%schema;
+</span><span class=""> 1933: }
 </span><span class=""> 1934: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1935: 	if($value !~ /[^[:ascii:]]/) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1936: 		return length($value);
-</span><span class=""> 1937: 	}
-</span><span class=""> 1938: 	# Decode only if it&#39;s not already a Perl character string
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1939 → 1945 → 0</span></span> 1939: 	$value = decode_utf8($value) unless utf8::is_utf8($value);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1935: # Return number of visible characters not number of bytes
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1936: # Ensure string is decoded into Perl characters
+</span><span class=""> 1937: sub _number_of_characters
+</span><span class=""> 1938: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1939 → 1943 → 1947</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1939 → 1943 → 0</span></span> 1939: 	my $value = $_[0];
 </span><span class=""> 1940: 
-</span><span class=""> 1941: 	# Count grapheme clusters (visible characters)
-</span><span class=""> 1942: 	# The pseudo-operator () = forces list context to count matches
-</span><span class=""> 1943: 	# return scalar( () = $value =~ /\X/g );
-</span><span class=""> 1944: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1945: 	return Unicode::GCString-&gt;new($value)-&gt;length();
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1946: }
-</span><span class=""> 1947: 
-</span><span class=""> 1948: sub _apply_nested_defaults {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1949 → 1952 → 1965</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1949 → 1952 → 0</span></span> 1949: 	my ($input, $schema) = @_;
-</span><span class=""> 1950: 	my %result = %$input;
-</span><span class=""> 1951: 
-</span><span class=""> 1952: 	foreach my $key (keys %$schema) {
-</span><span class=""> 1953: 		my $rules = $schema-&gt;{$key};
-</span><span class=""> 1954: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1955: 		if (ref $rules eq &#39;HASH&#39; &amp;&amp; exists $rules-&gt;{default} &amp;&amp; !exists $result{$key}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1956: 			$result{$key} = $rules-&gt;{default};
-</span><span class=""> 1957: 		}
-</span><span class=""> 1958: 
-</span><span class=""> 1959: 		# Recursively handle nested schema
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1960: 		if((ref $rules eq &#39;HASH&#39;) &amp;&amp; $rules-&gt;{schema} &amp;&amp; (ref $result{$key} eq &#39;HASH&#39;)) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1961: 			$result{$key} = _apply_nested_defaults($result{$key}, $rules-&gt;{schema});
-</span><span class=""> 1962: 		}
-</span><span class=""> 1963: 	}
-</span><span class=""> 1964: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1965 → 1965 → 0</span></span> 1965: 	return \%result;
-</span><span class=""> 1966: }
-</span><span class=""> 1967: 
-</span><span class=""> 1968: sub _validate_relationships {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1969 → 1973 → 0</span></span> 1969: 	my ($validated_args, $relationships, $logger, $description) = @_;
-</span><span class=""> 1970: 
-</span><span class=""> 1971: 	return unless ref($relationships) eq &#39;ARRAY&#39;;
+</span><span class=""> 1941: 	return if(!defined($value));
+</span><span class=""> 1942: 
+</span><span class=""> 1943: 	if($value !~ /[^[:ascii:]]/) {
+</span><span class=""> 1944: 		return length($value);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1945: 	}
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1946: 	# Decode only if it&#39;s not already a Perl character string
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1947 → 1953 → 0</span></span> 1947: 	$value = decode_utf8($value) unless utf8::is_utf8($value);
+</span><span class=""> 1948: 
+</span><span class=""> 1949: 	# Count grapheme clusters (visible characters)
+</span><span class=""> 1950: 	# The pseudo-operator () = forces list context to count matches
+</span><span class=""> 1951: 	# return scalar( () = $value =~ /\X/g );
+</span><span class=""> 1952: 
+</span><span class=""> 1953: 	return Unicode::GCString-&gt;new($value)-&gt;length();
+</span><span class=""> 1954: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1955: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1956: sub _apply_nested_defaults {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1957 → 1960 → 1973</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1957 → 1960 → 0</span></span> 1957: 	my ($input, $schema) = @_;
+</span><span class=""> 1958: 	my %result = %$input;
+</span><span class=""> 1959: 
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1960: 	foreach my $key (keys %$schema) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1961: 		my $rules = $schema-&gt;{$key};
+</span><span class=""> 1962: 
+</span><span class=""> 1963: 		if (ref $rules eq &#39;HASH&#39; &amp;&amp; exists $rules-&gt;{default} &amp;&amp; !exists $result{$key}) {
+</span><span class=""> 1964: 			$result{$key} = $rules-&gt;{default};
+</span><span class=""> 1965: 		}
+</span><span class=""> 1966: 
+</span><span class=""> 1967: 		# Recursively handle nested schema
+</span><span class=""> 1968: 		if((ref $rules eq &#39;HASH&#39;) &amp;&amp; $rules-&gt;{schema} &amp;&amp; (ref $result{$key} eq &#39;HASH&#39;)) {
+</span><span class=""> 1969: 			$result{$key} = _apply_nested_defaults($result{$key}, $rules-&gt;{schema});
+</span><span class=""> 1970: 		}
+</span><span class=""> 1971: 	}
 </span><span class=""> 1972: 
-</span><span class=""> 1973: 	foreach my $rel (@$relationships) {
-</span><span class=""> 1974: 		my $type = $rel-&gt;{type} or next;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1973 → 1973 → 0</span></span> 1973: 	return \%result;
+</span><span class=""> 1974: }
 </span><span class=""> 1975: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1976: 		if ($type eq &#39;mutually_exclusive&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1977: 			_validate_mutually_exclusive($validated_args, $rel, $logger, $description);
-</span><span class=""> 1978: 		} elsif ($type eq &#39;required_group&#39;) {
-</span><span class=""> 1979: 			_validate_required_group($validated_args, $rel, $logger, $description);
-</span><span class=""> 1980: 		} elsif ($type eq &#39;conditional_requirement&#39;) {
-</span><span class=""> 1981: 			_validate_conditional_requirement($validated_args, $rel, $logger, $description);
-</span><span class=""> 1982: 		} elsif ($type eq &#39;dependency&#39;) {
-</span><span class=""> 1983: 			_validate_dependency($validated_args, $rel, $logger, $description);
-</span><span class=""> 1984: 		} elsif ($type eq &#39;value_constraint&#39;) {
-</span><span class=""> 1985: 			_validate_value_constraint($validated_args, $rel, $logger, $description);
-</span><span class=""> 1986: 		} elsif ($type eq &#39;value_conditional&#39;) {
-</span><span class=""> 1987: 			_validate_value_conditional($validated_args, $rel, $logger, $description);
-</span><span class=""> 1988: 		} else {
-</span><span class=""> 1989: 			_error($logger, &quot;Unknown relationship type $type&quot;);
-</span><span class=""> 1990: 		}
-</span><span class=""> 1991: 	}
-</span><span class=""> 1992: }
-</span><span class=""> 1993: 
-</span><span class=""> 1994: sub _validate_mutually_exclusive {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1995 → 2002 → 0</span></span> 1995: 	my ($args, $rel, $logger, $description) = @_;
-</span><span class=""> 1996: 
-</span><span class=""> 1997: 	my @params = @{$rel-&gt;{params} || []};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1998: 	return unless @params &gt;= 2;
-</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 1999: 
-</span><span class=""> 2000: 	my @present = grep { exists($args-&gt;{$_}) &amp;&amp; defined($args-&gt;{$_}) } @params;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1976: sub _validate_relationships {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1977 → 1981 → 0</span></span> 1977: 	my ($validated_args, $relationships, $logger, $description) = @_;
+</span><span class=""> 1978: 
+</span><span class=""> 1979: 	return unless ref($relationships) eq &#39;ARRAY&#39;;
+</span><span class=""> 1980: 
+</span><span class=""> 1981: 	foreach my $rel (@$relationships) {
+</span><span class=""> 1982: 		my $type = $rel-&gt;{type} or next;
+</span><span class=""> 1983: 
+</span><span class=""> 1984: 		if ($type eq &#39;mutually_exclusive&#39;) {
+</span><span class=""> 1985: 			_validate_mutually_exclusive($validated_args, $rel, $logger, $description);
+</span><span class=""> 1986: 		} elsif ($type eq &#39;required_group&#39;) {
+</span><span class=""> 1987: 			_validate_required_group($validated_args, $rel, $logger, $description);
+</span><span class=""> 1988: 		} elsif ($type eq &#39;conditional_requirement&#39;) {
+</span><span class=""> 1989: 			_validate_conditional_requirement($validated_args, $rel, $logger, $description);
+</span><span class=""> 1990: 		} elsif ($type eq &#39;dependency&#39;) {
+</span><span class=""> 1991: 			_validate_dependency($validated_args, $rel, $logger, $description);
+</span><span class=""> 1992: 		} elsif ($type eq &#39;value_constraint&#39;) {
+</span><span class=""> 1993: 			_validate_value_constraint($validated_args, $rel, $logger, $description);
+</span><span class=""> 1994: 		} elsif ($type eq &#39;value_conditional&#39;) {
+</span><span class=""> 1995: 			_validate_value_conditional($validated_args, $rel, $logger, $description);
+</span><span class=""> 1996: 		} else {
+</span><span class=""> 1997: 			_error($logger, &quot;Unknown relationship type $type&quot;);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1998: 		}
+</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 1999: 	}
+</span><span class=""> 2000: }
 </span><span class=""> 2001: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2002: 	if (@present &gt; 1) {
-</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class=""> 2003: 		my $msg = $rel-&gt;{description} || &#39;Cannot specify both &#39; . join(&#39; and &#39;, @present);
-</span><span class=""> 2004: 		_error($logger, &quot;$description: $msg&quot;);
-</span><span class=""> 2005: 	}
-</span><span class=""> 2006: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2002: sub _validate_mutually_exclusive {
+</span><p> <b> Mutants (Total: 4, Killed: 4, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2003 → 2010 → 0</span></span> 2003: 	my ($args, $rel, $logger, $description) = @_;
+</span><span class=""> 2004: 
+</span><span class=""> 2005: 	my @params = @{$rel-&gt;{params} || []};
+</span><span class=""> 2006: 	return unless @params &gt;= 2;
 </span><span class=""> 2007: 
-</span><span class=""> 2008: sub _validate_required_group {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2009 → 2016 → 0</span></span> 2009: 	my ($args, $rel, $logger, $description) = @_;
-</span><span class=""> 2010: 
-</span><span class=""> 2011: 	my @params = @{$rel-&gt;{params} || []};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2012: 	return unless @params &gt;= 2;
-</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2013: 
-</span><span class=""> 2014: 	my @present = grep { exists($args-&gt;{$_}) &amp;&amp; defined($args-&gt;{$_}) } @params;
+</span><span class=""> 2008: 	my @present = grep { exists($args-&gt;{$_}) &amp;&amp; defined($args-&gt;{$_}) } @params;
+</span><span class=""> 2009: 
+</span><span class=""> 2010: 	if (@present &gt; 1) {
+</span><span class=""> 2011: 		my $msg = $rel-&gt;{description} || &#39;Cannot specify both &#39; . join(&#39; and &#39;, @present);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2012: 		_error($logger, &quot;$description: $msg&quot;);
+</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2013: 	}
+</span><span class=""> 2014: }
 </span><span class=""> 2015: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2016: 	if (@present == 0) {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 2017: 		my $msg = $rel-&gt;{description} ||
-</span><span class=""> 2018: 			&#39;Must specify at least one of: &#39; . join(&#39;, &#39;, @params);
-</span><span class=""> 2019: 		_error($logger, &quot;$description: $msg&quot;);
-</span><span class=""> 2020: 	}
-</span><span class=""> 2021: }
-</span><span class=""> 2022: 
-</span><span class=""> 2023: sub _validate_conditional_requirement {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2024 → 2030 → 0</span></span> 2024: 	my ($args, $rel, $logger, $description) = @_;
-</span><span class=""> 2025: 
-</span><span class=""> 2026: 	my $if_param = $rel-&gt;{if} or return;
-</span><span class=""> 2027: 	my $then_param = $rel-&gt;{then_required} or return;
-</span><span class=""> 2028: 
-</span><span class=""> 2029: 	# If the condition parameter is present and defined
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2030: 	if (exists($args-&gt;{$if_param}) &amp;&amp; defined($args-&gt;{$if_param})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2031: 		# Check if it&#39;s truthy (for booleans and general values)
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2032: 		if ($args-&gt;{$if_param}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2033: 			# Then the required parameter must also be present
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2034: 			unless (exists($args-&gt;{$then_param}) &amp;&amp; defined($args-&gt;{$then_param})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2035: 				my $msg = $rel-&gt;{description} || &quot;When $if_param is specified, $then_param is required&quot;;
-</span><span class=""> 2036: 				_error($logger, &quot;$description: $msg&quot;);
-</span><span class=""> 2037: 			}
-</span><span class=""> 2038: 		}
-</span><span class=""> 2039: 	}
-</span><span class=""> 2040: }
-</span><span class=""> 2041: 
-</span><span class=""> 2042: sub _validate_dependency {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2043 → 2049 → 0</span></span> 2043: 	my ($args, $rel, $logger, $description) = @_;
-</span><span class=""> 2044: 
-</span><span class=""> 2045: 	my $param = $rel-&gt;{param} or return;
-</span><span class=""> 2046: 	my $requires = $rel-&gt;{requires} or return;
-</span><span class=""> 2047: 
-</span><span class=""> 2048: 	# If param is present, requires must also be present
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2049: 	if (exists($args-&gt;{$param}) &amp;&amp; defined($args-&gt;{$param})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2050: 		unless (exists($args-&gt;{$requires}) &amp;&amp; defined($args-&gt;{$requires})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2051: 			my $msg = $rel-&gt;{description} || &quot;$param requires $requires to be specified&quot;;
-</span><span class=""> 2052: 			_error($logger, &quot;$description: $msg&quot;);
-</span><span class=""> 2053: 		}
-</span><span class=""> 2054: 	}
-</span><span class=""> 2055: }
-</span><span class=""> 2056: 
-</span><span class=""> 2057: sub _validate_value_constraint {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2058 → 2067 → 0</span></span> 2058: 	my ($args, $rel, $logger, $description) = @_;
-</span><span class=""> 2059: 
-</span><span class=""> 2060: 	my $if_param = $rel-&gt;{if} or return;
-</span><span class=""> 2061: 	my $then_param = $rel-&gt;{then} or return;
-</span><span class=""> 2062: 	my $operator = $rel-&gt;{operator} or return;
-</span><span class=""> 2063: 	my $value = $rel-&gt;{value};
-</span><span class=""> 2064: 	return unless defined $value;
-</span><span class=""> 2065: 
-</span><span class=""> 2066: 	# If the condition parameter is present and truthy
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2067: 	if (exists($args-&gt;{$if_param}) &amp;&amp; defined($args-&gt;{$if_param}) &amp;&amp; $args-&gt;{$if_param}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2068: 		# Check if the then parameter exists
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2069: 		if (exists($args-&gt;{$then_param}) &amp;&amp; defined($args-&gt;{$then_param})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2070: 			my $actual = $args-&gt;{$then_param};
-</span><span class=""> 2071: 			my $valid = 0;
-</span><span class=""> 2072: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2073: 			if ($operator eq &#39;==&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2074: 				$valid = ($actual == $value);
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2075: 			} elsif ($operator eq &#39;!=&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2076: 				$valid = ($actual != $value);
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2077: 			} elsif ($operator eq &#39;&lt;&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2078: 				$valid = ($actual &lt; $value);
-</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2079: 			} elsif ($operator eq &#39;&lt;=&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2080: 				$valid = ($actual &lt;= $value);
-</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2081: 			} elsif ($operator eq &#39;&gt;&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2082: 				$valid = ($actual &gt; $value);
-</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2083: 			} elsif ($operator eq &#39;&gt;=&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2084: 				$valid = ($actual &gt;= $value);
-</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2085: 			}
-</span><span class=""> 2086: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2087: 			unless ($valid) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2088: 				my $msg = $rel-&gt;{description} || &quot;When $if_param is specified, $then_param must be $operator $value (got $actual)&quot;;
-</span><span class=""> 2089: 				_error($logger, &quot;$description: $msg&quot;);
-</span><span class=""> 2090: 			}
-</span><span class=""> 2091: 		}
-</span><span class=""> 2092: 	}
-</span><span class=""> 2093: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2016: sub _validate_required_group {
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2017 → 2024 → 0</span></span> 2017: 	my ($args, $rel, $logger, $description) = @_;
+</span><span class=""> 2018: 
+</span><span class=""> 2019: 	my @params = @{$rel-&gt;{params} || []};
+</span><span class=""> 2020: 	return unless @params &gt;= 2;
+</span><span class=""> 2021: 
+</span><span class=""> 2022: 	my @present = grep { exists($args-&gt;{$_}) &amp;&amp; defined($args-&gt;{$_}) } @params;
+</span><span class=""> 2023: 
+</span><span class=""> 2024: 	if (@present == 0) {
+</span><span class=""> 2025: 		my $msg = $rel-&gt;{description} ||
+</span><span class=""> 2026: 			&#39;Must specify at least one of: &#39; . join(&#39;, &#39;, @params);
+</span><span class=""> 2027: 		_error($logger, &quot;$description: $msg&quot;);
+</span><span class=""> 2028: 	}
+</span><span class=""> 2029: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2030: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2031: sub _validate_conditional_requirement {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2032 → 2038 → 0</span></span> 2032: 	my ($args, $rel, $logger, $description) = @_;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2033: 
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2034: 	my $if_param = $rel-&gt;{if} or return;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2035: 	my $then_param = $rel-&gt;{then_required} or return;
+</span><span class=""> 2036: 
+</span><span class=""> 2037: 	# If the condition parameter is present and defined
+</span><span class=""> 2038: 	if (exists($args-&gt;{$if_param}) &amp;&amp; defined($args-&gt;{$if_param})) {
+</span><span class=""> 2039: 		# Check if it&#39;s truthy (for booleans and general values)
+</span><span class=""> 2040: 		if ($args-&gt;{$if_param}) {
+</span><span class=""> 2041: 			# Then the required parameter must also be present
+</span><span class=""> 2042: 			unless (exists($args-&gt;{$then_param}) &amp;&amp; defined($args-&gt;{$then_param})) {
+</span><span class=""> 2043: 				my $msg = $rel-&gt;{description} || &quot;When $if_param is specified, $then_param is required&quot;;
+</span><span class=""> 2044: 				_error($logger, &quot;$description: $msg&quot;);
+</span><span class=""> 2045: 			}
+</span><span class=""> 2046: 		}
+</span><span class=""> 2047: 	}
+</span><span class=""> 2048: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2049: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2050: sub _validate_dependency {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2051 → 2057 → 0</span></span> 2051: 	my ($args, $rel, $logger, $description) = @_;
+</span><span class=""> 2052: 
+</span><span class=""> 2053: 	my $param = $rel-&gt;{param} or return;
+</span><span class=""> 2054: 	my $requires = $rel-&gt;{requires} or return;
+</span><span class=""> 2055: 
+</span><span class=""> 2056: 	# If param is present, requires must also be present
+</span><span class=""> 2057: 	if (exists($args-&gt;{$param}) &amp;&amp; defined($args-&gt;{$param})) {
+</span><span class=""> 2058: 		unless (exists($args-&gt;{$requires}) &amp;&amp; defined($args-&gt;{$requires})) {
+</span><span class=""> 2059: 			my $msg = $rel-&gt;{description} || &quot;$param requires $requires to be specified&quot;;
+</span><span class=""> 2060: 			_error($logger, &quot;$description: $msg&quot;);
+</span><span class=""> 2061: 		}
+</span><span class=""> 2062: 	}
+</span><span class=""> 2063: }
+</span><span class=""> 2064: 
+</span><span class=""> 2065: sub _validate_value_constraint {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2066 → 2075 → 0</span></span> 2066: 	my ($args, $rel, $logger, $description) = @_;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2067: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2068: 	my $if_param = $rel-&gt;{if} or return;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2069: 	my $then_param = $rel-&gt;{then} or return;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2070: 	my $operator = $rel-&gt;{operator} or return;
+</span><span class=""> 2071: 	my $value = $rel-&gt;{value};
+</span><span class=""> 2072: 	return unless defined $value;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2073: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2074: 	# If the condition parameter is present and truthy
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2075: 	if (exists($args-&gt;{$if_param}) &amp;&amp; defined($args-&gt;{$if_param}) &amp;&amp; $args-&gt;{$if_param}) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2076: 		# Check if the then parameter exists
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2077: 		if (exists($args-&gt;{$then_param}) &amp;&amp; defined($args-&gt;{$then_param})) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2078: 			my $actual = $args-&gt;{$then_param};
+</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2079: 			my $valid = 0;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2080: 
+</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2081: 			if ($operator eq &#39;==&#39;) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2082: 				$valid = ($actual == $value);
+</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2083: 			} elsif ($operator eq &#39;!=&#39;) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2084: 				$valid = ($actual != $value);
+</span><p> <b> Mutants (Total: 3, Killed: 3, Survived: 0)</b><p><span class=""> 2085: 			} elsif ($operator eq &#39;&lt;&#39;) {
+</span><span class=""> 2086: 				$valid = ($actual &lt; $value);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2087: 			} elsif ($operator eq &#39;&lt;=&#39;) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2088: 				$valid = ($actual &lt;= $value);
+</span><span class=""> 2089: 			} elsif ($operator eq &#39;&gt;&#39;) {
+</span><span class=""> 2090: 				$valid = ($actual &gt; $value);
+</span><span class=""> 2091: 			} elsif ($operator eq &#39;&gt;=&#39;) {
+</span><span class=""> 2092: 				$valid = ($actual &gt;= $value);
+</span><span class=""> 2093: 			}
 </span><span class=""> 2094: 
-</span><span class=""> 2095: sub _validate_value_conditional {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2096 → 2104 → 0</span></span> 2096: 	my ($args, $rel, $logger, $description) = @_;
-</span><span class=""> 2097: 
-</span><span class=""> 2098: 	my $if_param = $rel-&gt;{if} or return;
-</span><span class=""> 2099: 	my $equals = $rel-&gt;{equals};
-</span><span class=""> 2100: 	my $then_param = $rel-&gt;{then_required} or return;
-</span><span class=""> 2101: 	return unless defined $equals;
+</span><span class=""> 2095: 			unless ($valid) {
+</span><span class=""> 2096: 				my $msg = $rel-&gt;{description} || &quot;When $if_param is specified, $then_param must be $operator $value (got $actual)&quot;;
+</span><span class=""> 2097: 				_error($logger, &quot;$description: $msg&quot;);
+</span><span class=""> 2098: 			}
+</span><span class=""> 2099: 		}
+</span><span class=""> 2100: 	}
+</span><span class=""> 2101: }
 </span><span class=""> 2102: 
-</span><span class=""> 2103: 	# If the parameter has the specific value
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2104: 	if (exists($args-&gt;{$if_param}) &amp;&amp; defined($args-&gt;{$if_param})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2105: 		if ($args-&gt;{$if_param} eq $equals) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2106: 			# Then the required parameter must be present
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2107: 			unless (exists($args-&gt;{$then_param}) &amp;&amp; defined($args-&gt;{$then_param})) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2108: 				my $msg = $rel-&gt;{description} ||
-</span><span class=""> 2109: 					&quot;When $if_param equals &#39;$equals&#39;, $then_param is required&quot;;
-</span><span class=""> 2110: 				_error($logger, &quot;$description: $msg&quot;);
-</span><span class=""> 2111: 			}
-</span><span class=""> 2112: 		}
-</span><span class=""> 2113: 	}
-</span><span class=""> 2114: }
-</span><span class=""> 2115: 
-</span><span class=""> 2116: # Helper to log error or croak
-</span><span class=""> 2117: sub _error
-</span><span class=""> 2118: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2119 → 2123 → 2126</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2119 → 2123 → 0</span></span> 2119: 	my $logger = shift;
-</span><span class=""> 2120: 	my $message = join(&#39;&#39;, @_);
-</span><span class=""> 2121: 
-</span><span class=""> 2122: 	my @call_details = caller(0);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2123: 	if($logger) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2124: 		$logger-&gt;error(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
-</span><span class=""> 2125: 	}
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2126 → 2128 → 0</span></span> 2126: 	croak(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
-</span><span class=""> 2127: 	# Be absolutely sure, sometimes croak doesn&#39;t die for me in Test::Most scripts
-</span><span class=""> 2128: 	die (__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
-</span><span class=""> 2129: }
-</span><span class=""> 2130: 
-</span><span class=""> 2131: # Helper to log warning or carp
-</span><span class=""> 2132: sub _warn
-</span><span class=""> 2133: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2134 → 2137 → 0</span></span> 2134: 	my $logger = shift;
-</span><span class=""> 2135: 	my $message = join(&#39;&#39;, @_);
-</span><span class=""> 2136: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2137: 	if($logger) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2138: 		$logger-&gt;warn(__PACKAGE__, &quot;: $message&quot;);
-</span><span class=""> 2139: 	} else {
-</span><span class=""> 2140: 		carp(__PACKAGE__, &quot;: $message&quot;);
-</span><span class=""> 2141: 	}
-</span><span class=""> 2142: }
-</span><span class=""> 2143: 
-</span><span class=""> 2144: =head1 AUTHOR
-</span><span class=""> 2145: 
-</span><span class=""> 2146: Nigel Horne, C&lt;&lt; &lt;njh at nigelhorne.com&gt; &gt;&gt;
-</span><span class=""> 2147: 
-</span><span class=""> 2148: =encoding utf-8
-</span><span class=""> 2149: 
-</span><span class=""> 2150: =head1 FORMAL SPECIFICATION
+</span><span class=""> 2103: sub _validate_value_conditional {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2104 → 2112 → 0</span></span> 2104: 	my ($args, $rel, $logger, $description) = @_;
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2105: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2106: 	my $if_param = $rel-&gt;{if} or return;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2107: 	my $equals = $rel-&gt;{equals};
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2108: 	my $then_param = $rel-&gt;{then_required} or return;
+</span><span class=""> 2109: 	return unless defined $equals;
+</span><span class=""> 2110: 
+</span><span class=""> 2111: 	# If the parameter has the specific value
+</span><span class=""> 2112: 	if (exists($args-&gt;{$if_param}) &amp;&amp; defined($args-&gt;{$if_param})) {
+</span><span class=""> 2113: 		if ($args-&gt;{$if_param} eq $equals) {
+</span><span class=""> 2114: 			# Then the required parameter must be present
+</span><span class=""> 2115: 			unless (exists($args-&gt;{$then_param}) &amp;&amp; defined($args-&gt;{$then_param})) {
+</span><span class=""> 2116: 				my $msg = $rel-&gt;{description} ||
+</span><span class=""> 2117: 					&quot;When $if_param equals &#39;$equals&#39;, $then_param is required&quot;;
+</span><span class=""> 2118: 				_error($logger, &quot;$description: $msg&quot;);
+</span><span class=""> 2119: 			}
+</span><span class=""> 2120: 		}
+</span><span class=""> 2121: 	}
+</span><span class=""> 2122: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2123: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2124: # Helper to log error or croak
+</span><span class=""> 2125: sub _error
+</span><span class=""> 2126: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2127 → 2131 → 2134</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2127 → 2131 → 0</span></span> 2127: 	my $logger = shift;
+</span><span class=""> 2128: 	my $message = join(&#39;&#39;, @_);
+</span><span class=""> 2129: 
+</span><span class=""> 2130: 	my @call_details = caller(0);
+</span><span class=""> 2131: 	if($logger) {
+</span><span class=""> 2132: 		$logger-&gt;error(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
+</span><span class=""> 2133: 	}
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2134 → 2136 → 0</span></span> 2134: 	croak(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
+</span><span class=""> 2135: 	# Be absolutely sure, sometimes croak doesn&#39;t die for me in Test::Most scripts
+</span><span class=""> 2136: 	die (__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2137: }
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2138: 
+</span><span class=""> 2139: # Helper to log warning or carp
+</span><span class=""> 2140: sub _warn
+</span><span class=""> 2141: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2142 → 2145 → 0</span></span> 2142: 	my $logger = shift;
+</span><span class=""> 2143: 	my $message = join(&#39;&#39;, @_);
+</span><span class=""> 2144: 
+</span><span class=""> 2145: 	if($logger) {
+</span><span class=""> 2146: 		$logger-&gt;warn(__PACKAGE__, &quot;: $message&quot;);
+</span><span class=""> 2147: 	} else {
+</span><span class=""> 2148: 		carp(__PACKAGE__, &quot;: $message&quot;);
+</span><span class=""> 2149: 	}
+</span><span class=""> 2150: }
 </span><span class=""> 2151: 
-</span><span class=""> 2152:     [PARAM_NAME, VALUE, TYPE_NAME, CONSTRAINT_VALUE]
+</span><span class=""> 2152: =head1 AUTHOR
 </span><span class=""> 2153: 
-</span><span class=""> 2154:     ValidationRule ::= SimpleType | ComplexRule | UnionType
+</span><span class=""> 2154: Nigel Horne, C&lt;&lt; &lt;njh at nigelhorne.com&gt; &gt;&gt;
 </span><span class=""> 2155: 
-</span><span class=""> 2156:     SimpleType ::= string | integer | number | arrayref | hashref | coderef | object
+</span><span class=""> 2156: =encoding utf-8
 </span><span class=""> 2157: 
-</span><span class=""> 2158:     UnionType ::= seq SimpleType    -- at least two members; written as type =&gt; [&#39;a&#39;, &#39;b&#39;]
+</span><span class=""> 2158: =head1 FORMAL SPECIFICATION
 </span><span class=""> 2159: 
-</span><span class=""> 2160:     ComplexRule == [
-</span><span class=""> 2161:         type: SimpleType | UnionType;
-</span><span class=""> 2162:         min: &acirc;&#132;&#149;&acirc;&#130;&#129;;
-</span><span class=""> 2163:         max: &acirc;&#132;&#149;&acirc;&#130;&#129;;
-</span><span class=""> 2164:         optional: &eth;&#157;&#148;&sup1;;
-</span><span class=""> 2165:         matches: REGEX;
-</span><span class=""> 2166:         regex: REGEX;
-</span><span class=""> 2167:         nomatch: REGEX;
-</span><span class=""> 2168: 	memberof: seq VALUE;
-</span><span class=""> 2169:         enum: seq VALUE;
-</span><span class=""> 2170:         values: seq VALUE;
-</span><span class=""> 2171:         notmemberof: seq VALUE;
-</span><span class=""> 2172:         callback: FUNCTION;
-</span><span class=""> 2173:         isa: TYPE_NAME;
-</span><span class=""> 2174:         can: METHOD_NAME
-</span><span class=""> 2175:     ]
-</span><span class=""> 2176: 
-</span><span class=""> 2177:     Schema == PARAM_NAME &acirc;&#135;&cedil; ValidationRule
-</span><span class=""> 2178: 
-</span><span class=""> 2179:     Arguments == PARAM_NAME &acirc;&#135;&cedil; VALUE
-</span><span class=""> 2180: 
-</span><span class=""> 2181:     ValidatedResult == PARAM_NAME &acirc;&#135;&cedil; VALUE
-</span><span class=""> 2182: 
-</span><span class=""> 2183:     &acirc;&#136;&#128; rule: ComplexRule &acirc;&#128;&cent;
-</span><span class=""> 2184:       rule.min &acirc;&#137;&curren; rule.max &acirc;&#136;&sect;
-</span><span class=""> 2185:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
-</span><span class=""> 2186:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.max) &acirc;&#136;&sect;
-</span><span class=""> 2187:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
-</span><span class=""> 2188:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.max)
-</span><span class=""> 2189: 
-</span><span class=""> 2190:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
-</span><span class=""> 2191:       dom(validate_strict(schema, args)) &acirc;&#138;&#134; dom(schema) &acirc;&#136;&ordf; dom(args)
-</span><span class=""> 2192: 
-</span><span class=""> 2193:     validate_strict: Schema &Atilde;&#151; Arguments &acirc;&#134;&#146; ValidatedResult
-</span><span class=""> 2194: 
-</span><span class=""> 2195:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
-</span><span class=""> 2196:       let result == validate_strict(schema, args) &acirc;&#128;&cent;
-</span><span class=""> 2197:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#136;&copy; dom(args) &acirc;&#128;&cent;
-</span><span class=""> 2198:           name &acirc;&#136;&#136; dom(result) &acirc;&#135;&#146;
-</span><span class=""> 2199:           type_matches(result(name), schema(name))) &acirc;&#136;&sect;
-</span><span class=""> 2200:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#128;&cent;
-</span><span class=""> 2201:           &Acirc;&not;optional(schema(name)) &acirc;&#135;&#146; name &acirc;&#136;&#136; dom(args))
+</span><span class=""> 2160:     [PARAM_NAME, VALUE, TYPE_NAME, CONSTRAINT_VALUE]
+</span><span class=""> 2161: 
+</span><span class=""> 2162:     ValidationRule ::= SimpleType | ComplexRule | UnionType
+</span><span class=""> 2163: 
+</span><span class=""> 2164:     SimpleType ::= string | integer | number | arrayref | hashref | coderef | object
+</span><span class=""> 2165: 
+</span><span class=""> 2166:     UnionType ::= seq SimpleType    -- at least two members; written as type =&gt; [&#39;a&#39;, &#39;b&#39;]
+</span><span class=""> 2167: 
+</span><span class=""> 2168:     ComplexRule == [
+</span><span class=""> 2169:         type: SimpleType | UnionType;
+</span><span class=""> 2170:         min: &acirc;&#132;&#149;&acirc;&#130;&#129;;
+</span><span class=""> 2171:         max: &acirc;&#132;&#149;&acirc;&#130;&#129;;
+</span><span class=""> 2172:         optional: &eth;&#157;&#148;&sup1;;
+</span><span class=""> 2173:         matches: REGEX;
+</span><span class=""> 2174:         regex: REGEX;
+</span><span class=""> 2175:         nomatch: REGEX;
+</span><span class=""> 2176: 	memberof: seq VALUE;
+</span><span class=""> 2177:         enum: seq VALUE;
+</span><span class=""> 2178:         values: seq VALUE;
+</span><span class=""> 2179:         notmemberof: seq VALUE;
+</span><span class=""> 2180:         callback: FUNCTION;
+</span><span class=""> 2181:         isa: TYPE_NAME;
+</span><span class=""> 2182:         can: METHOD_NAME
+</span><span class=""> 2183:     ]
+</span><span class=""> 2184: 
+</span><span class=""> 2185:     Schema == PARAM_NAME &acirc;&#135;&cedil; ValidationRule
+</span><span class=""> 2186: 
+</span><span class=""> 2187:     Arguments == PARAM_NAME &acirc;&#135;&cedil; VALUE
+</span><span class=""> 2188: 
+</span><span class=""> 2189:     ValidatedResult == PARAM_NAME &acirc;&#135;&cedil; VALUE
+</span><span class=""> 2190: 
+</span><span class=""> 2191:     &acirc;&#136;&#128; rule: ComplexRule &acirc;&#128;&cent;
+</span><span class=""> 2192:       rule.min &acirc;&#137;&curren; rule.max &acirc;&#136;&sect;
+</span><span class=""> 2193:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
+</span><span class=""> 2194:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.max) &acirc;&#136;&sect;
+</span><span class=""> 2195:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
+</span><span class=""> 2196:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.max)
+</span><span class=""> 2197: 
+</span><span class=""> 2198:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
+</span><span class=""> 2199:       dom(validate_strict(schema, args)) &acirc;&#138;&#134; dom(schema) &acirc;&#136;&ordf; dom(args)
+</span><span class=""> 2200: 
+</span><span class=""> 2201:     validate_strict: Schema &Atilde;&#151; Arguments &acirc;&#134;&#146; ValidatedResult
 </span><span class=""> 2202: 
-</span><span class=""> 2203:     type_matches: VALUE &Atilde;&#151; ValidationRule &acirc;&#134;&#146; &eth;&#157;&#148;&sup1;
-</span><span class=""> 2204: 
-</span><span class=""> 2205: =head1 EXAMPLE
-</span><span class=""> 2206: 
-</span><span class=""> 2207:     use Params::Get;
-</span><span class=""> 2208:     use Params::Validate::Strict;
-</span><span class=""> 2209: 
-</span><span class=""> 2210:     sub where_am_i
-</span><span class=""> 2211:     {
-</span><span class=""> 2212:         my $params = Params::Validate::Strict::validate_strict({
-</span><span class=""> 2213:             args =&gt; Params::Get::get_params(undef, \@_),
-</span><span class=""> 2214: 	    description =&gt; &#39;Print a string of latitude and longitude&#39;,
-</span><span class=""> 2215: 	    error_msg =&gt; &#39;Latitude is a number between +/- 90, longitude is a number between +/- 180&#39;,
-</span><span class=""> 2216:             members =&gt; {
-</span><span class=""> 2217:                 &#39;latitude&#39; =&gt; {
-</span><span class=""> 2218:                     type =&gt; &#39;number&#39;,
-</span><span class=""> 2219:                     min =&gt; -90,
-</span><span class=""> 2220:                     max =&gt; 90
-</span><span class=""> 2221:                 }, &#39;longitude&#39; =&gt; {
-</span><span class=""> 2222:                     type =&gt; &#39;number&#39;,
-</span><span class=""> 2223:                     min =&gt; -180,
-</span><span class=""> 2224:                     max =&gt; 180
-</span><span class=""> 2225:                 }
-</span><span class=""> 2226:             }
-</span><span class=""> 2227:         });
-</span><span class=""> 2228: 
-</span><span class=""> 2229:         print &#39;You are at &#39;, $params-&gt;{&#39;latitude&#39;}, &#39;, &#39;, $params-&gt;{&#39;longitude&#39;}, &quot;\n&quot;;
-</span><span class=""> 2230:     }
-</span><span class=""> 2231: 
-</span><span class=""> 2232:     where_am_i({ latitude =&gt; 3.14, longitude =&gt; -155 });
-</span><span class=""> 2233: 
-</span><span class=""> 2234: =head1 BUGS
-</span><span class=""> 2235: 
-</span><span class=""> 2236: =head1 SEE ALSO
-</span><span class=""> 2237: 
-</span><span class=""> 2238: =over 4
+</span><span class=""> 2203:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
+</span><span class=""> 2204:       let result == validate_strict(schema, args) &acirc;&#128;&cent;
+</span><span class=""> 2205:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#136;&copy; dom(args) &acirc;&#128;&cent;
+</span><span class=""> 2206:           name &acirc;&#136;&#136; dom(result) &acirc;&#135;&#146;
+</span><span class=""> 2207:           type_matches(result(name), schema(name))) &acirc;&#136;&sect;
+</span><span class=""> 2208:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#128;&cent;
+</span><span class=""> 2209:           &Acirc;&not;optional(schema(name)) &acirc;&#135;&#146; name &acirc;&#136;&#136; dom(args))
+</span><span class=""> 2210: 
+</span><span class=""> 2211:     type_matches: VALUE &Atilde;&#151; ValidationRule &acirc;&#134;&#146; &eth;&#157;&#148;&sup1;
+</span><span class=""> 2212: 
+</span><span class=""> 2213: =head1 EXAMPLE
+</span><span class=""> 2214: 
+</span><span class=""> 2215:     use Params::Get;
+</span><span class=""> 2216:     use Params::Validate::Strict;
+</span><span class=""> 2217: 
+</span><span class=""> 2218:     sub where_am_i
+</span><span class=""> 2219:     {
+</span><span class=""> 2220:         my $params = Params::Validate::Strict::validate_strict({
+</span><span class=""> 2221:             args =&gt; Params::Get::get_params(undef, \@_),
+</span><span class=""> 2222: 	    description =&gt; &#39;Print a string of latitude and longitude&#39;,
+</span><span class=""> 2223: 	    error_msg =&gt; &#39;Latitude is a number between +/- 90, longitude is a number between +/- 180&#39;,
+</span><span class=""> 2224:             members =&gt; {
+</span><span class=""> 2225:                 &#39;latitude&#39; =&gt; {
+</span><span class=""> 2226:                     type =&gt; &#39;number&#39;,
+</span><span class=""> 2227:                     min =&gt; -90,
+</span><span class=""> 2228:                     max =&gt; 90
+</span><span class=""> 2229:                 }, &#39;longitude&#39; =&gt; {
+</span><span class=""> 2230:                     type =&gt; &#39;number&#39;,
+</span><span class=""> 2231:                     min =&gt; -180,
+</span><span class=""> 2232:                     max =&gt; 180
+</span><span class=""> 2233:                 }
+</span><span class=""> 2234:             }
+</span><span class=""> 2235:         });
+</span><span class=""> 2236: 
+</span><span class=""> 2237:         print &#39;You are at &#39;, $params-&gt;{&#39;latitude&#39;}, &#39;, &#39;, $params-&gt;{&#39;longitude&#39;}, &quot;\n&quot;;
+</span><span class=""> 2238:     }
 </span><span class=""> 2239: 
-</span><span class=""> 2240: =item * L&lt;Test Dashboard|https://nigelhorne.github.io/Params-Validate-Strict/coverage/&gt;
+</span><span class=""> 2240:     where_am_i({ latitude =&gt; 3.14, longitude =&gt; -155 });
 </span><span class=""> 2241: 
-</span><span class=""> 2242: =item * L&lt;Data::Processor&gt;
+</span><span class=""> 2242: =head1 BUGS
 </span><span class=""> 2243: 
-</span><span class=""> 2244: =item * L&lt;Params::Get&gt;
+</span><span class=""> 2244: =head1 SEE ALSO
 </span><span class=""> 2245: 
-</span><span class=""> 2246: =item * L&lt;Params::Smart&gt;
+</span><span class=""> 2246: =over 4
 </span><span class=""> 2247: 
-</span><span class=""> 2248: =item * L&lt;Params::Validate&gt;
+</span><span class=""> 2248: =item * L&lt;Test Dashboard|https://nigelhorne.github.io/Params-Validate-Strict/coverage/&gt;
 </span><span class=""> 2249: 
-</span><span class=""> 2250: =item * L&lt;Return::Set&gt;
+</span><span class=""> 2250: =item * L&lt;Data::Processor&gt;
 </span><span class=""> 2251: 
-</span><span class=""> 2252: =item * L&lt;App::Test::Generator&gt;
+</span><span class=""> 2252: =item * L&lt;Params::Get&gt;
 </span><span class=""> 2253: 
-</span><span class=""> 2254: =back
+</span><span class=""> 2254: =item * L&lt;Params::Smart&gt;
 </span><span class=""> 2255: 
-</span><span class=""> 2256: =head1 SUPPORT
+</span><span class=""> 2256: =item * L&lt;Params::Validate&gt;
 </span><span class=""> 2257: 
-</span><span class=""> 2258: This module is provided as-is without any warranty.
+</span><span class=""> 2258: =item * L&lt;Return::Set&gt;
 </span><span class=""> 2259: 
-</span><span class=""> 2260: Please report any bugs or feature requests to C&lt;bug-params-validate-strict at rt.cpan.org&gt;,
-</span><span class=""> 2261: or through the web interface at
-</span><span class=""> 2262: L&lt;http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params-Validate-Strict&gt;.
-</span><span class=""> 2263: I will be notified, and then you&#39;ll
-</span><span class=""> 2264: automatically be notified of progress on your bug as I make changes.
+</span><span class=""> 2260: =item * L&lt;App::Test::Generator&gt;
+</span><span class=""> 2261: 
+</span><span class=""> 2262: =back
+</span><span class=""> 2263: 
+</span><span class=""> 2264: =head1 SUPPORT
 </span><span class=""> 2265: 
-</span><span class=""> 2266: You can find documentation for this module with the perldoc command.
+</span><span class=""> 2266: This module is provided as-is without any warranty.
 </span><span class=""> 2267: 
-</span><span class=""> 2268:     perldoc Params::Validate::Strict
-</span><span class=""> 2269: 
-</span><span class=""> 2270: You can also look for information at:
-</span><span class=""> 2271: 
-</span><span class=""> 2272: =over 4
+</span><span class=""> 2268: Please report any bugs or feature requests to C&lt;bug-params-validate-strict at rt.cpan.org&gt;,
+</span><span class=""> 2269: or through the web interface at
+</span><span class=""> 2270: L&lt;http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params-Validate-Strict&gt;.
+</span><span class=""> 2271: I will be notified, and then you&#39;ll
+</span><span class=""> 2272: automatically be notified of progress on your bug as I make changes.
 </span><span class=""> 2273: 
-</span><span class=""> 2274: =item * MetaCPAN
+</span><span class=""> 2274: You can find documentation for this module with the perldoc command.
 </span><span class=""> 2275: 
-</span><span class=""> 2276: L&lt;https://metacpan.org/dist/Params-Validate-Strict&gt;
+</span><span class=""> 2276:     perldoc Params::Validate::Strict
 </span><span class=""> 2277: 
-</span><span class=""> 2278: =item * RT: CPAN&#39;s request tracker
+</span><span class=""> 2278: You can also look for information at:
 </span><span class=""> 2279: 
-</span><span class=""> 2280: L&lt;https://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate-Strict&gt;
+</span><span class=""> 2280: =over 4
 </span><span class=""> 2281: 
-</span><span class=""> 2282: =item * CPAN Testers&#39; Matrix
+</span><span class=""> 2282: =item * MetaCPAN
 </span><span class=""> 2283: 
-</span><span class=""> 2284: L&lt;http://matrix.cpantesters.org/?dist=Params-Validate-Strict&gt;
+</span><span class=""> 2284: L&lt;https://metacpan.org/dist/Params-Validate-Strict&gt;
 </span><span class=""> 2285: 
-</span><span class=""> 2286: =item * CPAN Testers Dependencies
+</span><span class=""> 2286: =item * RT: CPAN&#39;s request tracker
 </span><span class=""> 2287: 
-</span><span class=""> 2288: L&lt;http://deps.cpantesters.org/?module=Params::Validate::Strict&gt;
+</span><span class=""> 2288: L&lt;https://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate-Strict&gt;
 </span><span class=""> 2289: 
-</span><span class=""> 2290: =back
+</span><span class=""> 2290: =item * CPAN Testers&#39; Matrix
 </span><span class=""> 2291: 
-</span><span class=""> 2292: =head1 LICENSE AND COPYRIGHT
+</span><span class=""> 2292: L&lt;http://matrix.cpantesters.org/?dist=Params-Validate-Strict&gt;
 </span><span class=""> 2293: 
-</span><span class=""> 2294: Copyright 2025-2026 Nigel Horne.
+</span><span class=""> 2294: =item * CPAN Testers Dependencies
 </span><span class=""> 2295: 
-</span><span class=""> 2296: This program is released under the following licence: GPL2.
-</span><span class=""> 2297: If you use it,
-</span><span class=""> 2298: please let me know.
+</span><span class=""> 2296: L&lt;http://deps.cpantesters.org/?module=Params::Validate::Strict&gt;
+</span><span class=""> 2297: 
+</span><span class=""> 2298: =back
 </span><span class=""> 2299: 
-</span><span class=""> 2300: =cut
+</span><span class=""> 2300: =head1 LICENSE AND COPYRIGHT
 </span><span class=""> 2301: 
-</span><span class=""> 2302: 1;
+</span><span class=""> 2302: Copyright 2025-2026 Nigel Horne.
 </span><span class=""> 2303: 
-</span><span class=""> 2304: __END__
+</span><span class=""> 2304: This program is released under the following licence: GPL2.
+</span><span class=""> 2305: If you use it,
+</span><span class=""> 2306: please let me know.
+</span><span class=""> 2307: 
+</span><span class=""> 2308: =cut
+</span><span class=""> 2309: 
+</span><span class=""> 2310: 1;
+</span><span class=""> 2311: 
+</span><span class=""> 2312: __END__
 </span></pre>
 
 <script>
