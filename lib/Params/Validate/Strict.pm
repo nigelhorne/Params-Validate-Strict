@@ -1406,6 +1406,10 @@ sub validate_strict
 							if($value < $rule_value) {
 								if($rules->{'error_msg'}) {
 									_error($logger, $rules->{'error_msg'});
+								} elsif(($type eq 'integer') && ($value == 0)) {
+									_error($logger, "$rule_description: Parameter '$key' ($value) must be a positive number");
+								} elsif(($type eq 'integer') && ($value == 1)) {
+									_error($logger, "$rule_description: Parameter '$key' ($value) must be a positive, non-zero number");
 								} else {
 									_error($logger, "$rule_description: Parameter '$key' ($value) must be at least $rule_value");
 								}
@@ -1484,6 +1488,10 @@ sub validate_strict
 							if($value > $rule_value) {
 								if($rules->{'error_msg'}) {
 									_error($logger, $rules->{'error_msg'});
+								} elsif(($type eq 'integer') && ($value == 0)) {
+									_error($logger, "$rule_description: Parameter '$key' ($value) must be a negative number");
+								} elsif(($type eq 'integer') && ($value == -1)) {
+									_error($logger, "$rule_description: Parameter '$key' ($value) must be a negative, non-zero number");
 								} else {
 									_error($logger, "$rule_description: Parameter '$key' ($value) must be no more than $rule_value");
 								}

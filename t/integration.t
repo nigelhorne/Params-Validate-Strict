@@ -917,8 +917,7 @@ subtest 'Data::Processor compat: error_msg from schema used in failure' => sub {
 			},
 			input => { count => 0 },
 		)
-	} qr/must be at least|Widget validation error/,
-	  'error from members schema reported with context';
+	} qr/must be a positive|Widget validation error/, 'error from members schema reported with context';
 };
 
 done_testing;

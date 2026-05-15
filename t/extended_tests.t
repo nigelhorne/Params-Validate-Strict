@@ -208,7 +208,7 @@ subtest 'integer min with float boundary: 0.5 → 1 passes, 0 fails' => sub {
 			schema => { n => { type => 'integer', min => 0.5 } },
 			input  => { n => '0' },
 		)
-	} qr/must be at least/, 'integer 0 fails float min => 0.5';
+	} qr/must be a positive/, 'integer 0 fails float min => 0.5';
 };
 
 # ══════════════════════════════════════════════════════════════════════════════

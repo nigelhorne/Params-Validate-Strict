@@ -1,5 +1,10 @@
 Revision history for Params-Validate-Strict
 
+0.33
+
+  [Enhancements]
+  - More informative boundary messages
+
 0.32	Mon May 11 20:34:23 EDT 2026
 
   [Enhancements]
