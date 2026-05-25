@@ -375,6 +375,53 @@ subtest 'type scalarref: logger receives error when non-scalarref supplied' => s
 };
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Union type: ['scalar', 'scalarref']
+# ══════════════════════════════════════════════════════════════════════════════
+
+subtest "union ['scalar','scalarref']: plain string accepted via scalar branch" => sub {
+	my $r = validate_strict(
+		schema => { x => { type => ['scalar', 'scalarref'] } },
+		input  => { x => 'hello' },
+	);
+	is($r->{x}, 'hello', 'plain string accepted via scalar branch of union');
+};
+
+subtest "union ['scalar','scalarref']: integer accepted via scalar branch" => sub {
+	my $r = validate_strict(
+		schema => { x => { type => ['scalar', 'scalarref'] } },
+		input  => { x => 42 },
+	);
+	is($r->{x}, 42, 'integer accepted via scalar branch of union');
+};
+
+subtest "union ['scalar','scalarref']: scalar reference accepted via scalarref branch" => sub {
+	my $s = 'hello';
+	my $r = validate_strict(
+		schema => { x => { type => ['scalar', 'scalarref'] } },
+		input  => { x => \$s },
+	);
+	is($r->{x}, \$s, 'scalar reference accepted via scalarref branch of union');
+};
+
+subtest "union ['scalar','scalarref']: arrayref rejected by both branches" => sub {
+	throws_ok {
+		validate_strict(
+			schema => { x => { type => ['scalar', 'scalarref'] } },
+			input  => { x => [] },
+		)
+	} qr/must be one of/, 'arrayref rejected by both scalar and scalarref branches';
+};
+
+subtest "union ['scalar','scalarref']: hashref rejected by both branches" => sub {
+	throws_ok {
+		validate_strict(
+			schema => { x => { type => ['scalar', 'scalarref'] } },
+			input  => { x => {} },
+		)
+	} qr/must be one of/, 'hashref rejected by both scalar and scalarref branches';
+};
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Type: coderef
 # ══════════════════════════════════════════════════════════════════════════════
 
