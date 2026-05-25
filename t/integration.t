@@ -1167,4 +1167,92 @@ subtest 'scenario: metadata field accepting any plain scalar value' => sub {
 	}
 };
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Type: scalarref — integration with Scalar::Util, Carp, and feature combinations
+# ══════════════════════════════════════════════════════════════════════════════
+
+subtest 'Scalar::Util + type scalarref: plain values have ref type "" and are all rejected' => sub {
+	for my $val (42, 'text', 0, '', '3.14') {
+		ok(!ref($val), "Scalar::Util: '$val' has no ref type");
+		throws_ok {
+			validate_strict(schema => { x => { type => 'scalarref' } }, input => { x => $val })
+		} qr/must be a scalar reference/, "plain value '$val' rejected by type scalarref";
+	}
+};
+
+subtest 'Scalar::Util + type scalarref: blessed scalar ref rejected with class name' => sub {
+	my $n = 99;
+	my $bref = bless \$n, 'MyScalar';
+	ok(ref($bref) eq 'MyScalar', 'blessed scalar ref has class name, not SCALAR');
+	throws_ok {
+		validate_strict(schema => { x => { type => 'scalarref' } }, input => { x => $bref })
+	} qr/must be a scalar reference/, 'blessed scalar ref rejected (ref() returns class, not SCALAR)';
+};
+
+subtest 'spy: croak called with must-be-a-scalar-reference message when plain scalar supplied' => sub {
+	my $spy = spy('Params::Validate::Strict::croak');
+	throws_ok {
+		validate_strict(schema => { x => { type => 'scalarref' } }, input => { x => 'hello' })
+	} qr/must be a scalar reference/;
+	my @calls = $spy->();
+	restore_all();
+	ok(scalar @calls > 0, 'croak was called when plain scalar supplied for scalarref type');
+	my $msg = join('', @{$calls[0]}[1 .. $#{$calls[0]}]);
+	like($msg, qr/must be a scalar reference/, 'croak message says "must be a scalar reference"');
+	like($msg, qr/plain scalar/,               'croak message identifies value as plain scalar');
+};
+
+subtest 'spy: croak called with ARRAY type name when arrayref supplied to scalarref' => sub {
+	my $spy = spy('Params::Validate::Strict::croak');
+	throws_ok {
+		validate_strict(schema => { x => { type => 'scalarref' } }, input => { x => [] })
+	} qr/must be a scalar reference/;
+	my @calls = $spy->();
+	restore_all();
+	is(scalar @calls, 1, 'croak called exactly once for single-field scalarref failure');
+	my $msg = join('', @{$calls[0]}[1 .. $#{$calls[0]}]);
+	like($msg, qr/ARRAY/, 'croak message names the ARRAY ref type');
+};
+
+subtest 'spy: croak not called when valid scalarref supplied' => sub {
+	my $s = 'ok';
+	my $spy = spy('Params::Validate::Strict::croak');
+	lives_ok {
+		validate_strict(schema => { x => { type => 'scalarref' } }, input => { x => \$s })
+	} 'no croak for valid scalarref';
+	my @calls = $spy->();
+	restore_all();
+	is(scalar @calls, 0, 'croak not called for valid scalarref input');
+};
+
+subtest 'combination: scalarref + optional + default' => sub {
+	my $default = \'default_value';
+	my $r1 = validate_strict(
+		schema => { ptr => { type => 'scalarref', optional => 1, default => $default } },
+		input  => {},
+	);
+	is($r1->{ptr}, $default, 'default scalar reference applied for absent optional scalarref');
+
+	my $supplied = \'custom';
+	my $r2 = validate_strict(
+		schema => { ptr => { type => 'scalarref', optional => 1, default => $default } },
+		input  => { ptr => $supplied },
+	);
+	is($r2->{ptr}, $supplied, 'supplied scalarref wins over default');
+};
+
+subtest 'scenario: pass-by-reference field for large data' => sub {
+	my $big = 'X' x 1_000_000;
+	my $schema = {
+		id   => { type => 'integer', min => 1 },
+		data => { type => 'scalarref' },
+	};
+	my $r = validate_strict(schema => $schema, input => { id => 1, data => \$big });
+	is(${$r->{data}}, $big, 'large scalar passed by reference survives validation unchanged');
+
+	throws_ok {
+		validate_strict(schema => $schema, input => { id => 1, data => $big })
+	} qr/must be a scalar reference/, 'plain (non-ref) large string rejected for scalarref type';
+};
+
 done_testing();

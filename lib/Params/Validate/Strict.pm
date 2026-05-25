@@ -214,8 +214,9 @@ The schema can define the following rules for each parameter:
 =item * C<type>
 
 The data type of the parameter.
-Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<scalar>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
+Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<scalar>, C<scalarref>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
 C<scalar> accepts any plain scalar value (string, number, boolean, etc.) but rejects references (arrayrefs, hashrefs, coderefs, objects).
+C<scalarref> accepts a reference to a scalar value (e.g. C<\$var>) but rejects plain scalars, arrayrefs, hashrefs, coderefs, and objects.
 
 A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
 
@@ -1296,6 +1297,14 @@ sub validate_strict
 						}
 						if(ref($value)) {
 							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a scalar, not a " . ref($value) . ' reference');
+						}
+					} elsif($type eq 'scalarref') {
+						if(!defined($value)) {
+							next;	# Skip if undefined
+						}
+						if(ref($value) ne 'SCALAR') {
+							my $got = ref($value) ? 'a ' . ref($value) . ' reference' : 'a plain scalar';
+							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a scalar reference, not $got");
 						}
 					} elsif(($type eq 'boolean') || ($type eq 'bool')) {
 						if(!defined($value)) {
