@@ -4,6 +4,7 @@ Revision history for Params-Validate-Strict
 
   [Enhancements]
   - More informative boundary messages
+  - New type 'scalar': accepts any plain scalar value but rejects references
 
 0.32	Mon May 11 20:34:23 EDT 2026
 

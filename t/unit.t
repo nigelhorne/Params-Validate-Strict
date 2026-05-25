@@ -229,6 +229,83 @@ subtest 'type hashref: arrayref rejected' => sub {
 };
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Type: scalar
+# ══════════════════════════════════════════════════════════════════════════════
+
+subtest 'type scalar: plain string accepted' => sub {
+	my $r = validate_strict(
+		schema => { x => { type => 'scalar' } },
+		input  => { x => 'hello' },
+	);
+	is($r->{x}, 'hello', 'string returned unchanged');
+};
+
+subtest 'type scalar: integer value accepted unchanged' => sub {
+	my $r = validate_strict(
+		schema => { x => { type => 'scalar' } },
+		input  => { x => 42 },
+	);
+	is($r->{x}, 42, 'integer returned unchanged — scalar type does not coerce');
+};
+
+subtest 'type scalar: zero accepted' => sub {
+	my $r = validate_strict(
+		schema => { x => { type => 'scalar' } },
+		input  => { x => 0 },
+	);
+	is($r->{x}, 0, 'zero (falsy scalar) accepted');
+};
+
+subtest 'type scalar: empty string accepted' => sub {
+	my $r = validate_strict(
+		schema => { x => { type => 'scalar' } },
+		input  => { x => '' },
+	);
+	is($r->{x}, '', 'empty string accepted');
+};
+
+subtest 'type scalar: arrayref rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { x => { type => 'scalar' } }, input => { x => [] })
+	} qr/must be a scalar/, 'croaks when arrayref passed as scalar';
+};
+
+subtest 'type scalar: hashref rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { x => { type => 'scalar' } }, input => { x => {} })
+	} qr/must be a scalar/, 'croaks when hashref passed as scalar';
+};
+
+subtest 'type scalar: coderef rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { x => { type => 'scalar' } }, input => { x => sub {} })
+	} qr/must be a scalar/, 'croaks when coderef passed as scalar';
+};
+
+subtest 'type scalar: blessed object rejected' => sub {
+	my $obj = Unit::Searcher->new;
+	throws_ok {
+		validate_strict(schema => { x => { type => 'scalar' } }, input => { x => $obj })
+	} qr/must be a scalar/, 'croaks when blessed object passed as scalar';
+};
+
+subtest 'type scalar: logger receives error when reference supplied' => sub {
+	my $logger = MockLogger->new;
+	my @logged;
+	my $m = mock_scoped('MockLogger', 'error',
+		sub { push @logged, join('', @_[1 .. $#_]) });
+	throws_ok {
+		validate_strict(
+			schema => { x => { type => 'scalar' } },
+			input  => { x => [] },
+			logger => $logger,
+		)
+	} qr/must be a scalar/, 'still croaks with logger present';
+	ok(scalar @logged > 0,                 'logger->error called on scalar type failure');
+	like($logged[0], qr/must be a scalar/, 'logger receives the error message');
+};
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Type: coderef
 # ══════════════════════════════════════════════════════════════════════════════
 
