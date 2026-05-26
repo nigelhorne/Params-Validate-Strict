@@ -1,6 +1,7 @@
 package Params::Validate::Strict;
 
 # FIXME: {max} doesn't play ball with non-ascii strings
+# TODO: better use of the description parameter in error messages
 
 use strict;
 use warnings;
