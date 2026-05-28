@@ -1,5 +1,24 @@
 Revision history for Params-Validate-Strict
 
+0.34	Thu May 28 2026
+
+  [Enhancements]
+  - New type 'stringref': accepts a reference to a scalar that contains a
+    plain string (e.g. \$var).  Rejects plain scalars, arrayrefs, hashrefs,
+    coderefs, blessed objects, and REF-of-REF values.  Dereferences the
+    string before further processing, so min/max (character length),
+    matches, nomatch, memberof, notmemberof, transform, callback, and all
+    other rules operate on the plain string.  The validated return value is
+    the dereferenced string.
+  - Union types such as type => ['string', 'stringref'] are fully supported.
+
+  [Tests]
+  - Comprehensive stringref tests across unit.t (acceptance, rejection,
+    min, max, matches, memberof, optional, default, error_msg, logger,
+    union types), extended_tests.t (all rule combinations, union types with
+    constraints), and edge_cases.t (pathological inputs, NUL bytes, unicode,
+    transform, callback, positional args, schema reuse).
+
 0.33	Mon May 25 09:21:12 EDT 2026
 
   [Enhancements]

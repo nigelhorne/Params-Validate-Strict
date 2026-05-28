@@ -215,9 +215,13 @@ The schema can define the following rules for each parameter:
 =item * C<type>
 
 The data type of the parameter.
-Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<scalar>, C<scalarref>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
+Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<scalar>, C<scalarref>, C<stringref>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
 C<scalar> accepts any plain scalar value (string, number, boolean, etc.) but rejects references (arrayrefs, hashrefs, coderefs, objects).
 C<scalarref> accepts a reference to a scalar value (e.g. C<\$var>) but rejects plain scalars, arrayrefs, hashrefs, coderefs, and objects.
+C<stringref> accepts a reference to a scalar that contains a plain string (e.g. C<\$str>) and rejects plain scalars, references-to-references, arrayrefs, hashrefs, coderefs, and objects.
+The C<min>/C<max> constraints apply to the B<length> (in characters) of the referenced string.
+All other string rules (C<matches>, C<nomatch>, C<memberof>, etc.) operate on the dereferenced string value.
+The validated return value is the dereferenced plain string.
 
 A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
 
@@ -1126,6 +1130,15 @@ sub validate_strict
 			if(exists($rules->{'description'})) {
 				$rule_description = $rules->{'description'};
 			}
+			# For stringref: validate and dereference before transform so that
+			# transform (and all subsequent rule handlers) see the plain string.
+			if(defined($value) && defined($rules->{'type'}) && !ref($rules->{'type'}) && lc($rules->{'type'}) eq 'stringref') {
+				if(ref($value) ne 'SCALAR') {
+					my $got = ref($value) ? 'a ' . ref($value) . ' reference' : 'a plain scalar';
+					_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a string reference, not $got");
+				}
+				$value = ${$value};
+			}
 			if($rules->{'transform'} && defined($value)) {
 				if(ref($rules->{'transform'}) eq 'CODE') {
 					$value = &{$rules->{'transform'}}($value);
@@ -1307,6 +1320,12 @@ sub validate_strict
 							my $got = ref($value) ? 'a ' . ref($value) . ' reference' : 'a plain scalar';
 							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a scalar reference, not $got");
 						}
+					} elsif($type eq 'stringref') {
+						if(!defined($value)) {
+							next;	# Skip if undefined
+						}
+						# Pre-processing above already validated and dereferenced $value to the
+						# plain string; nothing more to check here.
 					} elsif(($type eq 'boolean') || ($type eq 'bool')) {
 						if(!defined($value)) {
 							next;	# Skip if bool is undefined
@@ -1365,7 +1384,7 @@ sub validate_strict
 						$rule_value = $custom_types->{$type}->{'min'} // $custom_types->{$type}->{minumum};
 						$type = $custom_types->{$type}->{'type'};
 					}
-					if(($type eq 'string') || ($type eq 'str')) {
+					if(($type eq 'string') || ($type eq 'str') || ($type eq 'stringref')) {
 						if($rule_value < 0) {
 							if($rules->{'error_msg'}) {
 								_error($logger, $rules->{'error_msg'});
@@ -1454,7 +1473,7 @@ sub validate_strict
 						$rule_value = $custom_types->{$type}->{'max'};
 						$type = $custom_types->{$type}->{'type'};
 					}
-					if(($type eq 'string') || ($type eq 'str')) {
+					if(($type eq 'string') || ($type eq 'str') || ($type eq 'stringref')) {
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
@@ -2179,7 +2198,7 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
     ValidationRule ::= SimpleType | ComplexRule | UnionType
 
-    SimpleType ::= string | integer | number | scalar | arrayref | hashref | coderef | object
+    SimpleType ::= string | integer | number | scalar | scalarref | stringref | arrayref | hashref | coderef | object
 
     UnionType ::= seq SimpleType    -- at least two members; written as type => ['a', 'b']
 
