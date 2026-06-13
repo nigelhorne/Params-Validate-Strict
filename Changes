@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.34
+0.34	Sat Jun 13 15:55:13 EDT 2026
 
   [Enhancements]
   - New type 'stringref': accepts a reference to a scalar that contains a
