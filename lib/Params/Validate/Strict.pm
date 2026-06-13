@@ -1132,7 +1132,10 @@ sub validate_strict
 			}
 			# For stringref: validate and dereference before transform so that
 			# transform (and all subsequent rule handlers) see the plain string.
-			if(defined($value) && defined($rules->{'type'}) && !ref($rules->{'type'}) && lc($rules->{'type'}) eq 'stringref') {
+			# Preserve the original ref so optional => CODE receives what the caller passed.
+			my $pre_deref_value = $value;
+			my $is_stringref_type = defined($value) && defined($rules->{'type'}) && !ref($rules->{'type'}) && lc($rules->{'type'}) eq 'stringref';
+			if($is_stringref_type) {
 				if(ref($value) ne 'SCALAR') {
 					my $got = ref($value) ? 'a ' . ref($value) . ' reference' : 'a plain scalar';
 					_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be a string reference, not $got");
@@ -1148,7 +1151,11 @@ sub validate_strict
 			}
 			if(exists($rules->{optional})) {
 				if(ref($rules->{'optional'}) eq 'CODE') {
-					$is_optional = &{$rules->{optional}}($value, $args);
+					# For stringref the coderef receives the original SCALAR ref (what
+					# the caller supplied), not the internally-dereferenced plain string.
+					# For all other types the post-transform value is passed, as before.
+					my $opt_arg = $is_stringref_type ? $pre_deref_value : $value;
+					$is_optional = &{$rules->{optional}}($opt_arg, $args);
 				} else {
 					$is_optional = $rules->{'optional'};
 				}
@@ -1262,7 +1269,7 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if number is undefined
 						}
-						if(!Scalar::Util::looks_like_number($value) || $value != int($value)) {
+						if(!Scalar::Util::looks_like_number($value) || ($value - $value) != 0 || $value != int($value)) {
 							if($rules->{'error_msg'}) {
 								_error($logger, $rules->{'error_msg'});
 							} else {
@@ -1324,8 +1331,11 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if undefined
 						}
-						# Pre-processing above already validated and dereferenced $value to the
-						# plain string; nothing more to check here.
+						# The early-deref block validated the SCALAR ref and set $value to the
+						# plain string.  If transform subsequently returned a reference, reject it.
+						if(ref($value)) {
+							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' stringref transform must return a plain string, not a " . ref($value) . ' reference');
+						}
 					} elsif(($type eq 'boolean') || ($type eq 'bool')) {
 						if(!defined($value)) {
 							next;	# Skip if bool is undefined

@@ -585,6 +585,27 @@ subtest 'validate_strict: type integer — scientific notation whole number acce
 	ok(!ref($r->{n}),                   'returned value is a plain scalar');
 };
 
+subtest 'validate_strict: type integer — Inf rejected' => sub {
+	# int(Inf) == Inf in IEEE 754, so the naive check $v != int($v) passes for Inf.
+	# The fix adds a ($v - $v) != 0 guard: Inf - Inf = NaN, and NaN != 0 is true.
+	for my $val ('Inf', 'inf', '-Inf', '-inf') {
+		_vs_throws(
+			{ schema => { n => { type => 'integer' } }, input => { n => $val } },
+			qr/must be an integer/,
+			"\"$val\" rejected as integer"
+		);
+	}
+};
+
+subtest 'validate_strict: type integer — overflowing scientific notation (Inf) rejected' => sub {
+	# 1e309 overflows to Inf in IEEE 754 double; must be rejected, not accepted as Inf.
+	_vs_throws(
+		{ schema => { n => { type => 'integer' } }, input => { n => '1e309' } },
+		qr/must be an integer/,
+		'"1e309" (overflows to Inf) rejected as integer'
+	);
+};
+
 # ══════════════════════════════════════════════════════════════════════════════
 # validate_strict — type: number / float
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1865,6 +1886,78 @@ subtest 'validate_strict: type stringref × callback — failing callback croaks
 		qr/failed custom validation/,
 		'croaks when stringref callback returns false'
 	);
+};
+
+# ── stringref × transform returning non-string ───────────────────────────────
+# The early-deref block validates the SCALAR ref and derefs $value; transform
+# then runs on the plain string.  If transform returns a reference, the
+# stringref dispatch arm must catch it — the no-op stub that existed before
+# was a confirmed bug.
+
+subtest 'validate_strict: type stringref × transform returning hashref → croaks' => sub {
+	my $s = 'hello';
+	_vs_throws(
+		{
+			schema => { x => { type => 'stringref', transform => sub { {} } } },
+			input  => { x => \$s },
+		},
+		qr/stringref transform must return a plain string/,
+		'croaks when transform returns a hashref for a stringref parameter'
+	);
+};
+
+subtest 'validate_strict: type stringref × transform returning arrayref → croaks' => sub {
+	my $s = 'hello';
+	_vs_throws(
+		{
+			schema => { x => { type => 'stringref', transform => sub { [] } } },
+			input  => { x => \$s },
+		},
+		qr/stringref transform must return a plain string/,
+		'croaks when transform returns an arrayref for a stringref parameter'
+	);
+};
+
+subtest 'validate_strict: type stringref × transform returning plain string → ok' => sub {
+	my $s = 'hello';
+	my $r = _vs({
+		schema => { x => { type => 'stringref', transform => sub { uc($_[0]) } } },
+		input  => { x => \$s },
+	});
+	is($r->{x}, 'HELLO', 'transform returning a plain string is accepted normally');
+};
+
+# ── stringref × optional => CODE receives original SCALAR ref ────────────────
+# The early-deref mutates $value to a plain string before optional => CODE is
+# evaluated.  The fix captures the original ref so the coderef sees what the
+# caller actually passed, not the module's internal representation.
+
+subtest 'validate_strict: type stringref × optional CODE receives original SCALAR ref' => sub {
+	my $received;
+	my $s = 'world';
+	_vs({
+		schema => { x => {
+			type     => 'stringref',
+			optional => sub { $received = $_[0]; 0 },	# 0 = required; just capture
+		} },
+		input => { x => \$s },
+	});
+	ok(ref($received) eq 'SCALAR', 'optional coderef receives the original SCALAR ref');
+	is(${$received}, 'world',      'the ref still points to the correct string value');
+};
+
+subtest 'validate_strict: type stringref × optional CODE returning true — param treated as optional' => sub {
+	# Confirm the coderef return value is honoured even though the value is a ref.
+	my $s = 'ignored';
+	my $r = _vs({
+		schema => {
+			x => { type => 'stringref', optional => sub { 1 } },
+		},
+		input => { x => \$s },
+	});
+	# optional => 1 means the key is present but the parameter is optional;
+	# when the value IS provided it is still validated and returned.
+	ok(exists($r->{x}), 'present stringref value returned even when optional coderef returns true');
 };
 
 # ── stringref in union types ──────────────────────────────────────────────────
