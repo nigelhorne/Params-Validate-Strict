@@ -244,8 +244,8 @@ pre details.mutant-details ul {
 <div class="nav"><a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 86.46%<br>
-TER2 (Branch): 86.42%<br>
+TER1 (Statement): 86.31%<br>
+TER2 (Branch): 86.10%<br>
 TER3 (LCSAJ): 100.0% (45/45)<br>
 Approximate LCSAJ segments: 627<br>
 </div>
@@ -1554,8 +1554,8 @@ Approximate LCSAJ segments: 627<br>
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1262: 						if(!defined($value)) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1263: 							next;	# Skip if number is undefined
 </span><span class=""> 1264: 						}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1265: 						if($value !~ /^\s*[+\-]?\d+\s*$/) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1266: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1265: 						if(!Scalar::Util::looks_like_number($value) || $value != int($value)) {
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1266: 							if($rules-&gt;{&#39;error_msg&#39;}) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1267: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
 </span><span class=""> 1268: 							} else {
 </span><span class=""> 1269: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be an integer&quot;);
@@ -1752,8 +1752,14 @@ Approximate LCSAJ segments: 627<br>
 </span><span class=""> 1454: 								next;
 </span><span class=""> 1455: 							}
 </span><span class=""> 1456: 						} else {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1457: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1458: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1457: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span>
+					<details class="mutant-details">
+					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
+					<ul>
+				<li><b>COND_INV_1457_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
+</li></ul></details>
+<span class=""> 1458: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
 </span><span class=""> 1459: 							} else {
 </span><span class=""> 1460: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a number&quot;);
 </span><span class=""> 1461: 							}
