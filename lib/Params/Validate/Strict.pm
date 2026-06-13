@@ -1262,7 +1262,7 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if number is undefined
 						}
-						if($value !~ /^\s*[+\-]?\d+\s*$/) {
+						if(!Scalar::Util::looks_like_number($value) || $value != int($value)) {
 							if($rules->{'error_msg'}) {
 								_error($logger, $rules->{'error_msg'});
 							} else {

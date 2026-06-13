@@ -145,16 +145,23 @@ subtest 'integer: surrounding whitespace accepted' => sub {
 	is($r->{n}, -7, '"  -7  " with surrounding whitespace accepted');
 };
 
-subtest 'integer: "1e3" rejected (scientific notation is not an integer)' => sub {
-	throws_ok {
-		validate_strict(schema => { n => { type => 'integer' } }, input => { n => '1e3' })
-	} qr/must be an integer/, '"1e3" correctly rejected as non-integer';
+subtest 'integer: "1e3" accepted (scientific notation for a whole number)' => sub {
+	# 1e3 == 1000, which is a whole number; the validator must accept any
+	# representation whose numeric value has no fractional part.
+	my $r;
+	lives_ok {
+		$r = validate_strict(schema => { n => { type => 'integer' } }, input => { n => '1e3' })
+	} '"1e3" accepted as integer';
+	ok($r->{n} == 1000, 'coerced value is 1000');
 };
 
-subtest 'integer: "42.0" rejected (trailing .0 disqualifies it)' => sub {
-	throws_ok {
-		validate_strict(schema => { n => { type => 'integer' } }, input => { n => '42.0' })
-	} qr/must be an integer/, '"42.0" correctly rejected';
+subtest 'integer: "42.0" accepted (whole number with trailing .0)' => sub {
+	# 42.0 == 42; the fractional part is zero, so this is a valid integer.
+	my $r;
+	lives_ok {
+		$r = validate_strict(schema => { n => { type => 'integer' } }, input => { n => '42.0' })
+	} '"42.0" accepted as integer';
+	ok($r->{n} == 42, 'coerced value is 42');
 };
 
 subtest 'integer: "42.9" rejected (not an integer, no rounding)' => sub {

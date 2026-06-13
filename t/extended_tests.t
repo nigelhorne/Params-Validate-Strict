@@ -1037,10 +1037,14 @@ subtest 'integer: " -3 " (spaces + sign) coerces correctly' => sub {
 	is($r->{n}, -3, '" -3 " accepted and coerced to -3');
 };
 
-subtest 'integer: "3.0" rejected (decimal point present)' => sub {
-	throws_ok {
-		validate_strict(schema => { n => { type => 'integer' } }, input => { n => '3.0' })
-	} qr/must be an integer/, '"3.0" rejected as non-integer';
+subtest 'integer: "3.0" accepted (whole number with trailing .0)' => sub {
+	# 3.0 has no fractional part; the validator accepts any numeric representation
+	# whose value is a whole number, regardless of how it is written.
+	my $r;
+	lives_ok {
+		$r = validate_strict(schema => { n => { type => 'integer' } }, input => { n => '3.0' })
+	} '"3.0" accepted as integer';
+	ok($r->{n} == 3, 'coerced value is 3');
 };
 
 # ══════════════════════════════════════════════════════════════════════════════

@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.34	Thu May 28 2026
+0.34
 
   [Enhancements]
   - New type 'stringref': accepts a reference to a scalar that contains a
@@ -11,6 +11,11 @@ Revision history for Params-Validate-Strict
     other rules operate on the plain string.  The validated return value is
     the dereferenced string.
   - Union types such as type => ['string', 'stringref'] are fully supported.
+  - Integer validation now accepts any numeric representation whose value
+    has no fractional part, including scientific notation (e.g.
+    1.38255823391608e+18) and trailing-zero decimals (e.g. 42.0).  Values
+    with a non-zero fractional part (e.g. 3.14, 42.9) are still rejected.
+    The coerced return value is always a Perl integer (via int()).
 
   [Tests]
   - Comprehensive stringref tests across unit.t (acceptance, rejection,
@@ -18,6 +23,13 @@ Revision history for Params-Validate-Strict
     union types), extended_tests.t (all rule combinations, union types with
     constraints), and edge_cases.t (pathological inputs, NUL bytes, unicode,
     transform, callback, positional args, schema reuse).
+  - function.t: 30 new stringref subtests covering all type-rejection paths,
+    min/max on dereferenced length, matches, memberof, transform ordering,
+    callback, optional/default, and union types.
+  - function.t: scientific-notation integer subtest (1.38255823391608e+18).
+  - Updated stale subtests in edge_cases.t and extended_tests.t that
+    incorrectly asserted scientific-notation and trailing-.0 integers are
+    rejected.
 
 0.33	Mon May 25 09:21:12 EDT 2026
 
