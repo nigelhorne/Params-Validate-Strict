@@ -244,9 +244,9 @@ pre details.mutant-details ul {
 <div class="nav"><a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 86.41%<br>
-TER2 (Branch): 86.19%<br>
-TER3 (LCSAJ): 100.0% (45/45)<br>
+TER1 (Statement): 86.55%<br>
+TER2 (Branch): 86.67%<br>
+TER3 (LCSAJ): 100.0% (24/24)<br>
 Approximate LCSAJ segments: 631<br>
 </div>
 
@@ -1299,7 +1299,7 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1007: 
 </span><span class=""> 1008: sub validate_strict
 </span><span class=""> 1009: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1010 → 1017 → 1025</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1010 → 1017 → 0</span></span> 1010: 	my $params = Params::Get::get_params(undef, \@_);
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1010 → 1017 → 1025</span></span> 1010: 	my $params = Params::Get::get_params(undef, \@_);
 </span><span class=""> 1011: 
 </span><span class=""> 1012: 	my $schema = $params-&gt;{&#39;schema&#39;} || $params-&gt;{&#39;members&#39;};
 </span><span class=""> 1013: 	my $args = $params-&gt;{&#39;args&#39;} || $params-&gt;{&#39;input&#39;};
@@ -1314,7 +1314,7 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1022: 		}
 </span><span class=""> 1023: 	}
 </span><span class=""> 1024: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1025 → 1029 → 1034</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1025 → 1029 → 0</span></span> 1025: 	return $args if(!defined($schema));	# No schema, allow all arguments
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1025 → 1029 → 1034</span></span> 1025: 	return $args if(!defined($schema));	# No schema, allow all arguments
 </span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1026: 
 </span><span class=""> 1027: 	# Accept arrayref schema: [{ name=&gt;&#39;param&#39;, type=&gt;&#39;...&#39;, ... }, ...]
 </span><span class=""> 1028: 	# Normalise to the standard named-parameter hashref form before further processing.
@@ -1323,12 +1323,12 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1031: 	}
 </span><span class=""> 1032: 
 </span><span class=""> 1033: 	# Check if schema and args are references to hashes
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1034 → 1034 → 1039</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1034 → 1034 → 0</span></span> 1034: 	if(ref($schema) ne &#39;HASH&#39;) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1034 → 1034 → 1039</span></span> 1034: 	if(ref($schema) ne &#39;HASH&#39;) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1035: 		_error($logger, &#39;validate_strict: schema must be a hash reference&#39;);
 </span><span class=""> 1036: 	}
 </span><span class=""> 1037: 
 </span><span class=""> 1038: 	# Inspired by Data::Processor
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1039 → 1042 → 1052</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1039 → 1042 → 0</span></span> 1039: 	my $schema_description = $params-&gt;{&#39;description&#39;} || &#39;validate_strict&#39;;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1039 → 1042 → 1052</span></span> 1039: 	my $schema_description = $params-&gt;{&#39;description&#39;} || &#39;validate_strict&#39;;
 </span><span class=""> 1040: 	my $error_msg = $params-&gt;{&#39;error_msg&#39;};
 </span><span class=""> 1041: 
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1042: 	if($schema-&gt;{&#39;members&#39;} &amp;&amp; ($schema-&gt;{&#39;description&#39;} || $schema-&gt;{&#39;error_msg&#39;})) {
@@ -1341,13 +1341,13 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1049: 		}
 </span><span class=""> 1050: 	}
 </span><span class=""> 1051: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1052 → 1052 → 1058</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1052 → 1052 → 0</span></span> 1052: 	if(exists($params-&gt;{&#39;args&#39;}) &amp;&amp; (!defined($args))) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1052 → 1052 → 1058</span></span> 1052: 	if(exists($params-&gt;{&#39;args&#39;}) &amp;&amp; (!defined($args))) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1053: 		$args = {};
 </span><span class=""> 1054: 	} elsif((ref($args) ne &#39;HASH&#39;) &amp;&amp; (ref($args) ne &#39;ARRAY&#39;)) {
 </span><span class=""> 1055: 		_error($logger, $error_msg || &quot;$schema_description: args must be a hash or array reference&quot;);
 </span><span class=""> 1056: 	}
 </span><span class=""> 1057: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1058 → 1058 → 1080</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1058 → 1058 → 0</span></span> 1058: 	if(ref($args) eq &#39;HASH&#39;) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1058 → 1058 → 1080</span></span> 1058: 	if(ref($args) eq &#39;HASH&#39;) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1059: 		# Named args
 </span><span class=""> 1060: 		foreach my $key (keys %{$args}) {
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1061: 			if(!exists($schema-&gt;{$key})) {
@@ -1369,7 +1369,7 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1077: 	}
 </span><span class=""> 1078: 
 </span><span class=""> 1079: 	# Find out if this routine takes positional arguments
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1080 → 1081 → 1102</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1080 → 1081 → 0</span></span> 1080: 	my $are_positional_args = -1;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1080 → 1081 → 1102</span></span> 1080: 	my $are_positional_args = -1;
 </span><span class=""> 1081: 	foreach my $key (keys %{$schema}) {
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1082: 		if(defined(my $rules = $schema-&gt;{$key})) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1083: 			if(ref($rules) eq &#39;HASH&#39;) {
@@ -1391,7 +1391,7 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1099: 		}
 </span><span class=""> 1100: 	}
 </span><span class=""> 1101: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1102 → 1104 → 1911</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1102 → 1104 → 0</span></span> 1102: 	my %validated_args;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1102 → 1104 → 1911</span></span> 1102: 	my %validated_args;
 </span><span class=""> 1103: 	my %invalid_args;
 </span><span class=""> 1104: 	foreach my $key (keys %{$schema}) {
 </span><span class=""> 1105: 		my $rules = $schema-&gt;{$key};
@@ -1763,8 +1763,14 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1465: 								next;
 </span><span class=""> 1466: 							}
 </span><span class=""> 1467: 						} else {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1468: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1469: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1468: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span>
+					<details class="mutant-details">
+					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
+					<ul>
+				<li><b>COND_INV_1468_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
+</li></ul></details>
+<span class=""> 1469: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
 </span><span class=""> 1470: 							} else {
 </span><span class=""> 1471: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a number&quot;);
 </span><span class=""> 1472: 							}
@@ -2218,11 +2224,11 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1908: 	}
 </span><span class=""> 1909: 
 </span><span class=""> 1910: 	# Validate parameter relationships
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1911 → 1911 → 1915</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1911 → 1911 → 0</span></span> 1911: 	if (my $relationships = $params-&gt;{&#39;relationships&#39;}) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1911 → 1911 → 1915</span></span> 1911: 	if (my $relationships = $params-&gt;{&#39;relationships&#39;}) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1912: 		_validate_relationships(\%validated_args, $relationships, $logger, $schema_description);
 </span><span class=""> 1913: 	}
 </span><span class=""> 1914: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1915 → 1915 → 1930</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1915 → 1915 → 0</span></span> 1915: 	if(my $cross_validation = $params-&gt;{&#39;cross_validation&#39;}) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1915 → 1915 → 1930</span></span> 1915: 	if(my $cross_validation = $params-&gt;{&#39;cross_validation&#39;}) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1916: 		foreach my $validator_name(keys %{$cross_validation}) {
 </span><span class=""> 1917: 			my $validator = $cross_validation-&gt;{$validator_name};
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1918: 			if((!ref($validator)) || (ref($validator) ne &#39;CODE&#39;)) {
@@ -2237,11 +2243,11 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1927: 		}
 </span><span class=""> 1928: 	}
 </span><span class=""> 1929: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1930 → 1930 → 1934</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1930 → 1930 → 0</span></span> 1930: 	foreach my $key(keys %invalid_args) {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1930 → 1930 → 1934</span></span> 1930: 	foreach my $key(keys %invalid_args) {
 </span><span class=""> 1931: 		delete $validated_args{$key};
 </span><span class=""> 1932: 	}
 </span><span class=""> 1933: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1934 → 1934 → 1951</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1934 → 1934 → 0</span></span> 1934: 	if($are_positional_args == 1) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1934 → 1934 → 1951</span></span> 1934: 	if($are_positional_args == 1) {
 </span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1935: 		my @rc;
 </span><span class=""> 1936: 		foreach my $key (keys %{$schema}) {
 </span><span class=""> 1937: 			# Use exists() rather than if(my $value = ...) so that falsy but
@@ -2256,10 +2262,10 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1946: 				$rc[$position] = $value;
 </span><span class=""> 1947: 			}
 </span><span class=""> 1948: 		}
-</span><span class=""> 1949: 		return \@rc;
-</span><span class=""> 1950: 	}
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1951 → 1951 → 0</span></span> 1951: 	return \%validated_args;
-</span><span class=""> 1952: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1949: 		return \@rc;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1950: 	}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1951: 	return \%validated_args;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1952: }
 </span><span class=""> 1953: 
 </span><span class=""> 1954: # _schema_from_arrayref($arrayref, $logger)
 </span><span class=""> 1955: #
@@ -2273,7 +2279,7 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1963: # appears more than once.
 </span><span class=""> 1964: sub _schema_from_arrayref
 </span><span class=""> 1965: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1966 → 1969 → 1980</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1966 → 1969 → 0</span></span> 1966: 	my ($arrayref, $logger) = @_;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1966 → 1969 → 1980</span></span> 1966: 	my ($arrayref, $logger) = @_;
 </span><span class=""> 1967: 
 </span><span class=""> 1968: 	my %schema;
 </span><span class=""> 1969: 	foreach my $spec (@{$arrayref}) {
@@ -2287,22 +2293,22 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 1977: 			if exists($schema{$name});
 </span><span class=""> 1978: 		$schema{$name} = \%rule;
 </span><span class=""> 1979: 	}
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1980 → 1980 → 0</span></span> 1980: 	return \%schema;
-</span><span class=""> 1981: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1980: 	return \%schema;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1981: }
 </span><span class=""> 1982: 
 </span><span class=""> 1983: # Return number of visible characters not number of bytes
 </span><span class=""> 1984: # Ensure string is decoded into Perl characters
 </span><span class=""> 1985: sub _number_of_characters
 </span><span class=""> 1986: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1987 → 1991 → 1995</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1987 → 1991 → 0</span></span> 1987: 	my $value = $_[0];
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1987 → 1991 → 1995</span></span> 1987: 	my $value = $_[0];
 </span><span class=""> 1988: 
 </span><span class=""> 1989: 	return if(!defined($value));
 </span><span class=""> 1990: 
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1991: 	if($value !~ /[^[:ascii:]]/) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1992: 		return length($value);
-</span><span class=""> 1993: 	}
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1992: 		return length($value);
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1993: 	}
 </span><span class=""> 1994: 	# Decode only if it&#39;s not already a Perl character string
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1995 → 2001 → 0</span></span> 1995: 	$value = decode_utf8($value) unless utf8::is_utf8($value);
+</span><span class=""> 1995: 	$value = decode_utf8($value) unless utf8::is_utf8($value);
 </span><span class=""> 1996: 
 </span><span class=""> 1997: 	# Count grapheme clusters (visible characters)
 </span><span class=""> 1998: 	# The pseudo-operator () = forces list context to count matches
@@ -2312,7 +2318,7 @@ Approximate LCSAJ segments: 631<br>
 </span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 2002: }
 </span><span class=""> 2003: 
 </span><span class=""> 2004: sub _apply_nested_defaults {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2005 → 2008 → 2021</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2005 → 2008 → 0</span></span> 2005: 	my ($input, $schema) = @_;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2005 → 2008 → 2021</span></span> 2005: 	my ($input, $schema) = @_;
 </span><span class=""> 2006: 	my %result = %$input;
 </span><span class=""> 2007: 
 </span><span class=""> 2008: 	foreach my $key (keys %$schema) {
@@ -2328,8 +2334,8 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 2018: 		}
 </span><span class=""> 2019: 	}
 </span><span class=""> 2020: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2021 → 2021 → 0</span></span> 2021: 	return \%result;
-</span><span class=""> 2022: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2021: 	return \%result;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 2022: }
 </span><span class=""> 2023: 
 </span><span class=""> 2024: sub _validate_relationships {
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2025 → 2029 → 0</span></span> 2025: 	my ($validated_args, $relationships, $logger, $description) = @_;
@@ -2482,14 +2488,14 @@ Approximate LCSAJ segments: 631<br>
 </span><span class=""> 2172: # Helper to log error or croak
 </span><span class=""> 2173: sub _error
 </span><span class=""> 2174: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2175 → 2179 → 2182</span></span><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2175 → 2179 → 0</span></span> 2175: 	my $logger = shift;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2175 → 2179 → 2182</span></span> 2175: 	my $logger = shift;
 </span><span class=""> 2176: 	my $message = join(&#39;&#39;, @_);
 </span><span class=""> 2177: 
 </span><span class=""> 2178: 	my @call_details = caller(0);
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2179: 	if($logger) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2180: 		$logger-&gt;error(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
 </span><span class=""> 2181: 	}
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2182 → 2184 → 0</span></span> 2182: 	croak(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
+</span><span class=""> 2182: 	croak(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
 </span><span class=""> 2183: 	# Be absolutely sure, sometimes croak doesn&#39;t die for me in Test::Most scripts
 </span><span class=""> 2184: 	die (__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
 </span><span class=""> 2185: }
