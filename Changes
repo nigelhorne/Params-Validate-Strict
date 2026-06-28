@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.35
+0.35	Sat Jun 27 21:28:03 EDT 2026
 
   [Tests]
   - function.t: the "1e309 overflows to Inf" subtest now skips on
