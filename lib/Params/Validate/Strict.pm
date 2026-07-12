@@ -1425,12 +1425,11 @@ sub validate_strict
 							} else {
 								_error($logger, "$rule_description: Parameter '$key' must be an arrayref, not " . ref($value));
 							}
-						}
-						if(scalar(@{$value}) < $rule_value) {
+						} elsif(scalar(@{$value}) < $rule_value) {
 							if($rules->{'error_msg'}) {
 								_error($logger, $rules->{'error_msg'});
 							} else {
-								_error($logger, "$rule_description: Parameter '$key' must be at least length $rule_value");
+								_error($logger, "$rule_description: Parameter '$key' must have at least $rule_value member" . (($rule_value > 1) ? 's' : ''));
 							}
 							$invalid_args{$key} = 1;
 						}
