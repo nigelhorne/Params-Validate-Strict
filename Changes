@@ -1,5 +1,20 @@
 Revision history for Params-Validate-Strict
 
+0.36
+
+  [Tests]
+  - t/50-even-more.t: fixed inline Test::Logger mock whose error() method
+    called die($_[2]), which is the literal string ' line ' (the third
+    argument to the logger call), not the error message.  The method now
+    records join('', @_[1..$#_]) and does not die; _error's own croak fires
+    instead, setting $@ correctly.  Fixes three subtests: 'invalid min/max',
+    'checks number of characters not bytes', and 'invalid regex'.
+    Fixes https://www.cpantesters.org/cpan/report/5d5260f2-84d0-11f1-a803-c5b888e1d5bf
+  - t/50-even-more.t: corrected 'invalid regex' assertion from
+    qr/invalid regex/ to qr/regex.*error/i.  String patterns passed to
+    'matches' are always wrapped in qr/\Q...\E/ so they can never be invalid;
+    the test was asserting an error message the module never emits.
+
 0.35	Sat Jun 27 21:28:03 EDT 2026
 
   [Tests]
