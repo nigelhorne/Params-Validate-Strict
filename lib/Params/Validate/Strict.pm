@@ -3,7 +3,7 @@ package Params::Validate::Strict;
 # FIXME: {max} doesn't play ball with non-ascii strings
 # TODO: better use of the description parameter in error messages
 # FIXME: ensure paramaters such as min => 1 length constraint applies to all values. In this case, undef should not pass through without a croak.
-# As well as type => [ 'string', 'arrayref' ], allow type => 'string|arrayref'
+# TODO: As well as type => [ 'string', 'arrayref' ], allow type => 'string|arrayref'
 
 use strict;
 use warnings;
