@@ -85,7 +85,16 @@ jobs:
 
       - name: Install cpanm and local::lib (Windows)
         if: runner.os == 'Windows'
-        run: cpanm --notest App::cpanminus local::lib
+        shell: pwsh
+        run: |
+          # Ensure cpanm and local::lib are available and installed into %USERPROFILE%\perl5
+          # Use the same layout as the non-Windows runner (~\perl5)
+          Write-Host "Installing App::cpanminus and local::lib into $env:USERPROFILE\\perl5"
+          cpanm --notest --local-lib="$env:USERPROFILE\\perl5" local::lib
+          # Ensure user-local bin is first for this session
+          $env:PATH = "$env:USERPROFILE\\perl5\\bin;$env:PATH"
+          $env:PERL5LIB = "$env:USERPROFILE\\perl5\\lib\\perl5"
+          perl -V
 
       - name: Install dependencies
         if: runner.os != 'Windows'
@@ -96,17 +105,23 @@ jobs:
 
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
-        shell: cmd
+        shell: pwsh
         run: |
-          @echo off
-          set "PATH=%USERPROFILE%\perl5\bin;%PATH%"
-          set "PERL5LIB=%USERPROFILE%\perl5\lib\perl5"
+          # Activate the local::lib environment for this session
+          $env:PATH = "$env:USERPROFILE\\perl5\\bin;$env:PATH"
+          $env:PERL5LIB = "$env:USERPROFILE\\perl5\\lib\\perl5"
+          Write-Host "PERL5LIB=$env:PERL5LIB"
+          Write-Host "PATH=$env:PATH"
+          # Install runtime/test dependencies into the local::lib
           cpanm --notest --installdeps .
 
       - name: Reinstall YAML::XS against current Perl (Windows)
         if: runner.os == 'Windows'
-        shell: cmd
-        run: cpanm --notest --reinstall YAML::XS
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:USERPROFILE\\perl5\\bin;$env:PATH"
+          $env:PERL5LIB = "$env:USERPROFILE\\perl5\\lib\\perl5"
+          cpanm --notest --reinstall YAML::XS
 
       - name: Lint and syntax check
         shell: perl {0}
@@ -145,12 +160,20 @@ jobs:
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
-        shell: cmd
+        shell: pwsh
         run: |
-          @echo off
-          set "PATH=%USERPROFILE%\perl5\bin;%PATH%"
-          set "PERL5LIB=%USERPROFILE%\perl5\lib\perl5"
-          prove -lr t/
+          $env:PATH = "$env:USERPROFILE\\perl5\\bin;$env:PATH"
+          $env:PERL5LIB = "$env:USERPROFILE\\perl5\\lib\\perl5"
+          Write-Host "Running tests with PERL5LIB=$env:PERL5LIB"
+          # run tests with verbose output redirected to a file for diagnostics
+          $out = "prove-output.txt"
+          # Use & to ensure invocation of the external prove command
+          & prove -lr t/ *> $out 2>&1
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "prove failed (exit code $LASTEXITCODE). Showing first 500 lines of output:"
+            Get-Content $out -TotalCount 500 | ForEach-Object { Write-Host $_ }
+            exit $LASTEXITCODE
+          }
 
       - name: Run Perl::Critic
         if: matrix.perl == '5.42' && matrix.os == 'ubuntu-latest'
@@ -174,7 +197,7 @@ jobs:
         if: matrix.perl == '5.42' && matrix.os == 'ubuntu-latest'
         run: |
           eval $(perl -I ~/perl5/lib/perl5 -Mlocal::lib)
-          cpanm --notest Devel::Cover
+          cpanm --nottest Devel::Cover
           cover -delete
           HARNESS_PERL_SWITCHES=-MDevel::Cover prove -lr t/
           cover
