@@ -244,7 +244,7 @@ pre details.mutant-details ul {
 <div class="nav"><a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 86.51%<br>
+TER1 (Statement): 86.40%<br>
 TER2 (Branch): 86.41%<br>
 TER3 (LCSAJ): 100.0% (24/24)<br>
 Approximate LCSAJ segments: 641<br>
@@ -458,7 +458,7 @@ Approximate LCSAJ segments: 641<br>
 </span><span class="">  166:   my $custom_types = {
 </span><span class="">  167:     email =&gt; {
 </span><span class="">  168:       type =&gt; &#39;string&#39;,
-</span><span class="">  169:       matches =&gt; qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/,
+</span><span class="">  169:       matches =&gt; qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/,
 </span><span class="">  170:       error_msg =&gt; &#39;Invalid email address format&#39;
 </span><span class="">  171:     }, phone =&gt; {
 </span><span class="">  172:       type =&gt; &#39;string&#39;,
@@ -897,7 +897,7 @@ Approximate LCSAJ segments: 641<br>
 </span><span class="">  605:   email =&gt; {
 </span><span class="">  606:     type =&gt; &#39;string&#39;,
 </span><span class="">  607:     transform =&gt; sub { lc(trim($_[0])) },  # normalize email
-</span><span class="">  608:     matches =&gt; qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
+</span><span class="">  608:     matches =&gt; qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
 </span><span class="">  609:   }
 </span><span class="">  610: 
 </span><span class="">  611:   # Array transformations
@@ -969,7 +969,7 @@ Approximate LCSAJ segments: 641<br>
 </span><span class="">  677:     email =&gt; {
 </span><span class="">  678:       type =&gt; &#39;string&#39;,
 </span><span class="">  679:       transform =&gt; sub { lc(trim($_[0])) },
-</span><span class="">  680:       matches =&gt; qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
+</span><span class="">  680:       matches =&gt; qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
 </span><span class="">  681:     }
 </span><span class="">  682:   };
 </span><span class="">  683: 
@@ -1723,14 +1723,8 @@ Approximate LCSAJ segments: 641<br>
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1431: 							next;	# Skip if array is undefined
 </span><span class=""> 1432: 						}
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1433: 						if(ref($value) ne &#39;ARRAY&#39;) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1434: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span>
-					<details class="mutant-details">
-					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
-					<ul>
-				<li><b>COND_INV_1434_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
-</li></ul></details>
-<span class=""> 1435: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1434: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1435: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
 </span><span class=""> 1436: 							} else {
 </span><span class=""> 1437: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; must be an arrayref, not &quot; . ref($value));
 </span><span class=""> 1438: 							}
@@ -1802,14 +1796,8 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1475: 								next;
 </span><span class=""> 1476: 							}
 </span><span class=""> 1477: 						} else {
-</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."> 1478: 							if($rules-&gt;{&#39;error_msg&#39;}) {
-</span>
-					<details class="mutant-details">
-					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
-					<ul>
-				<li><b>COND_INV_1478_8: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
-</li></ul></details>
-<span class=""> 1479: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1478: 							if($rules-&gt;{&#39;error_msg&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1479: 								_error($logger, $rules-&gt;{&#39;error_msg&#39;});
 </span><span class=""> 1480: 							} else {
 </span><span class=""> 1481: 								_error($logger, &quot;$rule_description: Parameter &#39;$key&#39; ($value) must be a number&quot;);
 </span><span class=""> 1482: 							}
@@ -2527,192 +2515,229 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 2182: # Helper to log error or croak
 </span><span class=""> 2183: sub _error
 </span><span class=""> 2184: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2185 → 2189 → 2192</span></span> 2185: 	my $logger = shift;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2185 → 2192 → 2195</span></span> 2185: 	my $logger = shift;
 </span><span class=""> 2186: 	my $message = join(&#39;&#39;, @_);
-</span><span class=""> 2187: 
-</span><span class=""> 2188: 	my @call_details = caller(0);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2189: 	if($logger) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2190: 		$logger-&gt;error(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
-</span><span class=""> 2191: 	}
-</span><span class=""> 2192: 	croak(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
-</span><span class=""> 2193: 	# Be absolutely sure, sometimes croak doesn&#39;t die for me in Test::Most scripts
-</span><span class=""> 2194: 	die (__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
-</span><span class=""> 2195: }
-</span><span class=""> 2196: 
-</span><span class=""> 2197: # Helper to log warning or carp
-</span><span class=""> 2198: sub _warn
-</span><span class=""> 2199: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2200 → 2203 → 0</span></span> 2200: 	my $logger = shift;
-</span><span class=""> 2201: 	my $message = join(&#39;&#39;, @_);
-</span><span class=""> 2202: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2203: 	if($logger) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2204: 		$logger-&gt;warn(__PACKAGE__, &quot;: $message&quot;);
-</span><span class=""> 2205: 	} else {
-</span><span class=""> 2206: 		carp(__PACKAGE__, &quot;: $message&quot;);
-</span><span class=""> 2207: 	}
-</span><span class=""> 2208: }
-</span><span class=""> 2209: 
-</span><span class=""> 2210: =head1 AUTHOR
-</span><span class=""> 2211: 
-</span><span class=""> 2212: Nigel Horne, C&lt;&lt; &lt;njh at nigelhorne.com&gt; &gt;&gt;
-</span><span class=""> 2213: 
-</span><span class=""> 2214: =encoding utf-8
-</span><span class=""> 2215: 
-</span><span class=""> 2216: =head1 FORMAL SPECIFICATION
-</span><span class=""> 2217: 
-</span><span class=""> 2218:     [PARAM_NAME, VALUE, TYPE_NAME, CONSTRAINT_VALUE]
-</span><span class=""> 2219: 
-</span><span class=""> 2220:     ValidationRule ::= SimpleType | ComplexRule | UnionType
-</span><span class=""> 2221: 
-</span><span class=""> 2222:     SimpleType ::= string | integer | number | scalar | scalarref | stringref | arrayref | hashref | coderef | object
-</span><span class=""> 2223: 
-</span><span class=""> 2224:     UnionType ::= seq SimpleType    -- at least two members; written as type =&gt; [&#39;a&#39;, &#39;b&#39;]
-</span><span class=""> 2225: 
-</span><span class=""> 2226:     ComplexRule == [
-</span><span class=""> 2227:         type: SimpleType | UnionType;
-</span><span class=""> 2228:         min: &acirc;&#132;&#149;&acirc;&#130;&#129;;
-</span><span class=""> 2229:         max: &acirc;&#132;&#149;&acirc;&#130;&#129;;
-</span><span class=""> 2230:         optional: &eth;&#157;&#148;&sup1;;
-</span><span class=""> 2231:         matches: REGEX;
-</span><span class=""> 2232:         regex: REGEX;
-</span><span class=""> 2233:         nomatch: REGEX;
-</span><span class=""> 2234: 	memberof: seq VALUE;
-</span><span class=""> 2235:         enum: seq VALUE;
-</span><span class=""> 2236:         values: seq VALUE;
-</span><span class=""> 2237:         notmemberof: seq VALUE;
-</span><span class=""> 2238:         callback: FUNCTION;
-</span><span class=""> 2239:         isa: TYPE_NAME;
-</span><span class=""> 2240:         can: METHOD_NAME
-</span><span class=""> 2241:     ]
-</span><span class=""> 2242: 
-</span><span class=""> 2243:     Schema == PARAM_NAME &acirc;&#135;&cedil; ValidationRule
-</span><span class=""> 2244: 
-</span><span class=""> 2245:     Arguments == PARAM_NAME &acirc;&#135;&cedil; VALUE
-</span><span class=""> 2246: 
-</span><span class=""> 2247:     ValidatedResult == PARAM_NAME &acirc;&#135;&cedil; VALUE
-</span><span class=""> 2248: 
-</span><span class=""> 2249:     &acirc;&#136;&#128; rule: ComplexRule &acirc;&#128;&cent;
-</span><span class=""> 2250:       rule.min &acirc;&#137;&curren; rule.max &acirc;&#136;&sect;
-</span><span class=""> 2251:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
-</span><span class=""> 2252:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.max) &acirc;&#136;&sect;
-</span><span class=""> 2253:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
-</span><span class=""> 2254:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.max)
-</span><span class=""> 2255: 
-</span><span class=""> 2256:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
-</span><span class=""> 2257:       dom(validate_strict(schema, args)) &acirc;&#138;&#134; dom(schema) &acirc;&#136;&ordf; dom(args)
-</span><span class=""> 2258: 
-</span><span class=""> 2259:     validate_strict: Schema &Atilde;&#151; Arguments &acirc;&#134;&#146; ValidatedResult
+</span><span class=""> 2187: 	# Strip ASCII control characters to prevent log-injection / CRLF attacks
+</span><span class=""> 2188: 	# when user-supplied values appear in the message.
+</span><span class=""> 2189: 	$message =~ s/[[:cntrl:]]/ /g;
+</span><span class=""> 2190: 
+</span><span class=""> 2191: 	my @call_details = caller(0);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2192: 	if($logger) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2193: 		$logger-&gt;error(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
+</span><span class=""> 2194: 	}
+</span><span class=""> 2195: 	croak(__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
+</span><span class=""> 2196: 	# Be absolutely sure, sometimes croak doesn&#39;t die for me in Test::Most scripts
+</span><span class=""> 2197: 	die (__PACKAGE__, &#39; line &#39;, $call_details[2], &quot;: $message&quot;);
+</span><span class=""> 2198: }
+</span><span class=""> 2199: 
+</span><span class=""> 2200: # Helper to log warning or carp
+</span><span class=""> 2201: sub _warn
+</span><span class=""> 2202: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">2203 → 2208 → 0</span></span> 2203: 	my $logger = shift;
+</span><span class=""> 2204: 	my $message = join(&#39;&#39;, @_);
+</span><span class=""> 2205: 	# Strip ASCII control characters to prevent log-injection / CRLF attacks.
+</span><span class=""> 2206: 	$message =~ s/[[:cntrl:]]/ /g;
+</span><span class=""> 2207: 
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 2208: 	if($logger) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2209: 		$logger-&gt;warn(__PACKAGE__, &quot;: $message&quot;);
+</span><span class=""> 2210: 	} else {
+</span><span class=""> 2211: 		carp(__PACKAGE__, &quot;: $message&quot;);
+</span><span class=""> 2212: 	}
+</span><span class=""> 2213: }
+</span><span class=""> 2214: 
+</span><span class=""> 2215: =head1 AUTHOR
+</span><span class=""> 2216: 
+</span><span class=""> 2217: Nigel Horne, C&lt;&lt; &lt;njh at nigelhorne.com&gt; &gt;&gt;
+</span><span class=""> 2218: 
+</span><span class=""> 2219: =encoding utf-8
+</span><span class=""> 2220: 
+</span><span class=""> 2221: =head1 FORMAL SPECIFICATION
+</span><span class=""> 2222: 
+</span><span class=""> 2223:     [PARAM_NAME, VALUE, TYPE_NAME, CONSTRAINT_VALUE]
+</span><span class=""> 2224: 
+</span><span class=""> 2225:     ValidationRule ::= SimpleType | ComplexRule | UnionType
+</span><span class=""> 2226: 
+</span><span class=""> 2227:     SimpleType ::= string | integer | number | scalar | scalarref | stringref | arrayref | hashref | coderef | object
+</span><span class=""> 2228: 
+</span><span class=""> 2229:     UnionType ::= seq SimpleType    -- at least two members; written as type =&gt; [&#39;a&#39;, &#39;b&#39;]
+</span><span class=""> 2230: 
+</span><span class=""> 2231:     ComplexRule == [
+</span><span class=""> 2232:         type: SimpleType | UnionType;
+</span><span class=""> 2233:         min: &acirc;&#132;&#149;&acirc;&#130;&#129;;
+</span><span class=""> 2234:         max: &acirc;&#132;&#149;&acirc;&#130;&#129;;
+</span><span class=""> 2235:         optional: &eth;&#157;&#148;&sup1;;
+</span><span class=""> 2236:         matches: REGEX;
+</span><span class=""> 2237:         regex: REGEX;
+</span><span class=""> 2238:         nomatch: REGEX;
+</span><span class=""> 2239: 	memberof: seq VALUE;
+</span><span class=""> 2240:         enum: seq VALUE;
+</span><span class=""> 2241:         values: seq VALUE;
+</span><span class=""> 2242:         notmemberof: seq VALUE;
+</span><span class=""> 2243:         callback: FUNCTION;
+</span><span class=""> 2244:         isa: TYPE_NAME;
+</span><span class=""> 2245:         can: METHOD_NAME
+</span><span class=""> 2246:     ]
+</span><span class=""> 2247: 
+</span><span class=""> 2248:     Schema == PARAM_NAME &acirc;&#135;&cedil; ValidationRule
+</span><span class=""> 2249: 
+</span><span class=""> 2250:     Arguments == PARAM_NAME &acirc;&#135;&cedil; VALUE
+</span><span class=""> 2251: 
+</span><span class=""> 2252:     ValidatedResult == PARAM_NAME &acirc;&#135;&cedil; VALUE
+</span><span class=""> 2253: 
+</span><span class=""> 2254:     &acirc;&#136;&#128; rule: ComplexRule &acirc;&#128;&cent;
+</span><span class=""> 2255:       rule.min &acirc;&#137;&curren; rule.max &acirc;&#136;&sect;
+</span><span class=""> 2256:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
+</span><span class=""> 2257:       &Acirc;&not;((rule.memberof &acirc;&#136;&uml; rule.enum &acirc;&#136;&uml; rule.values) &acirc;&#136;&sect; rule.max) &acirc;&#136;&sect;
+</span><span class=""> 2258:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.min) &acirc;&#136;&sect;
+</span><span class=""> 2259:       &Acirc;&not;(rule.notmemberof &acirc;&#136;&sect; rule.max)
 </span><span class=""> 2260: 
 </span><span class=""> 2261:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
-</span><span class=""> 2262:       let result == validate_strict(schema, args) &acirc;&#128;&cent;
-</span><span class=""> 2263:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#136;&copy; dom(args) &acirc;&#128;&cent;
-</span><span class=""> 2264:           name &acirc;&#136;&#136; dom(result) &acirc;&#135;&#146;
-</span><span class=""> 2265:           type_matches(result(name), schema(name))) &acirc;&#136;&sect;
-</span><span class=""> 2266:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#128;&cent;
-</span><span class=""> 2267:           &Acirc;&not;optional(schema(name)) &acirc;&#135;&#146; name &acirc;&#136;&#136; dom(args))
-</span><span class=""> 2268: 
-</span><span class=""> 2269:     type_matches: VALUE &Atilde;&#151; ValidationRule &acirc;&#134;&#146; &eth;&#157;&#148;&sup1;
-</span><span class=""> 2270: 
-</span><span class=""> 2271: =head1 EXAMPLE
-</span><span class=""> 2272: 
-</span><span class=""> 2273:     use Params::Get;
-</span><span class=""> 2274:     use Params::Validate::Strict;
+</span><span class=""> 2262:       dom(validate_strict(schema, args)) &acirc;&#138;&#134; dom(schema) &acirc;&#136;&ordf; dom(args)
+</span><span class=""> 2263: 
+</span><span class=""> 2264:     validate_strict: Schema &Atilde;&#151; Arguments &acirc;&#134;&#146; ValidatedResult
+</span><span class=""> 2265: 
+</span><span class=""> 2266:     &acirc;&#136;&#128; schema: Schema; args: Arguments &acirc;&#128;&cent;
+</span><span class=""> 2267:       let result == validate_strict(schema, args) &acirc;&#128;&cent;
+</span><span class=""> 2268:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#136;&copy; dom(args) &acirc;&#128;&cent;
+</span><span class=""> 2269:           name &acirc;&#136;&#136; dom(result) &acirc;&#135;&#146;
+</span><span class=""> 2270:           type_matches(result(name), schema(name))) &acirc;&#136;&sect;
+</span><span class=""> 2271:         (&acirc;&#136;&#128; name: dom(schema) &acirc;&#128;&cent;
+</span><span class=""> 2272:           &Acirc;&not;optional(schema(name)) &acirc;&#135;&#146; name &acirc;&#136;&#136; dom(args))
+</span><span class=""> 2273: 
+</span><span class=""> 2274:     type_matches: VALUE &Atilde;&#151; ValidationRule &acirc;&#134;&#146; &eth;&#157;&#148;&sup1;
 </span><span class=""> 2275: 
-</span><span class=""> 2276:     sub where_am_i
-</span><span class=""> 2277:     {
-</span><span class=""> 2278:         my $params = Params::Validate::Strict::validate_strict({
-</span><span class=""> 2279:             args =&gt; Params::Get::get_params(undef, \@_),
-</span><span class=""> 2280: 	    description =&gt; &#39;Print a string of latitude and longitude&#39;,
-</span><span class=""> 2281: 	    error_msg =&gt; &#39;Latitude is a number between +/- 90, longitude is a number between +/- 180&#39;,
-</span><span class=""> 2282:             members =&gt; {
-</span><span class=""> 2283:                 &#39;latitude&#39; =&gt; {
-</span><span class=""> 2284:                     type =&gt; &#39;number&#39;,
-</span><span class=""> 2285:                     min =&gt; -90,
-</span><span class=""> 2286:                     max =&gt; 90
-</span><span class=""> 2287:                 }, &#39;longitude&#39; =&gt; {
-</span><span class=""> 2288:                     type =&gt; &#39;number&#39;,
-</span><span class=""> 2289:                     min =&gt; -180,
-</span><span class=""> 2290:                     max =&gt; 180
-</span><span class=""> 2291:                 }
-</span><span class=""> 2292:             }
-</span><span class=""> 2293:         });
-</span><span class=""> 2294: 
-</span><span class=""> 2295:         print &#39;You are at &#39;, $params-&gt;{&#39;latitude&#39;}, &#39;, &#39;, $params-&gt;{&#39;longitude&#39;}, &quot;\n&quot;;
-</span><span class=""> 2296:     }
-</span><span class=""> 2297: 
-</span><span class=""> 2298:     where_am_i({ latitude =&gt; 3.14, longitude =&gt; -155 });
+</span><span class=""> 2276: =head1 EXAMPLE
+</span><span class=""> 2277: 
+</span><span class=""> 2278:     use Params::Get;
+</span><span class=""> 2279:     use Params::Validate::Strict;
+</span><span class=""> 2280: 
+</span><span class=""> 2281:     sub where_am_i
+</span><span class=""> 2282:     {
+</span><span class=""> 2283:         my $params = Params::Validate::Strict::validate_strict({
+</span><span class=""> 2284:             args =&gt; Params::Get::get_params(undef, \@_),
+</span><span class=""> 2285: 	    description =&gt; &#39;Print a string of latitude and longitude&#39;,
+</span><span class=""> 2286: 	    error_msg =&gt; &#39;Latitude is a number between +/- 90, longitude is a number between +/- 180&#39;,
+</span><span class=""> 2287:             members =&gt; {
+</span><span class=""> 2288:                 &#39;latitude&#39; =&gt; {
+</span><span class=""> 2289:                     type =&gt; &#39;number&#39;,
+</span><span class=""> 2290:                     min =&gt; -90,
+</span><span class=""> 2291:                     max =&gt; 90
+</span><span class=""> 2292:                 }, &#39;longitude&#39; =&gt; {
+</span><span class=""> 2293:                     type =&gt; &#39;number&#39;,
+</span><span class=""> 2294:                     min =&gt; -180,
+</span><span class=""> 2295:                     max =&gt; 180
+</span><span class=""> 2296:                 }
+</span><span class=""> 2297:             }
+</span><span class=""> 2298:         });
 </span><span class=""> 2299: 
-</span><span class=""> 2300: =head1 BUGS
-</span><span class=""> 2301: 
-</span><span class=""> 2302: =head1 SEE ALSO
-</span><span class=""> 2303: 
-</span><span class=""> 2304: =over 4
-</span><span class=""> 2305: 
-</span><span class=""> 2306: =item * L&lt;Test Dashboard|https://nigelhorne.github.io/Params-Validate-Strict/coverage/&gt;
-</span><span class=""> 2307: 
-</span><span class=""> 2308: =item * L&lt;Data::Processor&gt;
-</span><span class=""> 2309: 
-</span><span class=""> 2310: =item * L&lt;Params::Get&gt;
-</span><span class=""> 2311: 
-</span><span class=""> 2312: =item * L&lt;Params::Smart&gt;
-</span><span class=""> 2313: 
-</span><span class=""> 2314: =item * L&lt;Params::Validate&gt;
-</span><span class=""> 2315: 
-</span><span class=""> 2316: =item * L&lt;Return::Set&gt;
+</span><span class=""> 2300:         print &#39;You are at &#39;, $params-&gt;{&#39;latitude&#39;}, &#39;, &#39;, $params-&gt;{&#39;longitude&#39;}, &quot;\n&quot;;
+</span><span class=""> 2301:     }
+</span><span class=""> 2302: 
+</span><span class=""> 2303:     where_am_i({ latitude =&gt; 3.14, longitude =&gt; -155 });
+</span><span class=""> 2304: 
+</span><span class=""> 2305: =head1 BUGS
+</span><span class=""> 2306: 
+</span><span class=""> 2307: =head1 SECURITY
+</span><span class=""> 2308: 
+</span><span class=""> 2309: =head2 Taint mode
+</span><span class=""> 2310: 
+</span><span class=""> 2311: This module does B&lt;not&gt; untaint its return values.
+</span><span class=""> 2312: When running under Perl&#39;s taint mode (C&lt;-T&gt;), any value that was derived from
+</span><span class=""> 2313: tainted external input (C&lt;$ENV{}&gt;, C&lt;STDIN&gt;, etc.) will remain tainted in the
+</span><span class=""> 2314: validated result, even if the module accepted it.
+</span><span class=""> 2315: Callers that require untainted values must perform their own regex capture after
+</span><span class=""> 2316: validation, for example:
 </span><span class=""> 2317: 
-</span><span class=""> 2318: =item * L&lt;App::Test::Generator&gt;
-</span><span class=""> 2319: 
-</span><span class=""> 2320: =back
-</span><span class=""> 2321: 
-</span><span class=""> 2322: =head1 SUPPORT
-</span><span class=""> 2323: 
-</span><span class=""> 2324: This module is provided as-is without any warranty.
-</span><span class=""> 2325: 
-</span><span class=""> 2326: Please report any bugs or feature requests to C&lt;bug-params-validate-strict at rt.cpan.org&gt;,
-</span><span class=""> 2327: or through the web interface at
-</span><span class=""> 2328: L&lt;http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params-Validate-Strict&gt;.
-</span><span class=""> 2329: I will be notified, and then you&#39;ll
-</span><span class=""> 2330: automatically be notified of progress on your bug as I make changes.
-</span><span class=""> 2331: 
-</span><span class=""> 2332: You can find documentation for this module with the perldoc command.
-</span><span class=""> 2333: 
-</span><span class=""> 2334:     perldoc Params::Validate::Strict
-</span><span class=""> 2335: 
-</span><span class=""> 2336: You can also look for information at:
-</span><span class=""> 2337: 
-</span><span class=""> 2338: =over 4
-</span><span class=""> 2339: 
-</span><span class=""> 2340: =item * MetaCPAN
-</span><span class=""> 2341: 
-</span><span class=""> 2342: L&lt;https://metacpan.org/dist/Params-Validate-Strict&gt;
-</span><span class=""> 2343: 
-</span><span class=""> 2344: =item * RT: CPAN&#39;s request tracker
-</span><span class=""> 2345: 
-</span><span class=""> 2346: L&lt;https://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate-Strict&gt;
-</span><span class=""> 2347: 
-</span><span class=""> 2348: =item * CPAN Testers&#39; Matrix
-</span><span class=""> 2349: 
-</span><span class=""> 2350: L&lt;http://matrix.cpantesters.org/?dist=Params-Validate-Strict&gt;
-</span><span class=""> 2351: 
-</span><span class=""> 2352: =item * CPAN Testers Dependencies
-</span><span class=""> 2353: 
-</span><span class=""> 2354: L&lt;http://deps.cpantesters.org/?module=Params::Validate::Strict&gt;
-</span><span class=""> 2355: 
-</span><span class=""> 2356: =back
-</span><span class=""> 2357: 
-</span><span class=""> 2358: =head1 LICENSE AND COPYRIGHT
-</span><span class=""> 2359: 
-</span><span class=""> 2360: Copyright 2025-2026 Nigel Horne.
-</span><span class=""> 2361: 
-</span><span class=""> 2362: This program is released under the following licence: GPL2.
-</span><span class=""> 2363: If you use it,
-</span><span class=""> 2364: please let me know.
-</span><span class=""> 2365: 
-</span><span class=""> 2366: =cut
-</span><span class=""> 2367: 
-</span><span class=""> 2368: 1;
-</span><span class=""> 2369: 
-</span><span class=""> 2370: __END__
+</span><span class=""> 2318:     my $validated = validate_strict(%args);
+</span><span class=""> 2319:     my ($safe_name) = ($validated-&gt;{name} =~ /\A([\w\s]+)\z/);
+</span><span class=""> 2320: 
+</span><span class=""> 2321: =head2 User-supplied regex patterns
+</span><span class=""> 2322: 
+</span><span class=""> 2323: The C&lt;matches&gt; rule accepts pre-compiled C&lt;qr//&gt; objects supplied by the caller.
+</span><span class=""> 2324: A pathologically constructed pattern (e.g. C&lt;qr/(a+)+b/&gt;) can cause catastrophic
+</span><span class=""> 2325: backtracking and peg a CPU core when matched against a hostile input value.
+</span><span class=""> 2326: Use possessive quantifiers (C&lt;++&gt;) or atomic groups (C&lt;&lt; (?&gt;...) &gt;&gt;) in any
+</span><span class=""> 2327: C&lt;matches&gt; pattern that will be applied to untrusted data.
+</span><span class=""> 2328: 
+</span><span class=""> 2329: =head2 Error message content
+</span><span class=""> 2330: 
+</span><span class=""> 2331: Error and warning messages produced by this module may include the parameter
+</span><span class=""> 2332: value supplied by the caller.
+</span><span class=""> 2333: The module strips ASCII control characters (including CR and LF) from all
+</span><span class=""> 2334: messages before passing them to the logger or croaking, to prevent log-injection
+</span><span class=""> 2335: and HTTP response-splitting attacks.
+</span><span class=""> 2336: Callers should nevertheless apply their own output encoding before including any
+</span><span class=""> 2337: validated value in an HTTP response, HTML page, or structured log entry.
+</span><span class=""> 2338: 
+</span><span class=""> 2339: =head1 SEE ALSO
+</span><span class=""> 2340: 
+</span><span class=""> 2341: =over 4
+</span><span class=""> 2342: 
+</span><span class=""> 2343: =item * L&lt;Test Dashboard|https://nigelhorne.github.io/Params-Validate-Strict/coverage/&gt;
+</span><span class=""> 2344: 
+</span><span class=""> 2345: =item * L&lt;Data::Processor&gt;
+</span><span class=""> 2346: 
+</span><span class=""> 2347: =item * L&lt;Params::Get&gt;
+</span><span class=""> 2348: 
+</span><span class=""> 2349: =item * L&lt;Params::Smart&gt;
+</span><span class=""> 2350: 
+</span><span class=""> 2351: =item * L&lt;Params::Validate&gt;
+</span><span class=""> 2352: 
+</span><span class=""> 2353: =item * L&lt;Return::Set&gt;
+</span><span class=""> 2354: 
+</span><span class=""> 2355: =item * L&lt;App::Test::Generator&gt;
+</span><span class=""> 2356: 
+</span><span class=""> 2357: =back
+</span><span class=""> 2358: 
+</span><span class=""> 2359: =head1 SUPPORT
+</span><span class=""> 2360: 
+</span><span class=""> 2361: This module is provided as-is without any warranty.
+</span><span class=""> 2362: 
+</span><span class=""> 2363: Please report any bugs or feature requests to C&lt;bug-params-validate-strict at rt.cpan.org&gt;,
+</span><span class=""> 2364: or through the web interface at
+</span><span class=""> 2365: L&lt;http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params-Validate-Strict&gt;.
+</span><span class=""> 2366: I will be notified, and then you&#39;ll
+</span><span class=""> 2367: automatically be notified of progress on your bug as I make changes.
+</span><span class=""> 2368: 
+</span><span class=""> 2369: You can find documentation for this module with the perldoc command.
+</span><span class=""> 2370: 
+</span><span class=""> 2371:     perldoc Params::Validate::Strict
+</span><span class=""> 2372: 
+</span><span class=""> 2373: You can also look for information at:
+</span><span class=""> 2374: 
+</span><span class=""> 2375: =over 4
+</span><span class=""> 2376: 
+</span><span class=""> 2377: =item * MetaCPAN
+</span><span class=""> 2378: 
+</span><span class=""> 2379: L&lt;https://metacpan.org/dist/Params-Validate-Strict&gt;
+</span><span class=""> 2380: 
+</span><span class=""> 2381: =item * RT: CPAN&#39;s request tracker
+</span><span class=""> 2382: 
+</span><span class=""> 2383: L&lt;https://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate-Strict&gt;
+</span><span class=""> 2384: 
+</span><span class=""> 2385: =item * CPAN Testers&#39; Matrix
+</span><span class=""> 2386: 
+</span><span class=""> 2387: L&lt;http://matrix.cpantesters.org/?dist=Params-Validate-Strict&gt;
+</span><span class=""> 2388: 
+</span><span class=""> 2389: =item * CPAN Testers Dependencies
+</span><span class=""> 2390: 
+</span><span class=""> 2391: L&lt;http://deps.cpantesters.org/?module=Params::Validate::Strict&gt;
+</span><span class=""> 2392: 
+</span><span class=""> 2393: =back
+</span><span class=""> 2394: 
+</span><span class=""> 2395: =head1 LICENSE AND COPYRIGHT
+</span><span class=""> 2396: 
+</span><span class=""> 2397: Copyright 2025-2026 Nigel Horne.
+</span><span class=""> 2398: 
+</span><span class=""> 2399: This program is released under the following licence: GPL2.
+</span><span class=""> 2400: If you use it,
+</span><span class=""> 2401: please let me know.
+</span><span class=""> 2402: 
+</span><span class=""> 2403: =cut
+</span><span class=""> 2404: 
+</span><span class=""> 2405: 1;
+</span><span class=""> 2406: 
+</span><span class=""> 2407: __END__
 </span></pre>
 
 <script>
