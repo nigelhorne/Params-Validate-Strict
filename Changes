@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.37
+0.37	Tue Jul 28 09:29:48 EDT 2026
   [Enhancements]
   - New type 'void': asserts that the parameter value is undef, representing
     a void return or absent output.  A schema using 'void' must contain
