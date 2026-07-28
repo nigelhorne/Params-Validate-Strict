@@ -137,9 +137,11 @@ subtest 'Security tests' => sub {
 		);
 	} qr//, 'ReDoS patterns handled';
 
-	# Test callback security
+	# Test callback security — the callback runs arbitrary Perl but that is
+	# expected behaviour; validate_strict must not suppress or sandbox it.
+	my $side_effect = 0;
 	my $malicious_callback = sub {
-		system("echo 'malicious code executed'");
+		$side_effect = 1;	# arbitrary side effect; no shell-out needed
 		return 1;
 	};
 
