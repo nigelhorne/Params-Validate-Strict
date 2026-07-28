@@ -665,7 +665,7 @@ subtest 'Input validation and error handling' => sub {
 	# Test memory and DoS protection
 	throws_ok {
 		validate_strict(
-			schema => {big_string => { type => 'string', max => 100 }},,
+			schema => {big_string => { type => 'string', max => 100 } },
 			args => {big_string => 'x' x 1_500_000}
 		);
 	} qr/must be no longer than 100/, 'DoS protection for strings works';
