@@ -130,7 +130,7 @@ It takes optional arguments:
         my $custom_types = {
           email => {
             type => 'string',
-            matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/,
+            matches => qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/,
             error_msg => 'Invalid email address format'
           }, phone => {
             type => 'string',
@@ -565,7 +565,7 @@ The schema can define the following rules for each parameter:
         email => {
           type => 'string',
           transform => sub { lc(trim($_[0])) },  # normalize email
-          matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
+          matches => qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
         }
 
         # Array transformations
@@ -637,7 +637,7 @@ The schema can define the following rules for each parameter:
           email => {
             type => 'string',
             transform => sub { lc(trim($_[0])) },
-            matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
+            matches => qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
           }
         };
 
@@ -1048,6 +1048,38 @@ Nigel Horne, `<njh at nigelhorne.com>`
     where_am_i({ latitude => 3.14, longitude => -155 });
 
 # BUGS
+
+# SECURITY
+
+## Taint mode
+
+This module does **not** untaint its return values.
+When running under Perl's taint mode (`-T`), any value that was derived from
+tainted external input (`$ENV{}`, `STDIN`, etc.) will remain tainted in the
+validated result, even if the module accepted it.
+Callers that require untainted values must perform their own regex capture after
+validation, for example:
+
+    my $validated = validate_strict(%args);
+    my ($safe_name) = ($validated->{name} =~ /\A([\w\s]+)\z/);
+
+## User-supplied regex patterns
+
+The `matches` rule accepts pre-compiled `qr//` objects supplied by the caller.
+A pathologically constructed pattern (e.g. `qr/(a+)+b/`) can cause catastrophic
+backtracking and peg a CPU core when matched against a hostile input value.
+Use possessive quantifiers (`++`) or atomic groups (`(?>...)`) in any
+`matches` pattern that will be applied to untrusted data.
+
+## Error message content
+
+Error and warning messages produced by this module may include the parameter
+value supplied by the caller.
+The module strips ASCII control characters (including CR and LF) from all
+messages before passing them to the logger or croaking, to prevent log-injection
+and HTTP response-splitting attacks.
+Callers should nevertheless apply their own output encoding before including any
+validated value in an HTTP response, HTML page, or structured log entry.
 
 # SEE ALSO
 

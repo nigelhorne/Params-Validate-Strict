@@ -166,7 +166,7 @@ Each custom type is defined as a hash reference containing the same validation r
   my $custom_types = {
     email => {
       type => 'string',
-      matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/,
+      matches => qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/,
       error_msg => 'Invalid email address format'
     }, phone => {
       type => 'string',
@@ -605,7 +605,7 @@ sanitizing user input, and converting between data formats.
   email => {
     type => 'string',
     transform => sub { lc(trim($_[0])) },  # normalize email
-    matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
+    matches => qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
   }
 
   # Array transformations
@@ -677,7 +677,7 @@ Transformations can also be defined in custom types for reusability:
     email => {
       type => 'string',
       transform => sub { lc(trim($_[0])) },
-      matches => qr/^[\w\.\-]+@[\w\.\-]+\.\w+$/
+      matches => qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
     }
   };
 
@@ -2184,6 +2184,9 @@ sub _error
 {
 	my $logger = shift;
 	my $message = join('', @_);
+	# Strip ASCII control characters to prevent log-injection / CRLF attacks
+	# when user-supplied values appear in the message.
+	$message =~ s/[[:cntrl:]]/ /g;
 
 	my @call_details = caller(0);
 	if($logger) {
@@ -2199,6 +2202,8 @@ sub _warn
 {
 	my $logger = shift;
 	my $message = join('', @_);
+	# Strip ASCII control characters to prevent log-injection / CRLF attacks.
+	$message =~ s/[[:cntrl:]]/ /g;
 
 	if($logger) {
 		$logger->warn(__PACKAGE__, ": $message");
@@ -2298,6 +2303,38 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
     where_am_i({ latitude => 3.14, longitude => -155 });
 
 =head1 BUGS
+
+=head1 SECURITY
+
+=head2 Taint mode
+
+This module does B<not> untaint its return values.
+When running under Perl's taint mode (C<-T>), any value that was derived from
+tainted external input (C<$ENV{}>, C<STDIN>, etc.) will remain tainted in the
+validated result, even if the module accepted it.
+Callers that require untainted values must perform their own regex capture after
+validation, for example:
+
+    my $validated = validate_strict(%args);
+    my ($safe_name) = ($validated->{name} =~ /\A([\w\s]+)\z/);
+
+=head2 User-supplied regex patterns
+
+The C<matches> rule accepts pre-compiled C<qr//> objects supplied by the caller.
+A pathologically constructed pattern (e.g. C<qr/(a+)+b/>) can cause catastrophic
+backtracking and peg a CPU core when matched against a hostile input value.
+Use possessive quantifiers (C<++>) or atomic groups (C<< (?>...) >>) in any
+C<matches> pattern that will be applied to untrusted data.
+
+=head2 Error message content
+
+Error and warning messages produced by this module may include the parameter
+value supplied by the caller.
+The module strips ASCII control characters (including CR and LF) from all
+messages before passing them to the logger or croaking, to prevent log-injection
+and HTTP response-splitting attacks.
+Callers should nevertheless apply their own output encoding before including any
+validated value in an HTTP response, HTML page, or structured log entry.
 
 =head1 SEE ALSO
 
