@@ -145,13 +145,14 @@ subtest 'Security tests' => sub {
 		return 1;
 	};
 
-	# This should work but the callback shouldn't cause harm in validation context
+	# validate_strict must not suppress or sandbox the callback; it must run.
 	lives_ok {
 		validate_strict(
 			schema => {test => {type => 'string', callback => $malicious_callback}},
 			args => {test => 'safe_value'}
 		);
 	} 'Callback validation works safely';
+	ok($side_effect, 'callback was actually executed by validate_strict');
 };
 
 # Test optional parameter edge cases
