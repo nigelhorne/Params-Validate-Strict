@@ -96,8 +96,8 @@ This function takes two mandatory arguments:
 A reference to a hash that defines the validation rules for each parameter.
 The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
 
-As an alternative the schema may be supplied as an B<arrayref of parameter
-hashrefs>, where every element describes one parameter and carries a mandatory
+As an alternative the schema may be supplied as an B<arrayref of parameter hashrefs>,
+where every element describes one parameter and carries a mandatory
 C<name> key:
 
   $schema = [
@@ -217,10 +217,12 @@ The schema can define the following rules for each parameter:
 =item * C<type>
 
 The data type of the parameter.
-Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<scalar>, C<scalarref>, C<stringref>, C<hashref>, C<arrayref>, C<object> and C<coderef>.
+Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<scalar>, C<scalarref>, C<stringref>, C<hashref>, C<arrayref>, C<object>, C<coderef> and C<void>.
 C<scalar> accepts any plain scalar value (string, number, boolean, etc.) but rejects references (arrayrefs, hashrefs, coderefs, objects).
 C<scalarref> accepts a reference to a scalar value (e.g. C<\$var>) but rejects plain scalars, arrayrefs, hashrefs, coderefs, and objects.
 C<stringref> accepts a reference to a scalar that contains a plain string (e.g. C<\$str>) and rejects plain scalars, references-to-references, arrayrefs, hashrefs, coderefs, and objects.
+C<void> asserts that the parameter value is C<undef> (the parameter represents a void return or absent output).
+When C<void> is used the schema must contain exactly one parameter.
 The C<min>/C<max> constraints apply to the B<length> (in characters) of the referenced string.
 All other string rules (C<matches>, C<nomatch>, C<memberof>, etc.) operate on the dereferenced string value.
 The validated return value is the dereferenced plain string.
@@ -948,8 +950,7 @@ The C<description> field is optional but recommended for clearer error messages.
     {
       type => 'mutually_exclusive',
       params => ['file', 'content']
-    },
-    {
+    }, {
       type => 'required_group',
       params => ['host', 'file']
     },
@@ -1163,6 +1164,8 @@ sub validate_strict
 				}
 			} elsif($rules->{nullable}) {
 				$is_optional = $rules->{'nullable'};
+			} elsif(defined($rules->{'type'}) && !ref($rules->{'type'}) && lc($rules->{'type'}) eq 'void') {
+				$is_optional = 1;
 			}
 		}
 
@@ -1337,6 +1340,13 @@ sub validate_strict
 						# plain string.  If transform subsequently returned a reference, reject it.
 						if(ref($value)) {
 							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' stringref transform must return a plain string, not a " . ref($value) . ' reference');
+						}
+					} elsif($type eq 'void') {
+						if(scalar(keys %{$schema}) != 1) {
+							_error($logger, "$rule_description: type 'void' requires exactly one parameter in the schema");
+						}
+						if(defined($value)) {
+							_error($logger, $rules->{'error_msg'} || "$rule_description: Parameter '$key' must be undef (void type accepts no value)");
 						}
 					} elsif(($type eq 'boolean') || ($type eq 'bool')) {
 						if(!defined($value)) {

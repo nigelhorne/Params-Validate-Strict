@@ -64,8 +64,8 @@ This function takes two mandatory arguments:
     A reference to a hash that defines the validation rules for each parameter.
     The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
 
-    As an alternative the schema may be supplied as an **arrayref of parameter
-    hashrefs**, where every element describes one parameter and carries a mandatory
+    As an alternative the schema may be supplied as an **arrayref of parameter hashrefs**,
+    where every element describes one parameter and carries a mandatory
     `name` key:
 
         $schema = [
@@ -177,10 +177,12 @@ The schema can define the following rules for each parameter:
 - `type`
 
     The data type of the parameter.
-    Valid types are `string`, `integer`, `number`, `float` `boolean`, `scalar`, `scalarref`, `stringref`, `hashref`, `arrayref`, `object` and `coderef`.
+    Valid types are `string`, `integer`, `number`, `float` `boolean`, `scalar`, `scalarref`, `stringref`, `hashref`, `arrayref`, `object`, `coderef` and `void`.
     `scalar` accepts any plain scalar value (string, number, boolean, etc.) but rejects references (arrayrefs, hashrefs, coderefs, objects).
     `scalarref` accepts a reference to a scalar value (e.g. `\$var`) but rejects plain scalars, arrayrefs, hashrefs, coderefs, and objects.
     `stringref` accepts a reference to a scalar that contains a plain string (e.g. `\$str`) and rejects plain scalars, references-to-references, arrayrefs, hashrefs, coderefs, and objects.
+    `void` asserts that the parameter value is `undef` (the parameter represents a void return or absent output).
+    When `void` is used the schema must contain exactly one parameter.
     The `min`/`max` constraints apply to the **length** (in characters) of the referenced string.
     All other string rules (`matches`, `nomatch`, `memberof`, etc.) operate on the dereferenced string value.
     The validated return value is the dereferenced plain string.
@@ -902,8 +904,7 @@ The schema can define the following rules for each parameter:
       {
         type => 'mutually_exclusive',
         params => ['file', 'content']
-      },
-      {
+      }, {
         type => 'required_group',
         params => ['host', 'file']
       },

@@ -1,5 +1,19 @@
 Revision history for Params-Validate-Strict
 
+0.37
+  [Enhancements]
+  - New type 'void': asserts that the parameter value is undef, representing
+    a void return or absent output.  A schema using 'void' must contain
+    exactly one parameter; a defined value is an error.  The void parameter
+    is implicitly optional (undef is the expected value, not an absent one),
+    so 'optional => 1' is not required.  Supports 'error_msg' override.
+
+  [Tests]
+  - function.t: 5 new subtests for type 'void' covering undef acceptance,
+    absent-key acceptance, all defined-value rejections (0, 1, empty string,
+    string, arrayref, hashref), multiple-schema-key rejection, and
+    error_msg override.
+
 0.36	Wed Jul 22 21:02:37 EDT 2026
 
   [Tests]
