@@ -1,5 +1,9 @@
 Revision history for Params-Validate-Strict
 
+0.38
+  [Tests]
+  - Bump minimum Test::Mockingbird
+
 0.37	Tue Jul 28 09:29:48 EDT 2026
   [Enhancements]
   - New type 'void': asserts that the parameter value is undef, representing
