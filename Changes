@@ -1,8 +1,10 @@
 Revision history for Params-Validate-Strict
 
 0.38
-  [Tests]
-  - Bump minimum Test::Mockingbird
+	[Enhancements]
+	- Reduce dependancies
+	[Tests]
+	- Bump minimum Test::Mockingbird
 
 0.37	Tue Jul 28 09:29:48 EDT 2026
   [Enhancements]

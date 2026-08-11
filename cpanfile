@@ -7,7 +7,6 @@ requires 'Encode';
 requires 'Exporter';
 requires 'ExtUtils::MakeMaker', '6.64';   # Minimum version for TEST_REQUIRES
 requires 'List::Util', '1.33';   # Minimum version for any()
-requires 'Params::Get', '0.13';
 requires 'Readonly::Values::Boolean';
 requires 'Scalar::Util';
 requires 'Unicode::GCString';

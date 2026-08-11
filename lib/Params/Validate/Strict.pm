@@ -12,7 +12,6 @@ use Carp;
 use Exporter qw(import);	# Required for @EXPORT_OK
 use Encode qw(decode_utf8);
 use List::Util 1.33 qw(any);	# Required for memberof validation
-use Params::Get 0.13;
 use Readonly::Values::Boolean;
 use Scalar::Util;
 use Unicode::GCString;
@@ -1022,7 +1021,8 @@ The C<description> field is optional but recommended for clearer error messages.
 
 sub validate_strict
 {
-	my $params = Params::Get::get_params(undef, \@_);
+	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
+	my $params = \%args;
 
 	my $schema = $params->{'schema'} || $params->{'members'};
 	my $args = $params->{'args'} || $params->{'input'};
