@@ -244,10 +244,10 @@ pre details.mutant-details ul {
 <div class="nav"><a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 86.97%<br>
-TER2 (Branch): 87.19%<br>
+TER1 (Statement): 86.81%<br>
+TER2 (Branch): 87.07%<br>
 TER3 (LCSAJ): 100.0% (24/24)<br>
-Approximate LCSAJ segments: 641<br>
+Approximate LCSAJ segments: 643<br>
 </div>
 
     <div class="legend">
@@ -304,1017 +304,1017 @@ Approximate LCSAJ segments: 641<br>
 </span><span class="">   12: use Exporter qw(import);	# Required for @EXPORT_OK
 </span><span class="">   13: use Encode qw(decode_utf8);
 </span><span class="">   14: use List::Util 1.33 qw(any);	# Required for memberof validation
-</span><span class="">   15: use Params::Get 0.13;
-</span><span class="">   16: use Readonly::Values::Boolean;
-</span><span class="">   17: use Scalar::Util;
-</span><span class="">   18: use Unicode::GCString;
-</span><span class="">   19: 
-</span><span class="">   20: our @ISA = qw(Exporter);
-</span><span class="">   21: our @EXPORT_OK = qw(validate_strict);
-</span><span class="">   22: 
-</span><span class="">   23: =head1 NAME
-</span><span class="">   24: 
-</span><span class="">   25: Params::Validate::Strict - Validates a set of parameters against a schema
-</span><span class="">   26: 
-</span><span class="">   27: =head1 VERSION
-</span><span class="">   28: 
-</span><span class="">   29: Version 0.37
-</span><span class="">   30: 
-</span><span class="">   31: =cut
-</span><span class="">   32: 
-</span><span class="">   33: our $VERSION = &#39;0.37&#39;;
-</span><span class="">   34: 
-</span><span class="">   35: =head1 SYNOPSIS
-</span><span class="">   36: 
-</span><span class="">   37:     my $schema = {
-</span><span class="">   38:         username =&gt; { type =&gt; &#39;string&#39;, min =&gt; 3, max =&gt; 50 },
-</span><span class="">   39:         age =&gt; { type =&gt; &#39;integer&#39;, min =&gt; 0, max =&gt; 150 },
-</span><span class="">   40:     };
-</span><span class="">   41: 
-</span><span class="">   42:     my $input = {
-</span><span class="">   43:          username =&gt; &#39;john_doe&#39;,
-</span><span class="">   44:          age =&gt; &#39;30&#39;,	# Will be coerced to integer
-</span><span class="">   45:     };
-</span><span class="">   46: 
-</span><span class="">   47:     my $validated_input = validate_strict(schema =&gt; $schema, input =&gt; $input);
-</span><span class="">   48: 
-</span><span class="">   49:     if(defined($validated_input)) {
-</span><span class="">   50:         print &quot;Example 1: Validation successful!\n&quot;;
-</span><span class="">   51:         print &#39;Username: &#39;, $validated_input-&gt;{username}, &quot;\n&quot;;
-</span><span class="">   52:         print &#39;Age: &#39;, $validated_input-&gt;{age}, &quot;\n&quot;;	# It&#39;s an integer now
-</span><span class="">   53:     } else {
-</span><span class="">   54:         print &quot;Example 1: Validation failed: $@\n&quot;;
-</span><span class="">   55:     }
-</span><span class="">   56: 
-</span><span class="">   57: Upon first reading this may seem overly complex and full of scope creep in a sledgehammer to crack a nut sort of way,
-</span><span class="">   58: however two use cases make use of the extensive logic that comes with this code
-</span><span class="">   59: and I have a couple of other reasons for writing it.
-</span><span class="">   60: 
-</span><span class="">   61: =over 4
-</span><span class="">   62: 
-</span><span class="">   63: =item * Black Box Testing
-</span><span class="">   64: 
-</span><span class="">   65: The schema can be plumbed into L&lt;App::Test::Generator&gt; to automatically create a set of black-box test cases.
-</span><span class="">   66: 
-</span><span class="">   67: =item * WAF
-</span><span class="">   68: 
-</span><span class="">   69: The schema can be plumbed into a WAF to protect from random user input.
-</span><span class="">   70: 
-</span><span class="">   71: =item * Improved API Documentation
-</span><span class="">   72: 
-</span><span class="">   73: Even if you don&#39;t use this module,
-</span><span class="">   74: the specification syntax can help with documentation.
-</span><span class="">   75: 
-</span><span class="">   76: =item * I like it
-</span><span class="">   77: 
-</span><span class="">   78: I find it fun to write this,
-</span><span class="">   79: even if nobody else finds it useful,
-</span><span class="">   80: though I hope you will.
-</span><span class="">   81: 
-</span><span class="">   82: =back
-</span><span class="">   83: 
-</span><span class="">   84: =head1	METHODS
-</span><span class="">   85: 
-</span><span class="">   86: =head2 validate_strict
-</span><span class="">   87: 
-</span><span class="">   88: Validates a set of parameters against a schema.
-</span><span class="">   89: 
-</span><span class="">   90: This function takes two mandatory arguments:
-</span><span class="">   91: 
-</span><span class="">   92: =over 4
-</span><span class="">   93: 
-</span><span class="">   94: =item * C&lt;schema&gt; || C&lt;members&gt;
-</span><span class="">   95: 
-</span><span class="">   96: A reference to a hash that defines the validation rules for each parameter.
-</span><span class="">   97: The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
-</span><span class="">   98: 
-</span><span class="">   99: As an alternative the schema may be supplied as an B&lt;arrayref of parameter hashrefs&gt;,
-</span><span class="">  100: where every element describes one parameter and carries a mandatory
-</span><span class="">  101: C&lt;name&gt; key:
-</span><span class="">  102: 
-</span><span class="">  103:   $schema = [
-</span><span class="">  104:     { name =&gt; &#39;username&#39;, type =&gt; &#39;string&#39;, min =&gt; 3, max =&gt; 50 },
-</span><span class="">  105:     { name =&gt; &#39;age&#39;,      type =&gt; &#39;integer&#39;, min =&gt; 0, max =&gt; 150 },
-</span><span class="">  106:     { name =&gt; &#39;role&#39;,     type =&gt; &#39;string&#39;, optional =&gt; 1, default =&gt; &#39;user&#39; },
-</span><span class="">  107:   ];
-</span><span class="">  108: 
-</span><span class="">  109: The arrayref form is normalised to the standard hashref form before any further
-</span><span class="">  110: processing.  It is particularly useful when declaration order matters (e.g.
-</span><span class="">  111: for positional or mixed calling conventions used by some CPAN modules).  The
-</span><span class="">  112: C&lt;name&gt; key is consumed during normalisation and does not appear as a
-</span><span class="">  113: validation rule.
-</span><span class="">  114: 
-</span><span class="">  115: For some sort of compatibility with L&lt;Data::Processor&gt;,
-</span><span class="">  116: it is possible to wrap the schema within a hash like this:
-</span><span class="">  117: 
-</span><span class="">  118:   $schema = {
-</span><span class="">  119:     description =&gt; &#39;Describe what this schema does&#39;,
-</span><span class="">  120:     error_msg =&gt; &#39;An error message&#39;,
-</span><span class="">  121:     schema =&gt; {
-</span><span class="">  122:       # ... schema goes here
-</span><span class="">  123:     }
-</span><span class="">  124:   }
-</span><span class="">  125: 
-</span><span class="">  126: =item * C&lt;args&gt; || C&lt;input&gt;
-</span><span class="">  127: 
-</span><span class="">  128: A reference to a hash containing the parameters to be validated.
-</span><span class="">  129: The keys of the hash are the parameter names, and the values are the parameter values.
-</span><span class="">  130: 
-</span><span class="">  131: =back
-</span><span class="">  132: 
-</span><span class="">  133: It takes optional arguments:
-</span><span class="">  134: 
-</span><span class="">  135: =over 4
-</span><span class="">  136: 
-</span><span class="">  137: =item * C&lt;description&gt;
-</span><span class="">  138: 
-</span><span class="">  139: What the schema does,
-</span><span class="">  140: used in error messages.
-</span><span class="">  141: 
-</span><span class="">  142: =item * C&lt;error_msg&gt;
-</span><span class="">  143: 
-</span><span class="">  144: Overrides the default message when something doesn&#39;t validate.
-</span><span class="">  145: 
-</span><span class="">  146: =item * C&lt;unknown_parameter_handler&gt;
-</span><span class="">  147: 
-</span><span class="">  148: This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
-</span><span class="">  149: It must be one of C&lt;die&gt;, C&lt;warn&gt;, or C&lt;ignore&gt;.
-</span><span class="">  150: 
-</span><span class="">  151: It defaults to C&lt;die&gt; unless C&lt;carp_on_warn&gt; is given, in which case it defaults to C&lt;warn&gt;.
-</span><span class="">  152: 
-</span><span class="">  153: =item * C&lt;logger&gt;
-</span><span class="">  154: 
-</span><span class="">  155: A logging object that understands messages such as C&lt;error&gt; and C&lt;warn&gt;.
-</span><span class="">  156: 
-</span><span class="">  157: =item * C&lt;custom_types&gt;
-</span><span class="">  158: 
-</span><span class="">  159: A reference to a hash that defines reusable custom types.
-</span><span class="">  160: Custom types allow you to define validation rules once and reuse them throughout your schema,
-</span><span class="">  161: making your validation logic more maintainable and readable.
-</span><span class="">  162: 
-</span><span class="">  163: Each custom type is defined as a hash reference containing the same validation rules available for regular parameters
-</span><span class="">  164: (C&lt;type&gt;, C&lt;min&gt;, C&lt;max&gt;, C&lt;matches&gt;, C&lt;memberof&gt;, C&lt;values&gt;, C&lt;enum&gt;, C&lt;notmemberof&gt;, C&lt;callback&gt;, etc.).
-</span><span class="">  165: 
-</span><span class="">  166:   my $custom_types = {
-</span><span class="">  167:     email =&gt; {
-</span><span class="">  168:       type =&gt; &#39;string&#39;,
-</span><span class="">  169:       matches =&gt; qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/,
-</span><span class="">  170:       error_msg =&gt; &#39;Invalid email address format&#39;
-</span><span class="">  171:     }, phone =&gt; {
-</span><span class="">  172:       type =&gt; &#39;string&#39;,
-</span><span class="">  173:       matches =&gt; qr/^\+?[1-9]\d{1,14}$/,
-</span><span class="">  174:       min =&gt; 10,
-</span><span class="">  175:       max =&gt; 15
-</span><span class="">  176:     }, percentage =&gt; {
-</span><span class="">  177:       type =&gt; &#39;number&#39;,
-</span><span class="">  178:       min =&gt; 0,
-</span><span class="">  179:       max =&gt; 100
-</span><span class="">  180:     }, status =&gt; {
-</span><span class="">  181:       type =&gt; &#39;string&#39;,
-</span><span class="">  182:       memberof =&gt; [&#39;draft&#39;, &#39;published&#39;, &#39;archived&#39;]
-</span><span class="">  183:     }
-</span><span class="">  184:   };
-</span><span class="">  185: 
-</span><span class="">  186:   my $schema = {
-</span><span class="">  187:     user_email =&gt; { type =&gt; &#39;email&#39; },
-</span><span class="">  188:     contact_number =&gt; { type =&gt; &#39;phone&#39;, optional =&gt; 1 },
-</span><span class="">  189:     completion =&gt; { type =&gt; &#39;percentage&#39; },
-</span><span class="">  190:     post_status =&gt; { type =&gt; &#39;status&#39; }
-</span><span class="">  191:   };
-</span><span class="">  192: 
-</span><span class="">  193:   my $validated = validate_strict(
-</span><span class="">  194:     schema =&gt; $schema,
-</span><span class="">  195:     input =&gt; $input,
-</span><span class="">  196:     custom_types =&gt; $custom_types
-</span><span class="">  197:   );
-</span><span class="">  198: 
-</span><span class="">  199: Custom types can be extended or overridden in the schema by specifying additional constraints:
-</span><span class="">  200: 
-</span><span class="">  201:   my $schema = {
-</span><span class="">  202:     admin_username =&gt; {
-</span><span class="">  203:       type =&gt; &#39;username&#39;,  # Uses custom type definition
-</span><span class="">  204:       min =&gt; 5,            # Overrides custom type&#39;s min value
-</span><span class="">  205:       max =&gt; 15            # Overrides custom type&#39;s max value
-</span><span class="">  206:     }
-</span><span class="">  207:   };
-</span><span class="">  208: 
-</span><span class="">  209: Custom types work seamlessly with nested schema, optional parameters, and all other validation features.
-</span><span class="">  210: 
-</span><span class="">  211: =back
-</span><span class="">  212: 
-</span><span class="">  213: The schema can define the following rules for each parameter:
-</span><span class="">  214: 
-</span><span class="">  215: =over 4
-</span><span class="">  216: 
-</span><span class="">  217: =item * C&lt;type&gt;
-</span><span class="">  218: 
-</span><span class="">  219: The data type of the parameter.
-</span><span class="">  220: Valid types are C&lt;string&gt;, C&lt;integer&gt;, C&lt;number&gt;, C&lt;float&gt; C&lt;boolean&gt;, C&lt;scalar&gt;, C&lt;scalarref&gt;, C&lt;stringref&gt;, C&lt;hashref&gt;, C&lt;arrayref&gt;, C&lt;object&gt;, C&lt;coderef&gt; and C&lt;void&gt;.
-</span><span class="">  221: C&lt;scalar&gt; accepts any plain scalar value (string, number, boolean, etc.) but rejects references (arrayrefs, hashrefs, coderefs, objects).
-</span><span class="">  222: C&lt;scalarref&gt; accepts a reference to a scalar value (e.g. C&lt;\$var&gt;) but rejects plain scalars, arrayrefs, hashrefs, coderefs, and objects.
-</span><span class="">  223: C&lt;stringref&gt; accepts a reference to a scalar that contains a plain string (e.g. C&lt;\$str&gt;) and rejects plain scalars, references-to-references, arrayrefs, hashrefs, coderefs, and objects.
-</span><span class="">  224: C&lt;void&gt; asserts that the parameter value is C&lt;undef&gt; (the parameter represents a void return or absent output).
-</span><span class="">  225: When C&lt;void&gt; is used the schema must contain exactly one parameter.
-</span><span class="">  226: The C&lt;min&gt;/C&lt;max&gt; constraints apply to the B&lt;length&gt; (in characters) of the referenced string.
-</span><span class="">  227: All other string rules (C&lt;matches&gt;, C&lt;nomatch&gt;, C&lt;memberof&gt;, etc.) operate on the dereferenced string value.
-</span><span class="">  228: The validated return value is the dereferenced plain string.
-</span><span class="">  229: 
-</span><span class="">  230: A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
-</span><span class="">  231: 
-</span><span class="">  232:   $schema = {
-</span><span class="">  233:     username =&gt; [
-</span><span class="">  234:       { type =&gt; &#39;string&#39;, min =&gt; 3, max =&gt; 50 },	# Name
-</span><span class="">  235:       { type =&gt; &#39;integer&#39;, &#39;min&#39; =&gt; 1 },	# UID that isn&#39;t root
-</span><span class="">  236:     ]
-</span><span class="">  237:   };
-</span><span class="">  238: 
-</span><span class="">  239: As a shorthand, C&lt;type&gt; itself may be an arrayref of type name strings (a I&lt;union type&gt;)
-</span><span class="">  240: when all other constraints are shared between the alternatives:
-</span><span class="">  241: 
-</span><span class="">  242:   $schema = {
-</span><span class="">  243:     data =&gt; { type =&gt; [&#39;string&#39;, &#39;arrayref&#39;] },
-</span><span class="">  244:     id   =&gt; { type =&gt; [&#39;string&#39;, &#39;integer&#39;], optional =&gt; 1 },
-</span><span class="">  245:   };
-</span><span class="">  246: 
-</span><span class="">  247: This is equivalent to the full array-of-rules form but more concise.
-</span><span class="">  248: Every other key in the rule hash (C&lt;optional&gt;, C&lt;min&gt;, C&lt;max&gt;, C&lt;matches&gt;, etc.)
-</span><span class="">  249: is inherited by each candidate type and validated independently against it.
-</span><span class="">  250: Type names are tried left-to-right; the first match wins and its coercion
-</span><span class="">  251: (e.g. numeric types) is propagated back to the caller.
-</span><span class="">  252: If the value fails all candidate types, validation croaks with a message
-</span><span class="">  253: listing the union members.
-</span><span class="">  254: 
-</span><span class="">  255: =item * C&lt;can&gt;
-</span><span class="">  256: 
-</span><span class="">  257: The parameter must be an object that understands the method C&lt;can&gt;.
-</span><span class="">  258: C&lt;can&gt; can be a simple scalar string of a method name,
-</span><span class="">  259: or an arrayref of a list of method names, all of which must be supported by the object.
-</span><span class="">  260: 
-</span><span class="">  261:    $schema = {
-</span><span class="">  262:      gedcom =&gt; { type =&gt; object, can =&gt; &#39;get_individual&#39; }
-</span><span class="">  263:    }
-</span><span class="">  264: 
-</span><span class="">  265: =item * C&lt;isa&gt;
-</span><span class="">  266: 
-</span><span class="">  267: The parameter must be an object of type C&lt;isa&gt;.
-</span><span class="">  268: 
-</span><span class="">  269: =item * C&lt;memberof&gt;
-</span><span class="">  270: 
-</span><span class="">  271: The parameter must be a member of the given arrayref.
-</span><span class="">  272: 
-</span><span class="">  273:   status =&gt; {
-</span><span class="">  274:     type =&gt; &#39;string&#39;,
-</span><span class="">  275:     memberof =&gt; [&#39;draft&#39;, &#39;published&#39;, &#39;archived&#39;]
-</span><span class="">  276:   }
-</span><span class="">  277: 
-</span><span class="">  278:   priority =&gt; {
-</span><span class="">  279:     type =&gt; &#39;integer&#39;,
-</span><span class="">  280:     memberof =&gt; [1, 2, 3, 4, 5]
-</span><span class="">  281:   }
-</span><span class="">  282: 
-</span><span class="">  283: For string types, the comparison is case-sensitive by default. Use the C&lt;case_sensitive&gt;
-</span><span class="">  284: flag to control this behavior:
-</span><span class="">  285: 
-</span><span class="">  286:   # Case-sensitive (default) - must be exact match
-</span><span class="">  287:   code =&gt; {
-</span><span class="">  288:     type =&gt; &#39;string&#39;,
-</span><span class="">  289:     memberof =&gt; [&#39;ABC&#39;, &#39;DEF&#39;, &#39;GHI&#39;]
-</span><span class="">  290:     # &#39;abc&#39; will fail
-</span><span class="">  291:   }
-</span><span class="">  292: 
-</span><span class="">  293:   # Case-insensitive - any case accepted
-</span><span class="">  294:   code =&gt; {
-</span><span class="">  295:     type =&gt; &#39;string&#39;,
-</span><span class="">  296:     memberof =&gt; [&#39;ABC&#39;, &#39;DEF&#39;, &#39;GHI&#39;],
-</span><span class="">  297:     case_sensitive =&gt; 0
-</span><span class="">  298:     # &#39;abc&#39;, &#39;Abc&#39;, &#39;ABC&#39; all pass, original case preserved
-</span><span class="">  299:   }
-</span><span class="">  300: 
-</span><span class="">  301: For numeric types (C&lt;integer&gt;, C&lt;number&gt;, C&lt;float&gt;), the comparison uses numeric
-</span><span class="">  302: equality (C&lt;==&gt; operator):
-</span><span class="">  303: 
-</span><span class="">  304:   rating =&gt; {
-</span><span class="">  305:     type =&gt; &#39;number&#39;,
-</span><span class="">  306:     memberof =&gt; [0.5, 1.0, 1.5, 2.0]
-</span><span class="">  307:   }
-</span><span class="">  308: 
-</span><span class="">  309: Note that C&lt;memberof&gt; cannot be combined with C&lt;min&gt; or C&lt;max&gt; constraints as they
-</span><span class="">  310: serve conflicting purposes - C&lt;memberof&gt; defines an explicit whitelist while C&lt;min&gt;/C&lt;max&gt;
-</span><span class="">  311: define ranges.
-</span><span class="">  312: 
-</span><span class="">  313: =item * C&lt;enum&gt;
-</span><span class="">  314: 
-</span><span class="">  315: Same as C&lt;memberof&gt;.
-</span><span class="">  316: 
-</span><span class="">  317: =item * C&lt;values&gt;
-</span><span class="">  318: 
-</span><span class="">  319: Same as C&lt;memberof&gt;.
-</span><span class="">  320: 
-</span><span class="">  321: =item * C&lt;notmemberof&gt;
-</span><span class="">  322: 
-</span><span class="">  323: The parameter must not be a member of the given arrayref (blacklist).
-</span><span class="">  324: This is the inverse of C&lt;memberof&gt;.
-</span><span class="">  325: 
-</span><span class="">  326:   username =&gt; {
-</span><span class="">  327:     type =&gt; &#39;string&#39;,
-</span><span class="">  328:     notmemberof =&gt; [&#39;admin&#39;, &#39;root&#39;, &#39;system&#39;, &#39;administrator&#39;]
-</span><span class="">  329:   }
-</span><span class="">  330: 
-</span><span class="">  331:   port =&gt; {
-</span><span class="">  332:     type =&gt; &#39;integer&#39;,
-</span><span class="">  333:     notmemberof =&gt; [22, 23, 25, 80, 443]  # Reserved ports
-</span><span class="">  334:   }
-</span><span class="">  335: 
-</span><span class="">  336: Like C&lt;memberof&gt;, string comparisons are case-sensitive by default but can be controlled
-</span><span class="">  337: with the C&lt;case_sensitive&gt; flag:
-</span><span class="">  338: 
-</span><span class="">  339:   # Case-sensitive (default)
-</span><span class="">  340:   username =&gt; {
-</span><span class="">  341:     type =&gt; &#39;string&#39;,
-</span><span class="">  342:     notmemberof =&gt; [&#39;Admin&#39;, &#39;Root&#39;]
-</span><span class="">  343:     # &#39;admin&#39; would pass, &#39;Admin&#39; would fail
-</span><span class="">  344:   }
-</span><span class="">  345: 
-</span><span class="">  346:   # Case-insensitive
-</span><span class="">  347:   username =&gt; {
-</span><span class="">  348:     type =&gt; &#39;string&#39;,
-</span><span class="">  349:     notmemberof =&gt; [&#39;Admin&#39;, &#39;Root&#39;],
-</span><span class="">  350:     case_sensitive =&gt; 0
-</span><span class="">  351:     # &#39;admin&#39;, &#39;ADMIN&#39;, &#39;Admin&#39; all fail
-</span><span class="">  352:   }
-</span><span class="">  353: 
-</span><span class="">  354: The blacklist is checked after any C&lt;transform&gt; rules are applied, allowing you to
-</span><span class="">  355: normalize input before checking:
-</span><span class="">  356: 
-</span><span class="">  357:   username =&gt; {
-</span><span class="">  358:     type =&gt; &#39;string&#39;,
-</span><span class="">  359:     transform =&gt; sub { lc($_[0]) },  # Normalize to lowercase
-</span><span class="">  360:     notmemberof =&gt; [&#39;admin&#39;, &#39;root&#39;, &#39;system&#39;]
-</span><span class="">  361:   }
-</span><span class="">  362: 
-</span><span class="">  363: C&lt;notmemberof&gt; can be combined with other validation rules:
-</span><span class="">  364: 
-</span><span class="">  365:   username =&gt; {
-</span><span class="">  366:     type =&gt; &#39;string&#39;,
-</span><span class="">  367:     notmemberof =&gt; [&#39;admin&#39;, &#39;root&#39;, &#39;system&#39;],
-</span><span class="">  368:     min =&gt; 3,
-</span><span class="">  369:     max =&gt; 20,
-</span><span class="">  370:     matches =&gt; qr/^[a-z0-9_]+$/
-</span><span class="">  371:   }
-</span><span class="">  372: 
-</span><span class="">  373: =item * C&lt;case_sensitive&gt;
-</span><span class="">  374: 
-</span><span class="">  375: A boolean value indicating whether string comparisons should be case-sensitive.
-</span><span class="">  376: This flag affects the C&lt;memberof&gt; and C&lt;notmemberof&gt; validation rules.
-</span><span class="">  377: The default value is C&lt;1&gt; (case-sensitive).
-</span><span class="">  378: 
-</span><span class="">  379: When set to C&lt;0&gt;, string comparisons are performed case-insensitively, allowing values
-</span><span class="">  380: with different casing to match. The original case of the input value is preserved in
-</span><span class="">  381: the validated output.
-</span><span class="">  382: 
-</span><span class="">  383:   # Case-sensitive (default)
-</span><span class="">  384:   status =&gt; {
-</span><span class="">  385:     type =&gt; &#39;string&#39;,
-</span><span class="">  386:     memberof =&gt; [&#39;Draft&#39;, &#39;Published&#39;, &#39;Archived&#39;] # Input &#39;draft&#39; will fail - must match exact case
-</span><span class="">  387:   }
-</span><span class="">  388: 
-</span><span class="">  389:   # Case-insensitive
-</span><span class="">  390:   status =&gt; {
-</span><span class="">  391:     type =&gt; &#39;string&#39;,
-</span><span class="">  392:     memberof =&gt; [&#39;Draft&#39;, &#39;Published&#39;, &#39;Archived&#39;],
-</span><span class="">  393:     case_sensitive =&gt; 0 # Input &#39;draft&#39;, &#39;DRAFT&#39;, or &#39;DrAfT&#39; will all pass
-</span><span class="">  394:   }
-</span><span class="">  395: 
-</span><span class="">  396:   country_code =&gt; {
-</span><span class="">  397:     type =&gt; &#39;string&#39;,
-</span><span class="">  398:     memberof =&gt; [&#39;US&#39;, &#39;UK&#39;, &#39;CA&#39;, &#39;FR&#39;],
-</span><span class="">  399:     case_sensitive =&gt; 0  # Accept &#39;us&#39;, &#39;US&#39;, &#39;Us&#39;, etc.
-</span><span class="">  400:   }
-</span><span class="">  401: 
-</span><span class="">  402: This flag has no effect on numeric types (C&lt;integer&gt;, C&lt;number&gt;, C&lt;float&gt;) as numbers
-</span><span class="">  403: do not have case.
-</span><span class="">  404: 
-</span><span class="">  405: =item * C&lt;min&gt;/C&lt;minimum&gt;
-</span><span class="">  406: 
-</span><span class="">  407: The minimum length (for strings in characters not bytes), value (for numbers) or number of keys (for hashrefs).
-</span><span class="">  408: 
-</span><span class="">  409: =item * C&lt;max&gt;
-</span><span class="">  410: 
-</span><span class="">  411: The maximum length (for strings in characters not bytes), value (for numbers) or number of keys (for hashrefs).
-</span><span class="">  412: 
-</span><span class="">  413: =item * C&lt;matches&gt;
-</span><span class="">  414: 
-</span><span class="">  415: A regular expression that the parameter value must match.
-</span><span class="">  416: Checks all members of arrayrefs.
-</span><span class="">  417: 
-</span><span class="">  418: =item * C&lt;nomatch&gt;
-</span><span class="">  419: 
-</span><span class="">  420: A regular expression that the parameter value must not match.
-</span><span class="">  421: Checks all members of arrayrefs.
-</span><span class="">  422: 
-</span><span class="">  423: =item * C&lt;position&gt;
-</span><span class="">  424: 
-</span><span class="">  425: For routines and methods that take positional args,
-</span><span class="">  426: this integer value defines which position the argument will be in.
-</span><span class="">  427: If this is set for all arguments,
-</span><span class="">  428: C&lt;validate_strict&gt; will return a reference to an array, rather than a reference to a hash.
-</span><span class="">  429: 
-</span><span class="">  430: =item * C&lt;regex&gt;
-</span><span class="">  431: 
-</span><span class="">  432: Synonym of matches
-</span><span class="">  433: 
-</span><span class="">  434: =item * C&lt;description&gt;
-</span><span class="">  435: 
-</span><span class="">  436: The description of the rule
-</span><span class="">  437: 
-</span><span class="">  438: =item * C&lt;callback&gt;
-</span><span class="">  439: 
-</span><span class="">  440: A code reference to a subroutine that performs custom validation logic.
-</span><span class="">  441: The subroutine should accept the parameter value, the argument list and the schema as arguments and return true if the value is valid, false otherwise.
-</span><span class="">  442: 
-</span><span class="">  443: Use this to test more complex examples:
-</span><span class="">  444: 
-</span><span class="">  445:   my $schema = {
-</span><span class="">  446:     even_number =&gt; {
-</span><span class="">  447:       type =&gt; &#39;integer&#39;,
-</span><span class="">  448:       callback =&gt; sub { $_[0] % 2 == 0 }
-</span><span class="">  449:   };
-</span><span class="">  450: 
-</span><span class="">  451:   # Specify the arguments for a routine which has a second, optional argument, which, if given, must be less than or equal to the first
-</span><span class="">  452:   my $schema = {
-</span><span class="">  453:     first =&gt; {
-</span><span class="">  454:       type =&gt; &#39;integer&#39;
-</span><span class="">  455:     }, second =&gt; {
-</span><span class="">  456:       type =&gt; &#39;integer&#39;,
-</span><span class="">  457:       optional =&gt; 1,
-</span><span class="">  458:       callback =&gt; sub {
-</span><span class="">  459:         my($value, $args) = @_;
-</span><span class="">  460: 	# The &#39;defined&#39; is needed in case &#39;second&#39; is evaluated before &#39;first&#39;
-</span><span class="">  461: 	return (defined($args-&gt;{first}) &amp;&amp; $value &lt;= $args-&gt;{first}) ? 1 : 0
-</span><span class="">  462:       }
-</span><span class="">  463:     }
-</span><span class="">  464:   };
-</span><span class="">  465: 
-</span><span class="">  466: =item * C&lt;optional&gt;
-</span><span class="">  467: 
-</span><span class="">  468: A boolean value indicating whether the parameter is optional.
-</span><span class="">  469: If true, the parameter is not required.
-</span><span class="">  470: If false or omitted, the parameter is required.
-</span><span class="">  471: 
-</span><span class="">  472: It can be a reference to a code snippet that will return true or false,
-</span><span class="">  473: to determine if the parameter is optional or not.
-</span><span class="">  474: The code will be called with two arguments: the value of the parameter and hash ref of all parameters:
-</span><span class="">  475: 
-</span><span class="">  476:   my $schema = {
-</span><span class="">  477:     optional_field =&gt; {
-</span><span class="">  478:       type =&gt; &#39;string&#39;,
-</span><span class="">  479:       optional =&gt; sub {
-</span><span class="">  480:         my ($value, $all_params) = @_;
-</span><span class="">  481:         return $all_params-&gt;{make_optional} ? 1 : 0;
-</span><span class="">  482:       }
-</span><span class="">  483:     },
-</span><span class="">  484:     make_optional =&gt; { type =&gt; &#39;boolean&#39; }
-</span><span class="">  485:   };
-</span><span class="">  486: 
-</span><span class="">  487:   my $result = validate_strict(schema =&gt; $schema, input =&gt; { make_optional =&gt; 1 });
-</span><span class="">  488: 
-</span><span class="">  489: If the parameter is not optional, it can be passed an undef value, which will not flag an error.
-</span><span class="">  490: This is by design.
-</span><span class="">  491: So this will not say that the required parameter &#39;s&#39; is missing:
-</span><span class="">  492: 
-</span><span class="">  493:     validate_strict(
-</span><span class="">  494:         schema =&gt; { s =&gt; { type =&gt; &#39;string&#39; } },
-</span><span class="">  495:         input  =&gt; { s =&gt; undef },
-</span><span class="">  496:     );
-</span><span class="">  497: 
-</span><span class="">  498: =item * C&lt;default&gt;
-</span><span class="">  499: 
-</span><span class="">  500: Populate missing optional parameters with the specified value.
-</span><span class="">  501: Note that this value is not validated.
-</span><span class="">  502: 
-</span><span class="">  503:   username =&gt; {
-</span><span class="">  504:     type =&gt; &#39;string&#39;,
-</span><span class="">  505:     optional =&gt; 1,
-</span><span class="">  506:     default =&gt; &#39;guest&#39;
-</span><span class="">  507:   }
-</span><span class="">  508: 
-</span><span class="">  509: =item * C&lt;element_type&gt;
-</span><span class="">  510: 
-</span><span class="">  511: Extends the validation to individual elements of arrays.
-</span><span class="">  512: 
-</span><span class="">  513:   tags =&gt; {
-</span><span class="">  514:     type =&gt; &#39;arrayref&#39;,
-</span><span class="">  515:     element_type =&gt; &#39;number&#39;,	# Float means the same
-</span><span class="">  516:     min =&gt; 1,	# this is the length of the array, not the min value for each of the numbers. For that, add a C&lt;schema&gt; rule
-</span><span class="">  517:     max =&gt; 5
-</span><span class="">  518:   }
-</span><span class="">  519: 
-</span><span class="">  520: =item * C&lt;error_msg&gt;
-</span><span class="">  521: 
-</span><span class="">  522: The custom error message to be used in the event of a validation failure.
-</span><span class="">  523: 
-</span><span class="">  524:   age =&gt; {
-</span><span class="">  525:     type =&gt; &#39;integer&#39;,
-</span><span class="">  526:     min =&gt; 18,
-</span><span class="">  527:     error_msg =&gt; &#39;You must be at least 18 years old&#39;
-</span><span class="">  528:   }
-</span><span class="">  529: 
-</span><span class="">  530: =item * C&lt;nullable&gt;
-</span><span class="">  531: 
-</span><span class="">  532: Like optional,
-</span><span class="">  533: though this cannot be a coderef,
-</span><span class="">  534: only a flag.
-</span><span class="">  535: 
-</span><span class="">  536: =item * C&lt;schema&gt;
-</span><span class="">  537: 
-</span><span class="">  538: You can validate nested hashrefs and arrayrefs using the C&lt;schema&gt; property:
-</span><span class="">  539: 
-</span><span class="">  540:     my $schema = {
-</span><span class="">  541:         user =&gt; {	# &#39;user&#39; is a hashref
-</span><span class="">  542:             type =&gt; &#39;hashref&#39;,
-</span><span class="">  543:             schema =&gt; {	# Specify what the elements of the hash should be
-</span><span class="">  544:                 name =&gt; { type =&gt; &#39;string&#39; },
-</span><span class="">  545:                 age =&gt; { type =&gt; &#39;integer&#39;, min =&gt; 0 },
-</span><span class="">  546:                 hobbies =&gt; {	# &#39;hobbies&#39; is an array ref that this user has
-</span><span class="">  547:                     type =&gt; &#39;arrayref&#39;,
-</span><span class="">  548:                     schema =&gt; { type =&gt; &#39;string&#39; }, # Validate each hobby
-</span><span class="">  549:                     min =&gt; 1 # At least one hobby
-</span><span class="">  550:                 }
-</span><span class="">  551:             }
-</span><span class="">  552:         }, metadata =&gt; {
-</span><span class="">  553:             type =&gt; &#39;hashref&#39;,
-</span><span class="">  554:             schema =&gt; {
-</span><span class="">  555:                 created =&gt; { type =&gt; &#39;string&#39; },
-</span><span class="">  556:                 tags =&gt; {
-</span><span class="">  557:                     type =&gt; &#39;arrayref&#39;,
-</span><span class="">  558:                     schema =&gt; {
-</span><span class="">  559:                         type =&gt; &#39;string&#39;,
-</span><span class="">  560:                         matches =&gt; qr/^[a-z]+$/	# Or you can say matches =&gt; &#39;^[a-z]+$&#39;
-</span><span class="">  561:                     }
-</span><span class="">  562:                 }
-</span><span class="">  563:             }
-</span><span class="">  564:         }
-</span><span class="">  565:     };
-</span><span class="">  566: 
-</span><span class="">  567: =item * C&lt;validate&gt;
-</span><span class="">  568: 
-</span><span class="">  569: A snippet of code that validates the input.
-</span><span class="">  570: It&#39;s passed the input arguments,
-</span><span class="">  571: and return a string containing a reason for rejection,
-</span><span class="">  572: or undef if it&#39;s allowed.
-</span><span class="">  573: 
-</span><span class="">  574:     my $schema = {
-</span><span class="">  575:       user =&gt; {
-</span><span class="">  576:         type =&gt; &#39;string&#39;,
-</span><span class="">  577: 	validate =&gt; sub {
-</span><span class="">  578: 	  if($_[0]-&gt;{&#39;password&#39;} eq &#39;bar&#39;) {
-</span><span class="">  579: 	    return undef;
-</span><span class="">  580: 	  }
-</span><span class="">  581: 	  return &#39;Invalid password, try again&#39;;
-</span><span class="">  582: 	}
-</span><span class="">  583:       }, password =&gt; {
-</span><span class="">  584:          type =&gt; &#39;string&#39;
-</span><span class="">  585:       }
-</span><span class="">  586:     };
-</span><span class="">  587: 
-</span><span class="">  588: =item * C&lt;transform&gt;
-</span><span class="">  589: 
-</span><span class="">  590: A code reference to a subroutine that transforms/sanitizes the parameter value before validation.
-</span><span class="">  591: The subroutine should accept the parameter value as an argument and return the transformed value.
-</span><span class="">  592: The transformation is applied before any validation rules are checked, allowing you to normalize
-</span><span class="">  593: or clean data before it is validated.
-</span><span class="">  594: 
-</span><span class="">  595: Common use cases include trimming whitespace, normalizing case, formatting phone numbers,
-</span><span class="">  596: sanitizing user input, and converting between data formats.
-</span><span class="">  597: 
-</span><span class="">  598:   # Simple string transformations
-</span><span class="">  599:   username =&gt; {
-</span><span class="">  600:     type =&gt; &#39;string&#39;,
-</span><span class="">  601:     transform =&gt; sub { lc(trim($_[0])) },  # lowercase and trim
-</span><span class="">  602:     matches =&gt; qr/^[a-z0-9_]+$/
-</span><span class="">  603:   }
-</span><span class="">  604: 
-</span><span class="">  605:   email =&gt; {
-</span><span class="">  606:     type =&gt; &#39;string&#39;,
-</span><span class="">  607:     transform =&gt; sub { lc(trim($_[0])) },  # normalize email
-</span><span class="">  608:     matches =&gt; qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
-</span><span class="">  609:   }
-</span><span class="">  610: 
-</span><span class="">  611:   # Array transformations
-</span><span class="">  612:   tags =&gt; {
-</span><span class="">  613:     type =&gt; &#39;arrayref&#39;,
-</span><span class="">  614:     transform =&gt; sub { [map { lc($_) } @{$_[0]}] },  # lowercase all elements
-</span><span class="">  615:     element_type =&gt; &#39;string&#39;
-</span><span class="">  616:   }
-</span><span class="">  617: 
-</span><span class="">  618:   keywords =&gt; {
-</span><span class="">  619:     type =&gt; &#39;arrayref&#39;,
-</span><span class="">  620:     transform =&gt; sub {
-</span><span class="">  621:       my @arr = map { lc(trim($_)) } @{$_[0]};
-</span><span class="">  622:       my %seen;
-</span><span class="">  623:       return [grep { !$seen{$_}++ } @arr];  # remove duplicates
-</span><span class="">  624:     }
-</span><span class="">  625:   }
-</span><span class="">  626: 
-</span><span class="">  627:   # Numeric transformations
-</span><span class="">  628:   quantity =&gt; {
-</span><span class="">  629:     type =&gt; &#39;integer&#39;,
-</span><span class="">  630:     transform =&gt; sub { int($_[0] + 0.5) },  # round to nearest integer
-</span><span class="">  631:     min =&gt; 1
-</span><span class="">  632:   }
-</span><span class="">  633: 
-</span><span class="">  634:   # Sanitization
-</span><span class="">  635:   slug =&gt; {
-</span><span class="">  636:     type =&gt; &#39;string&#39;,
-</span><span class="">  637:     transform =&gt; sub {
-</span><span class="">  638:       my $str = lc(trim($_[0]));
-</span><span class="">  639:       $str =~ s/[^\w\s-]//g;  # remove special characters
-</span><span class="">  640:       $str =~ s/\s+/-/g;      # replace spaces with hyphens
-</span><span class="">  641:       return $str;
-</span><span class="">  642:     },
-</span><span class="">  643:     matches =&gt; qr/^[a-z0-9-]+$/
-</span><span class="">  644:   }
-</span><span class="">  645: 
-</span><span class="">  646:   phone =&gt; {
-</span><span class="">  647:     type =&gt; &#39;string&#39;,
-</span><span class="">  648:     transform =&gt; sub {
-</span><span class="">  649:       my $str = $_[0];
-</span><span class="">  650:       $str =~ s/\D//g;  # remove all non-digits
-</span><span class="">  651:       return $str;
-</span><span class="">  652:     },
-</span><span class="">  653:     matches =&gt; qr/^\d{10}$/
-</span><span class="">  654:   }
-</span><span class="">  655: 
-</span><span class="">  656: The C&lt;transform&gt; function is applied to the value before any validation checks (C&lt;min&gt;/C&lt;minimum&gt;, C&lt;max&gt;,
-</span><span class="">  657: C&lt;matches&gt;, C&lt;callback&gt;, etc.), ensuring that validation rules are checked against the cleaned data.
-</span><span class="">  658: 
-</span><span class="">  659: Transformations work with all parameter types including nested structures:
-</span><span class="">  660: 
-</span><span class="">  661:   user =&gt; {
-</span><span class="">  662:     type =&gt; &#39;hashref&#39;,
-</span><span class="">  663:     schema =&gt; {
-</span><span class="">  664:       name =&gt; {
-</span><span class="">  665:         type =&gt; &#39;string&#39;,
-</span><span class="">  666:         transform =&gt; sub { trim($_[0]) }
-</span><span class="">  667:       }, email =&gt; {
-</span><span class="">  668:         type =&gt; &#39;string&#39;,
-</span><span class="">  669:         transform =&gt; sub { lc(trim($_[0])) }
-</span><span class="">  670:       }
-</span><span class="">  671:     }
-</span><span class="">  672:   }
-</span><span class="">  673: 
-</span><span class="">  674: Transformations can also be defined in custom types for reusability:
-</span><span class="">  675: 
-</span><span class="">  676:   my $custom_types = {
-</span><span class="">  677:     email =&gt; {
-</span><span class="">  678:       type =&gt; &#39;string&#39;,
-</span><span class="">  679:       transform =&gt; sub { lc(trim($_[0])) },
-</span><span class="">  680:       matches =&gt; qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
-</span><span class="">  681:     }
-</span><span class="">  682:   };
-</span><span class="">  683: 
-</span><span class="">  684: Note that the transformed value is what gets returned in the validated result and is what
-</span><span class="">  685: subsequent validation rules will check against. If a transformation might fail, ensure it
-</span><span class="">  686: handles edge cases appropriately.
-</span><span class="">  687: It is the responsibility of the transformer to ensure that the type of the returned value is correct,
-</span><span class="">  688: since that is what will be validated.
-</span><span class="">  689: 
-</span><span class="">  690: Many validators also allow a code ref to be passed so that you can create your own, conditional validation rule, e.g.:
-</span><span class="">  691: 
-</span><span class="">  692:   $schema = {
-</span><span class="">  693:     age =&gt; {
-</span><span class="">  694:       type =&gt; &#39;integer&#39;,
-</span><span class="">  695:       min =&gt; sub {
-</span><span class="">  696:           my ($value, $all_params) = @_;
-</span><span class="">  697:           return $all_params-&gt;{country} eq &#39;US&#39; ? 21 : 18;
-</span><span class="">  698:       }
-</span><span class="">  699:     }
-</span><span class="">  700:   }
-</span><span class="">  701: 
-</span><span class="">  702: =item * C&lt;validator&gt;
-</span><span class="">  703: 
-</span><span class="">  704: A synonym of C&lt;validate&gt;, for compatibility with L&lt;Data::Processor&gt;.
-</span><span class="">  705: 
-</span><span class="">  706: =item * C&lt;cross_validation&gt;
-</span><span class="">  707: 
-</span><span class="">  708: A reference to a hash that defines validation rules that depend on more than one parameter.
-</span><span class="">  709: Cross-field validations are performed after all individual parameter validations have passed,
-</span><span class="">  710: allowing you to enforce business logic that requires checking relationships between different fields.
-</span><span class="">  711: 
-</span><span class="">  712: Each cross-validation rule is a key-value pair where the key is a descriptive name for the validation
-</span><span class="">  713: and the value is a code reference that accepts a hash reference of all validated parameters.
-</span><span class="">  714: The subroutine should return C&lt;undef&gt; if the validation passes, or an error message string if it fails.
-</span><span class="">  715: 
-</span><span class="">  716:   my $schema = {
-</span><span class="">  717:     password =&gt; { type =&gt; &#39;string&#39;, min =&gt; 8 },
-</span><span class="">  718:     password_confirm =&gt; { type =&gt; &#39;string&#39; }
-</span><span class="">  719:   };
-</span><span class="">  720: 
-</span><span class="">  721:   my $cross_validation = {
-</span><span class="">  722:     passwords_match =&gt; sub {
-</span><span class="">  723:       my $params = shift;
-</span><span class="">  724:       return $params-&gt;{password} eq $params-&gt;{password_confirm}
-</span><span class="">  725:         ? undef : &quot;Passwords don&#39;t match&quot;;
-</span><span class="">  726:     }
-</span><span class="">  727:   };
-</span><span class="">  728: 
-</span><span class="">  729:   my $validated = validate_strict(
-</span><span class="">  730:     schema =&gt; $schema,
-</span><span class="">  731:     input =&gt; $input,
-</span><span class="">  732:     cross_validation =&gt; $cross_validation
-</span><span class="">  733:   );
-</span><span class="">  734: 
-</span><span class="">  735: Common use cases include password confirmation, date range validation, numeric comparisons,
-</span><span class="">  736: and conditional requirements:
-</span><span class="">  737: 
-</span><span class="">  738:   # Date range validation
-</span><span class="">  739:   my $cross_validation = {
-</span><span class="">  740:     date_range_valid =&gt; sub {
-</span><span class="">  741:       my $params = shift;
-</span><span class="">  742:       return $params-&gt;{start_date} le $params-&gt;{end_date}
-</span><span class="">  743:         ? undef : &quot;Start date must be before or equal to end date&quot;;
-</span><span class="">  744:     }
-</span><span class="">  745:   };
-</span><span class="">  746: 
-</span><span class="">  747:   # Price range validation
-</span><span class="">  748:   my $cross_validation = {
-</span><span class="">  749:     price_range_valid =&gt; sub {
-</span><span class="">  750:       my $params = shift;
-</span><span class="">  751:       return $params-&gt;{min_price} &lt;= $params-&gt;{max_price}
-</span><span class="">  752:         ? undef : &quot;Minimum price must be less than or equal to maximum price&quot;;
-</span><span class="">  753:     }
-</span><span class="">  754:   };
-</span><span class="">  755: 
-</span><span class="">  756:   # Conditional required field
-</span><span class="">  757:   my $cross_validation = {
-</span><span class="">  758:     address_required_for_delivery =&gt; sub {
-</span><span class="">  759:       my $params = shift;
-</span><span class="">  760:       if ($params-&gt;{shipping_method} eq &#39;delivery&#39; &amp;&amp; !$params-&gt;{delivery_address}) {
-</span><span class="">  761:         return &quot;Delivery address is required when shipping method is &#39;delivery&#39;&quot;;
-</span><span class="">  762:       }
-</span><span class="">  763:       return undef;
-</span><span class="">  764:     }
-</span><span class="">  765:   };
-</span><span class="">  766: 
-</span><span class="">  767: Multiple cross-validations can be defined in the same hash, and they are all checked in order.
-</span><span class="">  768: If any cross-validation fails, the function will C&lt;croak&gt; with the error message returned by the validation:
-</span><span class="">  769: 
-</span><span class="">  770:   my $cross_validation = {
-</span><span class="">  771:     passwords_match =&gt; sub {
-</span><span class="">  772:       my $params = shift;
-</span><span class="">  773:       return $params-&gt;{password} eq $params-&gt;{password_confirm}
-</span><span class="">  774:         ? undef : &quot;Passwords don&#39;t match&quot;;
-</span><span class="">  775:     },
-</span><span class="">  776:     emails_match =&gt; sub {
-</span><span class="">  777:       my $params = shift;
-</span><span class="">  778:       return $params-&gt;{email} eq $params-&gt;{email_confirm}
-</span><span class="">  779:         ? undef : &quot;Email addresses don&#39;t match&quot;;
-</span><span class="">  780:     },
-</span><span class="">  781:     age_matches_birth_year =&gt; sub {
-</span><span class="">  782:       my $params = shift;
-</span><span class="">  783:       my $current_year = (localtime)[5] + 1900;
-</span><span class="">  784:       my $calculated_age = $current_year - $params-&gt;{birth_year};
-</span><span class="">  785:       return abs($calculated_age - $params-&gt;{age}) &lt;= 1
-</span><span class="">  786:         ? undef : &quot;Age doesn&#39;t match birth year&quot;;
-</span><span class="">  787:     }
-</span><span class="">  788:   };
-</span><span class="">  789: 
-</span><span class="">  790: Cross-validations receive the parameters after individual validation and transformation have been applied,
-</span><span class="">  791: so you can rely on the data being in the correct format and type:
-</span><span class="">  792: 
-</span><span class="">  793:   my $schema = {
-</span><span class="">  794:     email =&gt; {
-</span><span class="">  795:       type =&gt; &#39;string&#39;,
-</span><span class="">  796:       transform =&gt; sub { lc($_[0]) }  # Lowercased before cross-validation
-</span><span class="">  797:     },
-</span><span class="">  798:     email_confirm =&gt; {
-</span><span class="">  799:       type =&gt; &#39;string&#39;,
-</span><span class="">  800:       transform =&gt; sub { lc($_[0]) }
-</span><span class="">  801:     }
-</span><span class="">  802:   };
-</span><span class="">  803: 
-</span><span class="">  804:   my $cross_validation = {
-</span><span class="">  805:     emails_match =&gt; sub {
-</span><span class="">  806:       my $params = shift;
-</span><span class="">  807:       # Both emails are already lowercased at this point
-</span><span class="">  808:       return $params-&gt;{email} eq $params-&gt;{email_confirm}
-</span><span class="">  809:         ? undef : &quot;Email addresses don&#39;t match&quot;;
-</span><span class="">  810:     }
-</span><span class="">  811:   };
-</span><span class="">  812: 
-</span><span class="">  813: Cross-validations can access nested structures and optional fields:
-</span><span class="">  814: 
-</span><span class="">  815:   my $cross_validation = {
-</span><span class="">  816:     guardian_required_for_minors =&gt; sub {
-</span><span class="">  817:       my $params = shift;
-</span><span class="">  818:       if ($params-&gt;{user}{age} &lt; 18 &amp;&amp; !$params-&gt;{guardian}) {
-</span><span class="">  819:         return &quot;Guardian information required for users under 18&quot;;
-</span><span class="">  820:       }
-</span><span class="">  821:       return undef;
-</span><span class="">  822:     }
-</span><span class="">  823:   };
-</span><span class="">  824: 
-</span><span class="">  825: =item * metadata
-</span><span class="">  826: 
-</span><span class="">  827: Fields starting with &lt;_&gt; are generated by L&lt;App::Test::Generator::SchemaExtractor&gt;,
-</span><span class="">  828: and are currently ignored.
-</span><span class="">  829: 
-</span><span class="">  830: =item * C&lt;semantic&gt;
-</span><span class="">  831: 
-</span><span class="">  832: A hint about the semantic meaning of the parameter value.
-</span><span class="">  833: Currently only C&lt;unix_timestamp&gt; is supported.
-</span><span class="">  834: 
-</span><span class="">  835:   ts =&gt; { type =&gt; &#39;integer&#39;, semantic =&gt; &#39;unix_timestamp&#39; }
-</span><span class="">  836: 
-</span><span class="">  837: When C&lt;semantic&gt; is C&lt;unix_timestamp&gt;, the value must be a non-negative integer no greater than
-</span><span class="">  838: C&lt;2147483647&gt; (i.e. a valid 32-bit Unix epoch timestamp).
-</span><span class="">  839: Values outside this range cause the function to C&lt;croak&gt;.
-</span><span class="">  840: 
-</span><span class="">  841: Unknown semantic values emit a warning but do not cause an error.
-</span><span class="">  842: 
-</span><span class="">  843: =item * schematic
-</span><span class="">  844: 
-</span><span class="">  845: TODO: gives an idea of what the field will be, e.g. C&lt;filename&gt;.
-</span><span class="">  846: 
-</span><span class="">  847: All cross-validations must pass for the overall validation to succeed.
-</span><span class="">  848: 
-</span><span class="">  849: =item * C&lt;relationships&gt;
-</span><span class="">  850: 
-</span><span class="">  851: A reference to an array that defines validation rules based on relationships between parameters.
-</span><span class="">  852: Relationship validations are performed after all individual parameter validations have passed,
-</span><span class="">  853: but before cross-validations.
-</span><span class="">  854: 
-</span><span class="">  855: Each relationship is a hash reference with a C&lt;type&gt; field and additional fields depending on the type:
-</span><span class="">  856: 
-</span><span class="">  857: =over 4
-</span><span class="">  858: 
-</span><span class="">  859: =item * B&lt;mutually_exclusive&gt;
-</span><span class="">  860: 
-</span><span class="">  861: Parameters that cannot be specified together.
-</span><span class="">  862: 
-</span><span class="">  863:   relationships =&gt; [
-</span><span class="">  864:     {
-</span><span class="">  865:       type =&gt; &#39;mutually_exclusive&#39;,
-</span><span class="">  866:       params =&gt; [&#39;file&#39;, &#39;content&#39;],
-</span><span class="">  867:       description =&gt; &#39;Cannot specify both file and content&#39;
-</span><span class="">  868:     }
-</span><span class="">  869:   ]
-</span><span class="">  870: 
-</span><span class="">  871: =item * B&lt;required_group&gt;
-</span><span class="">  872: 
-</span><span class="">  873: At least one parameter from the group must be specified.
-</span><span class="">  874: 
-</span><span class="">  875:   relationships =&gt; [
-</span><span class="">  876:     {
-</span><span class="">  877:       type =&gt; &#39;required_group&#39;,
-</span><span class="">  878:       params =&gt; [&#39;id&#39;, &#39;name&#39;],
-</span><span class="">  879:       logic =&gt; &#39;or&#39;,
-</span><span class="">  880:       description =&gt; &#39;Must specify either id or name&#39;
-</span><span class="">  881:     }
-</span><span class="">  882:   ]
-</span><span class="">  883: 
-</span><span class="">  884: =item * B&lt;conditional_requirement&gt;
-</span><span class="">  885: 
-</span><span class="">  886: If one parameter is specified, another becomes required.
-</span><span class="">  887: 
-</span><span class="">  888:   relationships =&gt; [
-</span><span class="">  889:     {
-</span><span class="">  890:       type =&gt; &#39;conditional_requirement&#39;,
-</span><span class="">  891:       if =&gt; &#39;async&#39;,
-</span><span class="">  892:       then_required =&gt; &#39;callback&#39;,
-</span><span class="">  893:       description =&gt; &#39;When async is specified, callback is required&#39;
-</span><span class="">  894:     }
-</span><span class="">  895:   ]
-</span><span class="">  896: 
-</span><span class="">  897: =item * B&lt;dependency&gt;
-</span><span class="">  898: 
-</span><span class="">  899: One parameter requires another to be present.
-</span><span class="">  900: 
-</span><span class="">  901:   relationships =&gt; [
-</span><span class="">  902:     {
-</span><span class="">  903:       type =&gt; &#39;dependency&#39;,
-</span><span class="">  904:       param =&gt; &#39;port&#39;,
-</span><span class="">  905:       requires =&gt; &#39;host&#39;,
-</span><span class="">  906:       description =&gt; &#39;port requires host to be specified&#39;
-</span><span class="">  907:     }
-</span><span class="">  908:   ]
-</span><span class="">  909: 
-</span><span class="">  910: =item * B&lt;value_constraint&gt;
-</span><span class="">  911: 
-</span><span class="">  912: Specific value requirements between parameters.
-</span><span class="">  913: 
-</span><span class="">  914:   relationships =&gt; [
-</span><span class="">  915:     {
-</span><span class="">  916:       type =&gt; &#39;value_constraint&#39;,
-</span><span class="">  917:       if =&gt; &#39;ssl&#39;,
-</span><span class="">  918:       then =&gt; &#39;port&#39;,
-</span><span class="">  919:       operator =&gt; &#39;==&#39;,
-</span><span class="">  920:       value =&gt; 443,
-</span><span class="">  921:       description =&gt; &#39;When ssl is specified, port must equal 443&#39;
-</span><span class="">  922:     }
-</span><span class="">  923:   ]
-</span><span class="">  924: 
-</span><span class="">  925: =item * B&lt;value_conditional&gt;
-</span><span class="">  926: 
-</span><span class="">  927: Parameter required when another has a specific value.
-</span><span class="">  928: 
-</span><span class="">  929:   relationships =&gt; [
-</span><span class="">  930:     {
-</span><span class="">  931:       type =&gt; &#39;value_conditional&#39;,
-</span><span class="">  932:       if =&gt; &#39;mode&#39;,
-</span><span class="">  933:       equals =&gt; &#39;secure&#39;,
-</span><span class="">  934:       then_required =&gt; &#39;key&#39;,
-</span><span class="">  935:       description =&gt; &quot;When mode equals &#39;secure&#39;, key is required&quot;
-</span><span class="">  936:     }
-</span><span class="">  937:   ]
-</span><span class="">  938: 
-</span><span class="">  939: =back
-</span><span class="">  940: 
-</span><span class="">  941: If a parameter is optional and its value is C&lt;undef&gt;,
-</span><span class="">  942: validation will be skipped for that parameter.
-</span><span class="">  943: 
-</span><span class="">  944: If the validation fails, the function will C&lt;croak&gt; with an error message describing the validation failure.
-</span><span class="">  945: 
-</span><span class="">  946: If the validation is successful, the function will return a reference to a new hash containing the validated and (where applicable) coerced parameters.  Integer and number parameters will be coerced to their respective types.
-</span><span class="">  947: 
-</span><span class="">  948: The C&lt;description&gt; field is optional but recommended for clearer error messages.
-</span><span class="">  949: 
-</span><span class="">  950: =back
-</span><span class="">  951: 
-</span><span class="">  952: =head2 Example Usage
-</span><span class="">  953: 
-</span><span class="">  954:   my $schema = {
-</span><span class="">  955:     host =&gt; { type =&gt; &#39;string&#39; },
-</span><span class="">  956:     port =&gt; { type =&gt; &#39;integer&#39; },
-</span><span class="">  957:     ssl =&gt; { type =&gt; &#39;boolean&#39; },
-</span><span class="">  958:     file =&gt; { type =&gt; &#39;string&#39;, optional =&gt; 1 },
-</span><span class="">  959:     content =&gt; { type =&gt; &#39;string&#39;, optional =&gt; 1 }
-</span><span class="">  960:   };
-</span><span class="">  961: 
-</span><span class="">  962:   my $relationships = [
-</span><span class="">  963:     {
-</span><span class="">  964:       type =&gt; &#39;mutually_exclusive&#39;,
-</span><span class="">  965:       params =&gt; [&#39;file&#39;, &#39;content&#39;]
-</span><span class="">  966:     }, {
-</span><span class="">  967:       type =&gt; &#39;required_group&#39;,
-</span><span class="">  968:       params =&gt; [&#39;host&#39;, &#39;file&#39;]
-</span><span class="">  969:     },
-</span><span class="">  970:     {
-</span><span class="">  971:       type =&gt; &#39;dependency&#39;,
-</span><span class="">  972:       param =&gt; &#39;port&#39;,
-</span><span class="">  973:       requires =&gt; &#39;host&#39;
-</span><span class="">  974:     },
-</span><span class="">  975:     {
-</span><span class="">  976:       type =&gt; &#39;value_constraint&#39;,
-</span><span class="">  977:       if =&gt; &#39;ssl&#39;,
-</span><span class="">  978:       then =&gt; &#39;port&#39;,
-</span><span class="">  979:       operator =&gt; &#39;==&#39;,
-</span><span class="">  980:       value =&gt; 443
-</span><span class="">  981:     }
-</span><span class="">  982:   ];
-</span><span class="">  983: 
-</span><span class="">  984:   my $validated = validate_strict(
-</span><span class="">  985:     schema =&gt; $schema,
-</span><span class="">  986:     input =&gt; $input,
-</span><span class="">  987:     relationships =&gt; $relationships
-</span><span class="">  988:   );
-</span><span class="">  989: 
-</span><span class="">  990: =head1 MIGRATION FROM LEGACY VALIDATORS
-</span><span class="">  991: 
-</span><span class="">  992: =head2 From L&lt;Params::Validate&gt;
-</span><span class="">  993: 
-</span><span class="">  994:     # Old style
-</span><span class="">  995:     validate(@_, {
-</span><span class="">  996:         name =&gt; { type =&gt; SCALAR },
-</span><span class="">  997:         age =&gt; { type =&gt; SCALAR, regex =&gt; qr/^\d+$/ }
-</span><span class="">  998:     });
-</span><span class="">  999: 
-</span><span class=""> 1000:     # New style
-</span><span class=""> 1001:     validate_strict(
-</span><span class=""> 1002:         schema =&gt; {	# or &quot;members&quot;
-</span><span class=""> 1003:             name =&gt; &#39;string&#39;,
-</span><span class=""> 1004:             age =&gt; { type =&gt; &#39;integer&#39;, min =&gt; 0 }
-</span><span class=""> 1005:         },
-</span><span class=""> 1006:         args =&gt; { @_ }
-</span><span class=""> 1007:     );
-</span><span class=""> 1008: 
-</span><span class=""> 1009: =head2 From L&lt;Type::Params&gt;
-</span><span class=""> 1010: 
-</span><span class=""> 1011:     # Old style
-</span><span class=""> 1012:     my ($name, $age) = validate_positional \@_, Str, Int;
-</span><span class=""> 1013: 
-</span><span class=""> 1014:     # New style - requires converting to named parameters first
-</span><span class=""> 1015:     my %args = (name =&gt; $_[0], age =&gt; $_[1]);
-</span><span class=""> 1016:     my $validated = validate_strict(
-</span><span class=""> 1017:         schema =&gt; { name =&gt; &#39;string&#39;, age =&gt; &#39;integer&#39; },
-</span><span class=""> 1018:         args =&gt; \%args
-</span><span class=""> 1019:     );
-</span><span class=""> 1020: 
-</span><span class=""> 1021: =cut
-</span><span class=""> 1022: 
-</span><span class=""> 1023: sub validate_strict
-</span><span class=""> 1024: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1025 → 1032 → 1040</span></span> 1025: 	my $params = Params::Get::get_params(undef, \@_);
+</span><span class="">   15: use Readonly::Values::Boolean;
+</span><span class="">   16: use Scalar::Util;
+</span><span class="">   17: use Unicode::GCString;
+</span><span class="">   18: 
+</span><span class="">   19: our @ISA = qw(Exporter);
+</span><span class="">   20: our @EXPORT_OK = qw(validate_strict);
+</span><span class="">   21: 
+</span><span class="">   22: =head1 NAME
+</span><span class="">   23: 
+</span><span class="">   24: Params::Validate::Strict - Validates a set of parameters against a schema
+</span><span class="">   25: 
+</span><span class="">   26: =head1 VERSION
+</span><span class="">   27: 
+</span><span class="">   28: Version 0.37
+</span><span class="">   29: 
+</span><span class="">   30: =cut
+</span><span class="">   31: 
+</span><span class="">   32: our $VERSION = &#39;0.37&#39;;
+</span><span class="">   33: 
+</span><span class="">   34: =head1 SYNOPSIS
+</span><span class="">   35: 
+</span><span class="">   36:     my $schema = {
+</span><span class="">   37:         username =&gt; { type =&gt; &#39;string&#39;, min =&gt; 3, max =&gt; 50 },
+</span><span class="">   38:         age =&gt; { type =&gt; &#39;integer&#39;, min =&gt; 0, max =&gt; 150 },
+</span><span class="">   39:     };
+</span><span class="">   40: 
+</span><span class="">   41:     my $input = {
+</span><span class="">   42:          username =&gt; &#39;john_doe&#39;,
+</span><span class="">   43:          age =&gt; &#39;30&#39;,	# Will be coerced to integer
+</span><span class="">   44:     };
+</span><span class="">   45: 
+</span><span class="">   46:     my $validated_input = validate_strict(schema =&gt; $schema, input =&gt; $input);
+</span><span class="">   47: 
+</span><span class="">   48:     if(defined($validated_input)) {
+</span><span class="">   49:         print &quot;Example 1: Validation successful!\n&quot;;
+</span><span class="">   50:         print &#39;Username: &#39;, $validated_input-&gt;{username}, &quot;\n&quot;;
+</span><span class="">   51:         print &#39;Age: &#39;, $validated_input-&gt;{age}, &quot;\n&quot;;	# It&#39;s an integer now
+</span><span class="">   52:     } else {
+</span><span class="">   53:         print &quot;Example 1: Validation failed: $@\n&quot;;
+</span><span class="">   54:     }
+</span><span class="">   55: 
+</span><span class="">   56: Upon first reading this may seem overly complex and full of scope creep in a sledgehammer to crack a nut sort of way,
+</span><span class="">   57: however two use cases make use of the extensive logic that comes with this code
+</span><span class="">   58: and I have a couple of other reasons for writing it.
+</span><span class="">   59: 
+</span><span class="">   60: =over 4
+</span><span class="">   61: 
+</span><span class="">   62: =item * Black Box Testing
+</span><span class="">   63: 
+</span><span class="">   64: The schema can be plumbed into L&lt;App::Test::Generator&gt; to automatically create a set of black-box test cases.
+</span><span class="">   65: 
+</span><span class="">   66: =item * WAF
+</span><span class="">   67: 
+</span><span class="">   68: The schema can be plumbed into a WAF to protect from random user input.
+</span><span class="">   69: 
+</span><span class="">   70: =item * Improved API Documentation
+</span><span class="">   71: 
+</span><span class="">   72: Even if you don&#39;t use this module,
+</span><span class="">   73: the specification syntax can help with documentation.
+</span><span class="">   74: 
+</span><span class="">   75: =item * I like it
+</span><span class="">   76: 
+</span><span class="">   77: I find it fun to write this,
+</span><span class="">   78: even if nobody else finds it useful,
+</span><span class="">   79: though I hope you will.
+</span><span class="">   80: 
+</span><span class="">   81: =back
+</span><span class="">   82: 
+</span><span class="">   83: =head1	METHODS
+</span><span class="">   84: 
+</span><span class="">   85: =head2 validate_strict
+</span><span class="">   86: 
+</span><span class="">   87: Validates a set of parameters against a schema.
+</span><span class="">   88: 
+</span><span class="">   89: This function takes two mandatory arguments:
+</span><span class="">   90: 
+</span><span class="">   91: =over 4
+</span><span class="">   92: 
+</span><span class="">   93: =item * C&lt;schema&gt; || C&lt;members&gt;
+</span><span class="">   94: 
+</span><span class="">   95: A reference to a hash that defines the validation rules for each parameter.
+</span><span class="">   96: The keys of the hash are the parameter names, and the values are either a string representing the parameter type or a reference to a hash containing more detailed rules.
+</span><span class="">   97: 
+</span><span class="">   98: As an alternative the schema may be supplied as an B&lt;arrayref of parameter hashrefs&gt;,
+</span><span class="">   99: where every element describes one parameter and carries a mandatory
+</span><span class="">  100: C&lt;name&gt; key:
+</span><span class="">  101: 
+</span><span class="">  102:   $schema = [
+</span><span class="">  103:     { name =&gt; &#39;username&#39;, type =&gt; &#39;string&#39;, min =&gt; 3, max =&gt; 50 },
+</span><span class="">  104:     { name =&gt; &#39;age&#39;,      type =&gt; &#39;integer&#39;, min =&gt; 0, max =&gt; 150 },
+</span><span class="">  105:     { name =&gt; &#39;role&#39;,     type =&gt; &#39;string&#39;, optional =&gt; 1, default =&gt; &#39;user&#39; },
+</span><span class="">  106:   ];
+</span><span class="">  107: 
+</span><span class="">  108: The arrayref form is normalised to the standard hashref form before any further
+</span><span class="">  109: processing.  It is particularly useful when declaration order matters (e.g.
+</span><span class="">  110: for positional or mixed calling conventions used by some CPAN modules).  The
+</span><span class="">  111: C&lt;name&gt; key is consumed during normalisation and does not appear as a
+</span><span class="">  112: validation rule.
+</span><span class="">  113: 
+</span><span class="">  114: For some sort of compatibility with L&lt;Data::Processor&gt;,
+</span><span class="">  115: it is possible to wrap the schema within a hash like this:
+</span><span class="">  116: 
+</span><span class="">  117:   $schema = {
+</span><span class="">  118:     description =&gt; &#39;Describe what this schema does&#39;,
+</span><span class="">  119:     error_msg =&gt; &#39;An error message&#39;,
+</span><span class="">  120:     schema =&gt; {
+</span><span class="">  121:       # ... schema goes here
+</span><span class="">  122:     }
+</span><span class="">  123:   }
+</span><span class="">  124: 
+</span><span class="">  125: =item * C&lt;args&gt; || C&lt;input&gt;
+</span><span class="">  126: 
+</span><span class="">  127: A reference to a hash containing the parameters to be validated.
+</span><span class="">  128: The keys of the hash are the parameter names, and the values are the parameter values.
+</span><span class="">  129: 
+</span><span class="">  130: =back
+</span><span class="">  131: 
+</span><span class="">  132: It takes optional arguments:
+</span><span class="">  133: 
+</span><span class="">  134: =over 4
+</span><span class="">  135: 
+</span><span class="">  136: =item * C&lt;description&gt;
+</span><span class="">  137: 
+</span><span class="">  138: What the schema does,
+</span><span class="">  139: used in error messages.
+</span><span class="">  140: 
+</span><span class="">  141: =item * C&lt;error_msg&gt;
+</span><span class="">  142: 
+</span><span class="">  143: Overrides the default message when something doesn&#39;t validate.
+</span><span class="">  144: 
+</span><span class="">  145: =item * C&lt;unknown_parameter_handler&gt;
+</span><span class="">  146: 
+</span><span class="">  147: This parameter describes what to do when a parameter is given that is not in the schema of valid parameters.
+</span><span class="">  148: It must be one of C&lt;die&gt;, C&lt;warn&gt;, or C&lt;ignore&gt;.
+</span><span class="">  149: 
+</span><span class="">  150: It defaults to C&lt;die&gt; unless C&lt;carp_on_warn&gt; is given, in which case it defaults to C&lt;warn&gt;.
+</span><span class="">  151: 
+</span><span class="">  152: =item * C&lt;logger&gt;
+</span><span class="">  153: 
+</span><span class="">  154: A logging object that understands messages such as C&lt;error&gt; and C&lt;warn&gt;.
+</span><span class="">  155: 
+</span><span class="">  156: =item * C&lt;custom_types&gt;
+</span><span class="">  157: 
+</span><span class="">  158: A reference to a hash that defines reusable custom types.
+</span><span class="">  159: Custom types allow you to define validation rules once and reuse them throughout your schema,
+</span><span class="">  160: making your validation logic more maintainable and readable.
+</span><span class="">  161: 
+</span><span class="">  162: Each custom type is defined as a hash reference containing the same validation rules available for regular parameters
+</span><span class="">  163: (C&lt;type&gt;, C&lt;min&gt;, C&lt;max&gt;, C&lt;matches&gt;, C&lt;memberof&gt;, C&lt;values&gt;, C&lt;enum&gt;, C&lt;notmemberof&gt;, C&lt;callback&gt;, etc.).
+</span><span class="">  164: 
+</span><span class="">  165:   my $custom_types = {
+</span><span class="">  166:     email =&gt; {
+</span><span class="">  167:       type =&gt; &#39;string&#39;,
+</span><span class="">  168:       matches =&gt; qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/,
+</span><span class="">  169:       error_msg =&gt; &#39;Invalid email address format&#39;
+</span><span class="">  170:     }, phone =&gt; {
+</span><span class="">  171:       type =&gt; &#39;string&#39;,
+</span><span class="">  172:       matches =&gt; qr/^\+?[1-9]\d{1,14}$/,
+</span><span class="">  173:       min =&gt; 10,
+</span><span class="">  174:       max =&gt; 15
+</span><span class="">  175:     }, percentage =&gt; {
+</span><span class="">  176:       type =&gt; &#39;number&#39;,
+</span><span class="">  177:       min =&gt; 0,
+</span><span class="">  178:       max =&gt; 100
+</span><span class="">  179:     }, status =&gt; {
+</span><span class="">  180:       type =&gt; &#39;string&#39;,
+</span><span class="">  181:       memberof =&gt; [&#39;draft&#39;, &#39;published&#39;, &#39;archived&#39;]
+</span><span class="">  182:     }
+</span><span class="">  183:   };
+</span><span class="">  184: 
+</span><span class="">  185:   my $schema = {
+</span><span class="">  186:     user_email =&gt; { type =&gt; &#39;email&#39; },
+</span><span class="">  187:     contact_number =&gt; { type =&gt; &#39;phone&#39;, optional =&gt; 1 },
+</span><span class="">  188:     completion =&gt; { type =&gt; &#39;percentage&#39; },
+</span><span class="">  189:     post_status =&gt; { type =&gt; &#39;status&#39; }
+</span><span class="">  190:   };
+</span><span class="">  191: 
+</span><span class="">  192:   my $validated = validate_strict(
+</span><span class="">  193:     schema =&gt; $schema,
+</span><span class="">  194:     input =&gt; $input,
+</span><span class="">  195:     custom_types =&gt; $custom_types
+</span><span class="">  196:   );
+</span><span class="">  197: 
+</span><span class="">  198: Custom types can be extended or overridden in the schema by specifying additional constraints:
+</span><span class="">  199: 
+</span><span class="">  200:   my $schema = {
+</span><span class="">  201:     admin_username =&gt; {
+</span><span class="">  202:       type =&gt; &#39;username&#39;,  # Uses custom type definition
+</span><span class="">  203:       min =&gt; 5,            # Overrides custom type&#39;s min value
+</span><span class="">  204:       max =&gt; 15            # Overrides custom type&#39;s max value
+</span><span class="">  205:     }
+</span><span class="">  206:   };
+</span><span class="">  207: 
+</span><span class="">  208: Custom types work seamlessly with nested schema, optional parameters, and all other validation features.
+</span><span class="">  209: 
+</span><span class="">  210: =back
+</span><span class="">  211: 
+</span><span class="">  212: The schema can define the following rules for each parameter:
+</span><span class="">  213: 
+</span><span class="">  214: =over 4
+</span><span class="">  215: 
+</span><span class="">  216: =item * C&lt;type&gt;
+</span><span class="">  217: 
+</span><span class="">  218: The data type of the parameter.
+</span><span class="">  219: Valid types are C&lt;string&gt;, C&lt;integer&gt;, C&lt;number&gt;, C&lt;float&gt; C&lt;boolean&gt;, C&lt;scalar&gt;, C&lt;scalarref&gt;, C&lt;stringref&gt;, C&lt;hashref&gt;, C&lt;arrayref&gt;, C&lt;object&gt;, C&lt;coderef&gt; and C&lt;void&gt;.
+</span><span class="">  220: C&lt;scalar&gt; accepts any plain scalar value (string, number, boolean, etc.) but rejects references (arrayrefs, hashrefs, coderefs, objects).
+</span><span class="">  221: C&lt;scalarref&gt; accepts a reference to a scalar value (e.g. C&lt;\$var&gt;) but rejects plain scalars, arrayrefs, hashrefs, coderefs, and objects.
+</span><span class="">  222: C&lt;stringref&gt; accepts a reference to a scalar that contains a plain string (e.g. C&lt;\$str&gt;) and rejects plain scalars, references-to-references, arrayrefs, hashrefs, coderefs, and objects.
+</span><span class="">  223: C&lt;void&gt; asserts that the parameter value is C&lt;undef&gt; (the parameter represents a void return or absent output).
+</span><span class="">  224: When C&lt;void&gt; is used the schema must contain exactly one parameter.
+</span><span class="">  225: The C&lt;min&gt;/C&lt;max&gt; constraints apply to the B&lt;length&gt; (in characters) of the referenced string.
+</span><span class="">  226: All other string rules (C&lt;matches&gt;, C&lt;nomatch&gt;, C&lt;memberof&gt;, etc.) operate on the dereferenced string value.
+</span><span class="">  227: The validated return value is the dereferenced plain string.
+</span><span class="">  228: 
+</span><span class="">  229: A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
+</span><span class="">  230: 
+</span><span class="">  231:   $schema = {
+</span><span class="">  232:     username =&gt; [
+</span><span class="">  233:       { type =&gt; &#39;string&#39;, min =&gt; 3, max =&gt; 50 },	# Name
+</span><span class="">  234:       { type =&gt; &#39;integer&#39;, &#39;min&#39; =&gt; 1 },	# UID that isn&#39;t root
+</span><span class="">  235:     ]
+</span><span class="">  236:   };
+</span><span class="">  237: 
+</span><span class="">  238: As a shorthand, C&lt;type&gt; itself may be an arrayref of type name strings (a I&lt;union type&gt;)
+</span><span class="">  239: when all other constraints are shared between the alternatives:
+</span><span class="">  240: 
+</span><span class="">  241:   $schema = {
+</span><span class="">  242:     data =&gt; { type =&gt; [&#39;string&#39;, &#39;arrayref&#39;] },
+</span><span class="">  243:     id   =&gt; { type =&gt; [&#39;string&#39;, &#39;integer&#39;], optional =&gt; 1 },
+</span><span class="">  244:   };
+</span><span class="">  245: 
+</span><span class="">  246: This is equivalent to the full array-of-rules form but more concise.
+</span><span class="">  247: Every other key in the rule hash (C&lt;optional&gt;, C&lt;min&gt;, C&lt;max&gt;, C&lt;matches&gt;, etc.)
+</span><span class="">  248: is inherited by each candidate type and validated independently against it.
+</span><span class="">  249: Type names are tried left-to-right; the first match wins and its coercion
+</span><span class="">  250: (e.g. numeric types) is propagated back to the caller.
+</span><span class="">  251: If the value fails all candidate types, validation croaks with a message
+</span><span class="">  252: listing the union members.
+</span><span class="">  253: 
+</span><span class="">  254: =item * C&lt;can&gt;
+</span><span class="">  255: 
+</span><span class="">  256: The parameter must be an object that understands the method C&lt;can&gt;.
+</span><span class="">  257: C&lt;can&gt; can be a simple scalar string of a method name,
+</span><span class="">  258: or an arrayref of a list of method names, all of which must be supported by the object.
+</span><span class="">  259: 
+</span><span class="">  260:    $schema = {
+</span><span class="">  261:      gedcom =&gt; { type =&gt; object, can =&gt; &#39;get_individual&#39; }
+</span><span class="">  262:    }
+</span><span class="">  263: 
+</span><span class="">  264: =item * C&lt;isa&gt;
+</span><span class="">  265: 
+</span><span class="">  266: The parameter must be an object of type C&lt;isa&gt;.
+</span><span class="">  267: 
+</span><span class="">  268: =item * C&lt;memberof&gt;
+</span><span class="">  269: 
+</span><span class="">  270: The parameter must be a member of the given arrayref.
+</span><span class="">  271: 
+</span><span class="">  272:   status =&gt; {
+</span><span class="">  273:     type =&gt; &#39;string&#39;,
+</span><span class="">  274:     memberof =&gt; [&#39;draft&#39;, &#39;published&#39;, &#39;archived&#39;]
+</span><span class="">  275:   }
+</span><span class="">  276: 
+</span><span class="">  277:   priority =&gt; {
+</span><span class="">  278:     type =&gt; &#39;integer&#39;,
+</span><span class="">  279:     memberof =&gt; [1, 2, 3, 4, 5]
+</span><span class="">  280:   }
+</span><span class="">  281: 
+</span><span class="">  282: For string types, the comparison is case-sensitive by default. Use the C&lt;case_sensitive&gt;
+</span><span class="">  283: flag to control this behavior:
+</span><span class="">  284: 
+</span><span class="">  285:   # Case-sensitive (default) - must be exact match
+</span><span class="">  286:   code =&gt; {
+</span><span class="">  287:     type =&gt; &#39;string&#39;,
+</span><span class="">  288:     memberof =&gt; [&#39;ABC&#39;, &#39;DEF&#39;, &#39;GHI&#39;]
+</span><span class="">  289:     # &#39;abc&#39; will fail
+</span><span class="">  290:   }
+</span><span class="">  291: 
+</span><span class="">  292:   # Case-insensitive - any case accepted
+</span><span class="">  293:   code =&gt; {
+</span><span class="">  294:     type =&gt; &#39;string&#39;,
+</span><span class="">  295:     memberof =&gt; [&#39;ABC&#39;, &#39;DEF&#39;, &#39;GHI&#39;],
+</span><span class="">  296:     case_sensitive =&gt; 0
+</span><span class="">  297:     # &#39;abc&#39;, &#39;Abc&#39;, &#39;ABC&#39; all pass, original case preserved
+</span><span class="">  298:   }
+</span><span class="">  299: 
+</span><span class="">  300: For numeric types (C&lt;integer&gt;, C&lt;number&gt;, C&lt;float&gt;), the comparison uses numeric
+</span><span class="">  301: equality (C&lt;==&gt; operator):
+</span><span class="">  302: 
+</span><span class="">  303:   rating =&gt; {
+</span><span class="">  304:     type =&gt; &#39;number&#39;,
+</span><span class="">  305:     memberof =&gt; [0.5, 1.0, 1.5, 2.0]
+</span><span class="">  306:   }
+</span><span class="">  307: 
+</span><span class="">  308: Note that C&lt;memberof&gt; cannot be combined with C&lt;min&gt; or C&lt;max&gt; constraints as they
+</span><span class="">  309: serve conflicting purposes - C&lt;memberof&gt; defines an explicit whitelist while C&lt;min&gt;/C&lt;max&gt;
+</span><span class="">  310: define ranges.
+</span><span class="">  311: 
+</span><span class="">  312: =item * C&lt;enum&gt;
+</span><span class="">  313: 
+</span><span class="">  314: Same as C&lt;memberof&gt;.
+</span><span class="">  315: 
+</span><span class="">  316: =item * C&lt;values&gt;
+</span><span class="">  317: 
+</span><span class="">  318: Same as C&lt;memberof&gt;.
+</span><span class="">  319: 
+</span><span class="">  320: =item * C&lt;notmemberof&gt;
+</span><span class="">  321: 
+</span><span class="">  322: The parameter must not be a member of the given arrayref (blacklist).
+</span><span class="">  323: This is the inverse of C&lt;memberof&gt;.
+</span><span class="">  324: 
+</span><span class="">  325:   username =&gt; {
+</span><span class="">  326:     type =&gt; &#39;string&#39;,
+</span><span class="">  327:     notmemberof =&gt; [&#39;admin&#39;, &#39;root&#39;, &#39;system&#39;, &#39;administrator&#39;]
+</span><span class="">  328:   }
+</span><span class="">  329: 
+</span><span class="">  330:   port =&gt; {
+</span><span class="">  331:     type =&gt; &#39;integer&#39;,
+</span><span class="">  332:     notmemberof =&gt; [22, 23, 25, 80, 443]  # Reserved ports
+</span><span class="">  333:   }
+</span><span class="">  334: 
+</span><span class="">  335: Like C&lt;memberof&gt;, string comparisons are case-sensitive by default but can be controlled
+</span><span class="">  336: with the C&lt;case_sensitive&gt; flag:
+</span><span class="">  337: 
+</span><span class="">  338:   # Case-sensitive (default)
+</span><span class="">  339:   username =&gt; {
+</span><span class="">  340:     type =&gt; &#39;string&#39;,
+</span><span class="">  341:     notmemberof =&gt; [&#39;Admin&#39;, &#39;Root&#39;]
+</span><span class="">  342:     # &#39;admin&#39; would pass, &#39;Admin&#39; would fail
+</span><span class="">  343:   }
+</span><span class="">  344: 
+</span><span class="">  345:   # Case-insensitive
+</span><span class="">  346:   username =&gt; {
+</span><span class="">  347:     type =&gt; &#39;string&#39;,
+</span><span class="">  348:     notmemberof =&gt; [&#39;Admin&#39;, &#39;Root&#39;],
+</span><span class="">  349:     case_sensitive =&gt; 0
+</span><span class="">  350:     # &#39;admin&#39;, &#39;ADMIN&#39;, &#39;Admin&#39; all fail
+</span><span class="">  351:   }
+</span><span class="">  352: 
+</span><span class="">  353: The blacklist is checked after any C&lt;transform&gt; rules are applied, allowing you to
+</span><span class="">  354: normalize input before checking:
+</span><span class="">  355: 
+</span><span class="">  356:   username =&gt; {
+</span><span class="">  357:     type =&gt; &#39;string&#39;,
+</span><span class="">  358:     transform =&gt; sub { lc($_[0]) },  # Normalize to lowercase
+</span><span class="">  359:     notmemberof =&gt; [&#39;admin&#39;, &#39;root&#39;, &#39;system&#39;]
+</span><span class="">  360:   }
+</span><span class="">  361: 
+</span><span class="">  362: C&lt;notmemberof&gt; can be combined with other validation rules:
+</span><span class="">  363: 
+</span><span class="">  364:   username =&gt; {
+</span><span class="">  365:     type =&gt; &#39;string&#39;,
+</span><span class="">  366:     notmemberof =&gt; [&#39;admin&#39;, &#39;root&#39;, &#39;system&#39;],
+</span><span class="">  367:     min =&gt; 3,
+</span><span class="">  368:     max =&gt; 20,
+</span><span class="">  369:     matches =&gt; qr/^[a-z0-9_]+$/
+</span><span class="">  370:   }
+</span><span class="">  371: 
+</span><span class="">  372: =item * C&lt;case_sensitive&gt;
+</span><span class="">  373: 
+</span><span class="">  374: A boolean value indicating whether string comparisons should be case-sensitive.
+</span><span class="">  375: This flag affects the C&lt;memberof&gt; and C&lt;notmemberof&gt; validation rules.
+</span><span class="">  376: The default value is C&lt;1&gt; (case-sensitive).
+</span><span class="">  377: 
+</span><span class="">  378: When set to C&lt;0&gt;, string comparisons are performed case-insensitively, allowing values
+</span><span class="">  379: with different casing to match. The original case of the input value is preserved in
+</span><span class="">  380: the validated output.
+</span><span class="">  381: 
+</span><span class="">  382:   # Case-sensitive (default)
+</span><span class="">  383:   status =&gt; {
+</span><span class="">  384:     type =&gt; &#39;string&#39;,
+</span><span class="">  385:     memberof =&gt; [&#39;Draft&#39;, &#39;Published&#39;, &#39;Archived&#39;] # Input &#39;draft&#39; will fail - must match exact case
+</span><span class="">  386:   }
+</span><span class="">  387: 
+</span><span class="">  388:   # Case-insensitive
+</span><span class="">  389:   status =&gt; {
+</span><span class="">  390:     type =&gt; &#39;string&#39;,
+</span><span class="">  391:     memberof =&gt; [&#39;Draft&#39;, &#39;Published&#39;, &#39;Archived&#39;],
+</span><span class="">  392:     case_sensitive =&gt; 0 # Input &#39;draft&#39;, &#39;DRAFT&#39;, or &#39;DrAfT&#39; will all pass
+</span><span class="">  393:   }
+</span><span class="">  394: 
+</span><span class="">  395:   country_code =&gt; {
+</span><span class="">  396:     type =&gt; &#39;string&#39;,
+</span><span class="">  397:     memberof =&gt; [&#39;US&#39;, &#39;UK&#39;, &#39;CA&#39;, &#39;FR&#39;],
+</span><span class="">  398:     case_sensitive =&gt; 0  # Accept &#39;us&#39;, &#39;US&#39;, &#39;Us&#39;, etc.
+</span><span class="">  399:   }
+</span><span class="">  400: 
+</span><span class="">  401: This flag has no effect on numeric types (C&lt;integer&gt;, C&lt;number&gt;, C&lt;float&gt;) as numbers
+</span><span class="">  402: do not have case.
+</span><span class="">  403: 
+</span><span class="">  404: =item * C&lt;min&gt;/C&lt;minimum&gt;
+</span><span class="">  405: 
+</span><span class="">  406: The minimum length (for strings in characters not bytes), value (for numbers) or number of keys (for hashrefs).
+</span><span class="">  407: 
+</span><span class="">  408: =item * C&lt;max&gt;
+</span><span class="">  409: 
+</span><span class="">  410: The maximum length (for strings in characters not bytes), value (for numbers) or number of keys (for hashrefs).
+</span><span class="">  411: 
+</span><span class="">  412: =item * C&lt;matches&gt;
+</span><span class="">  413: 
+</span><span class="">  414: A regular expression that the parameter value must match.
+</span><span class="">  415: Checks all members of arrayrefs.
+</span><span class="">  416: 
+</span><span class="">  417: =item * C&lt;nomatch&gt;
+</span><span class="">  418: 
+</span><span class="">  419: A regular expression that the parameter value must not match.
+</span><span class="">  420: Checks all members of arrayrefs.
+</span><span class="">  421: 
+</span><span class="">  422: =item * C&lt;position&gt;
+</span><span class="">  423: 
+</span><span class="">  424: For routines and methods that take positional args,
+</span><span class="">  425: this integer value defines which position the argument will be in.
+</span><span class="">  426: If this is set for all arguments,
+</span><span class="">  427: C&lt;validate_strict&gt; will return a reference to an array, rather than a reference to a hash.
+</span><span class="">  428: 
+</span><span class="">  429: =item * C&lt;regex&gt;
+</span><span class="">  430: 
+</span><span class="">  431: Synonym of matches
+</span><span class="">  432: 
+</span><span class="">  433: =item * C&lt;description&gt;
+</span><span class="">  434: 
+</span><span class="">  435: The description of the rule
+</span><span class="">  436: 
+</span><span class="">  437: =item * C&lt;callback&gt;
+</span><span class="">  438: 
+</span><span class="">  439: A code reference to a subroutine that performs custom validation logic.
+</span><span class="">  440: The subroutine should accept the parameter value, the argument list and the schema as arguments and return true if the value is valid, false otherwise.
+</span><span class="">  441: 
+</span><span class="">  442: Use this to test more complex examples:
+</span><span class="">  443: 
+</span><span class="">  444:   my $schema = {
+</span><span class="">  445:     even_number =&gt; {
+</span><span class="">  446:       type =&gt; &#39;integer&#39;,
+</span><span class="">  447:       callback =&gt; sub { $_[0] % 2 == 0 }
+</span><span class="">  448:   };
+</span><span class="">  449: 
+</span><span class="">  450:   # Specify the arguments for a routine which has a second, optional argument, which, if given, must be less than or equal to the first
+</span><span class="">  451:   my $schema = {
+</span><span class="">  452:     first =&gt; {
+</span><span class="">  453:       type =&gt; &#39;integer&#39;
+</span><span class="">  454:     }, second =&gt; {
+</span><span class="">  455:       type =&gt; &#39;integer&#39;,
+</span><span class="">  456:       optional =&gt; 1,
+</span><span class="">  457:       callback =&gt; sub {
+</span><span class="">  458:         my($value, $args) = @_;
+</span><span class="">  459: 	# The &#39;defined&#39; is needed in case &#39;second&#39; is evaluated before &#39;first&#39;
+</span><span class="">  460: 	return (defined($args-&gt;{first}) &amp;&amp; $value &lt;= $args-&gt;{first}) ? 1 : 0
+</span><span class="">  461:       }
+</span><span class="">  462:     }
+</span><span class="">  463:   };
+</span><span class="">  464: 
+</span><span class="">  465: =item * C&lt;optional&gt;
+</span><span class="">  466: 
+</span><span class="">  467: A boolean value indicating whether the parameter is optional.
+</span><span class="">  468: If true, the parameter is not required.
+</span><span class="">  469: If false or omitted, the parameter is required.
+</span><span class="">  470: 
+</span><span class="">  471: It can be a reference to a code snippet that will return true or false,
+</span><span class="">  472: to determine if the parameter is optional or not.
+</span><span class="">  473: The code will be called with two arguments: the value of the parameter and hash ref of all parameters:
+</span><span class="">  474: 
+</span><span class="">  475:   my $schema = {
+</span><span class="">  476:     optional_field =&gt; {
+</span><span class="">  477:       type =&gt; &#39;string&#39;,
+</span><span class="">  478:       optional =&gt; sub {
+</span><span class="">  479:         my ($value, $all_params) = @_;
+</span><span class="">  480:         return $all_params-&gt;{make_optional} ? 1 : 0;
+</span><span class="">  481:       }
+</span><span class="">  482:     },
+</span><span class="">  483:     make_optional =&gt; { type =&gt; &#39;boolean&#39; }
+</span><span class="">  484:   };
+</span><span class="">  485: 
+</span><span class="">  486:   my $result = validate_strict(schema =&gt; $schema, input =&gt; { make_optional =&gt; 1 });
+</span><span class="">  487: 
+</span><span class="">  488: If the parameter is not optional, it can be passed an undef value, which will not flag an error.
+</span><span class="">  489: This is by design.
+</span><span class="">  490: So this will not say that the required parameter &#39;s&#39; is missing:
+</span><span class="">  491: 
+</span><span class="">  492:     validate_strict(
+</span><span class="">  493:         schema =&gt; { s =&gt; { type =&gt; &#39;string&#39; } },
+</span><span class="">  494:         input  =&gt; { s =&gt; undef },
+</span><span class="">  495:     );
+</span><span class="">  496: 
+</span><span class="">  497: =item * C&lt;default&gt;
+</span><span class="">  498: 
+</span><span class="">  499: Populate missing optional parameters with the specified value.
+</span><span class="">  500: Note that this value is not validated.
+</span><span class="">  501: 
+</span><span class="">  502:   username =&gt; {
+</span><span class="">  503:     type =&gt; &#39;string&#39;,
+</span><span class="">  504:     optional =&gt; 1,
+</span><span class="">  505:     default =&gt; &#39;guest&#39;
+</span><span class="">  506:   }
+</span><span class="">  507: 
+</span><span class="">  508: =item * C&lt;element_type&gt;
+</span><span class="">  509: 
+</span><span class="">  510: Extends the validation to individual elements of arrays.
+</span><span class="">  511: 
+</span><span class="">  512:   tags =&gt; {
+</span><span class="">  513:     type =&gt; &#39;arrayref&#39;,
+</span><span class="">  514:     element_type =&gt; &#39;number&#39;,	# Float means the same
+</span><span class="">  515:     min =&gt; 1,	# this is the length of the array, not the min value for each of the numbers. For that, add a C&lt;schema&gt; rule
+</span><span class="">  516:     max =&gt; 5
+</span><span class="">  517:   }
+</span><span class="">  518: 
+</span><span class="">  519: =item * C&lt;error_msg&gt;
+</span><span class="">  520: 
+</span><span class="">  521: The custom error message to be used in the event of a validation failure.
+</span><span class="">  522: 
+</span><span class="">  523:   age =&gt; {
+</span><span class="">  524:     type =&gt; &#39;integer&#39;,
+</span><span class="">  525:     min =&gt; 18,
+</span><span class="">  526:     error_msg =&gt; &#39;You must be at least 18 years old&#39;
+</span><span class="">  527:   }
+</span><span class="">  528: 
+</span><span class="">  529: =item * C&lt;nullable&gt;
+</span><span class="">  530: 
+</span><span class="">  531: Like optional,
+</span><span class="">  532: though this cannot be a coderef,
+</span><span class="">  533: only a flag.
+</span><span class="">  534: 
+</span><span class="">  535: =item * C&lt;schema&gt;
+</span><span class="">  536: 
+</span><span class="">  537: You can validate nested hashrefs and arrayrefs using the C&lt;schema&gt; property:
+</span><span class="">  538: 
+</span><span class="">  539:     my $schema = {
+</span><span class="">  540:         user =&gt; {	# &#39;user&#39; is a hashref
+</span><span class="">  541:             type =&gt; &#39;hashref&#39;,
+</span><span class="">  542:             schema =&gt; {	# Specify what the elements of the hash should be
+</span><span class="">  543:                 name =&gt; { type =&gt; &#39;string&#39; },
+</span><span class="">  544:                 age =&gt; { type =&gt; &#39;integer&#39;, min =&gt; 0 },
+</span><span class="">  545:                 hobbies =&gt; {	# &#39;hobbies&#39; is an array ref that this user has
+</span><span class="">  546:                     type =&gt; &#39;arrayref&#39;,
+</span><span class="">  547:                     schema =&gt; { type =&gt; &#39;string&#39; }, # Validate each hobby
+</span><span class="">  548:                     min =&gt; 1 # At least one hobby
+</span><span class="">  549:                 }
+</span><span class="">  550:             }
+</span><span class="">  551:         }, metadata =&gt; {
+</span><span class="">  552:             type =&gt; &#39;hashref&#39;,
+</span><span class="">  553:             schema =&gt; {
+</span><span class="">  554:                 created =&gt; { type =&gt; &#39;string&#39; },
+</span><span class="">  555:                 tags =&gt; {
+</span><span class="">  556:                     type =&gt; &#39;arrayref&#39;,
+</span><span class="">  557:                     schema =&gt; {
+</span><span class="">  558:                         type =&gt; &#39;string&#39;,
+</span><span class="">  559:                         matches =&gt; qr/^[a-z]+$/	# Or you can say matches =&gt; &#39;^[a-z]+$&#39;
+</span><span class="">  560:                     }
+</span><span class="">  561:                 }
+</span><span class="">  562:             }
+</span><span class="">  563:         }
+</span><span class="">  564:     };
+</span><span class="">  565: 
+</span><span class="">  566: =item * C&lt;validate&gt;
+</span><span class="">  567: 
+</span><span class="">  568: A snippet of code that validates the input.
+</span><span class="">  569: It&#39;s passed the input arguments,
+</span><span class="">  570: and return a string containing a reason for rejection,
+</span><span class="">  571: or undef if it&#39;s allowed.
+</span><span class="">  572: 
+</span><span class="">  573:     my $schema = {
+</span><span class="">  574:       user =&gt; {
+</span><span class="">  575:         type =&gt; &#39;string&#39;,
+</span><span class="">  576: 	validate =&gt; sub {
+</span><span class="">  577: 	  if($_[0]-&gt;{&#39;password&#39;} eq &#39;bar&#39;) {
+</span><span class="">  578: 	    return undef;
+</span><span class="">  579: 	  }
+</span><span class="">  580: 	  return &#39;Invalid password, try again&#39;;
+</span><span class="">  581: 	}
+</span><span class="">  582:       }, password =&gt; {
+</span><span class="">  583:          type =&gt; &#39;string&#39;
+</span><span class="">  584:       }
+</span><span class="">  585:     };
+</span><span class="">  586: 
+</span><span class="">  587: =item * C&lt;transform&gt;
+</span><span class="">  588: 
+</span><span class="">  589: A code reference to a subroutine that transforms/sanitizes the parameter value before validation.
+</span><span class="">  590: The subroutine should accept the parameter value as an argument and return the transformed value.
+</span><span class="">  591: The transformation is applied before any validation rules are checked, allowing you to normalize
+</span><span class="">  592: or clean data before it is validated.
+</span><span class="">  593: 
+</span><span class="">  594: Common use cases include trimming whitespace, normalizing case, formatting phone numbers,
+</span><span class="">  595: sanitizing user input, and converting between data formats.
+</span><span class="">  596: 
+</span><span class="">  597:   # Simple string transformations
+</span><span class="">  598:   username =&gt; {
+</span><span class="">  599:     type =&gt; &#39;string&#39;,
+</span><span class="">  600:     transform =&gt; sub { lc(trim($_[0])) },  # lowercase and trim
+</span><span class="">  601:     matches =&gt; qr/^[a-z0-9_]+$/
+</span><span class="">  602:   }
+</span><span class="">  603: 
+</span><span class="">  604:   email =&gt; {
+</span><span class="">  605:     type =&gt; &#39;string&#39;,
+</span><span class="">  606:     transform =&gt; sub { lc(trim($_[0])) },  # normalize email
+</span><span class="">  607:     matches =&gt; qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
+</span><span class="">  608:   }
+</span><span class="">  609: 
+</span><span class="">  610:   # Array transformations
+</span><span class="">  611:   tags =&gt; {
+</span><span class="">  612:     type =&gt; &#39;arrayref&#39;,
+</span><span class="">  613:     transform =&gt; sub { [map { lc($_) } @{$_[0]}] },  # lowercase all elements
+</span><span class="">  614:     element_type =&gt; &#39;string&#39;
+</span><span class="">  615:   }
+</span><span class="">  616: 
+</span><span class="">  617:   keywords =&gt; {
+</span><span class="">  618:     type =&gt; &#39;arrayref&#39;,
+</span><span class="">  619:     transform =&gt; sub {
+</span><span class="">  620:       my @arr = map { lc(trim($_)) } @{$_[0]};
+</span><span class="">  621:       my %seen;
+</span><span class="">  622:       return [grep { !$seen{$_}++ } @arr];  # remove duplicates
+</span><span class="">  623:     }
+</span><span class="">  624:   }
+</span><span class="">  625: 
+</span><span class="">  626:   # Numeric transformations
+</span><span class="">  627:   quantity =&gt; {
+</span><span class="">  628:     type =&gt; &#39;integer&#39;,
+</span><span class="">  629:     transform =&gt; sub { int($_[0] + 0.5) },  # round to nearest integer
+</span><span class="">  630:     min =&gt; 1
+</span><span class="">  631:   }
+</span><span class="">  632: 
+</span><span class="">  633:   # Sanitization
+</span><span class="">  634:   slug =&gt; {
+</span><span class="">  635:     type =&gt; &#39;string&#39;,
+</span><span class="">  636:     transform =&gt; sub {
+</span><span class="">  637:       my $str = lc(trim($_[0]));
+</span><span class="">  638:       $str =~ s/[^\w\s-]//g;  # remove special characters
+</span><span class="">  639:       $str =~ s/\s+/-/g;      # replace spaces with hyphens
+</span><span class="">  640:       return $str;
+</span><span class="">  641:     },
+</span><span class="">  642:     matches =&gt; qr/^[a-z0-9-]+$/
+</span><span class="">  643:   }
+</span><span class="">  644: 
+</span><span class="">  645:   phone =&gt; {
+</span><span class="">  646:     type =&gt; &#39;string&#39;,
+</span><span class="">  647:     transform =&gt; sub {
+</span><span class="">  648:       my $str = $_[0];
+</span><span class="">  649:       $str =~ s/\D//g;  # remove all non-digits
+</span><span class="">  650:       return $str;
+</span><span class="">  651:     },
+</span><span class="">  652:     matches =&gt; qr/^\d{10}$/
+</span><span class="">  653:   }
+</span><span class="">  654: 
+</span><span class="">  655: The C&lt;transform&gt; function is applied to the value before any validation checks (C&lt;min&gt;/C&lt;minimum&gt;, C&lt;max&gt;,
+</span><span class="">  656: C&lt;matches&gt;, C&lt;callback&gt;, etc.), ensuring that validation rules are checked against the cleaned data.
+</span><span class="">  657: 
+</span><span class="">  658: Transformations work with all parameter types including nested structures:
+</span><span class="">  659: 
+</span><span class="">  660:   user =&gt; {
+</span><span class="">  661:     type =&gt; &#39;hashref&#39;,
+</span><span class="">  662:     schema =&gt; {
+</span><span class="">  663:       name =&gt; {
+</span><span class="">  664:         type =&gt; &#39;string&#39;,
+</span><span class="">  665:         transform =&gt; sub { trim($_[0]) }
+</span><span class="">  666:       }, email =&gt; {
+</span><span class="">  667:         type =&gt; &#39;string&#39;,
+</span><span class="">  668:         transform =&gt; sub { lc(trim($_[0])) }
+</span><span class="">  669:       }
+</span><span class="">  670:     }
+</span><span class="">  671:   }
+</span><span class="">  672: 
+</span><span class="">  673: Transformations can also be defined in custom types for reusability:
+</span><span class="">  674: 
+</span><span class="">  675:   my $custom_types = {
+</span><span class="">  676:     email =&gt; {
+</span><span class="">  677:       type =&gt; &#39;string&#39;,
+</span><span class="">  678:       transform =&gt; sub { lc(trim($_[0])) },
+</span><span class="">  679:       matches =&gt; qr/^[^@\s]+\@[^@\s]+\.[^@\s]+$/
+</span><span class="">  680:     }
+</span><span class="">  681:   };
+</span><span class="">  682: 
+</span><span class="">  683: Note that the transformed value is what gets returned in the validated result and is what
+</span><span class="">  684: subsequent validation rules will check against. If a transformation might fail, ensure it
+</span><span class="">  685: handles edge cases appropriately.
+</span><span class="">  686: It is the responsibility of the transformer to ensure that the type of the returned value is correct,
+</span><span class="">  687: since that is what will be validated.
+</span><span class="">  688: 
+</span><span class="">  689: Many validators also allow a code ref to be passed so that you can create your own, conditional validation rule, e.g.:
+</span><span class="">  690: 
+</span><span class="">  691:   $schema = {
+</span><span class="">  692:     age =&gt; {
+</span><span class="">  693:       type =&gt; &#39;integer&#39;,
+</span><span class="">  694:       min =&gt; sub {
+</span><span class="">  695:           my ($value, $all_params) = @_;
+</span><span class="">  696:           return $all_params-&gt;{country} eq &#39;US&#39; ? 21 : 18;
+</span><span class="">  697:       }
+</span><span class="">  698:     }
+</span><span class="">  699:   }
+</span><span class="">  700: 
+</span><span class="">  701: =item * C&lt;validator&gt;
+</span><span class="">  702: 
+</span><span class="">  703: A synonym of C&lt;validate&gt;, for compatibility with L&lt;Data::Processor&gt;.
+</span><span class="">  704: 
+</span><span class="">  705: =item * C&lt;cross_validation&gt;
+</span><span class="">  706: 
+</span><span class="">  707: A reference to a hash that defines validation rules that depend on more than one parameter.
+</span><span class="">  708: Cross-field validations are performed after all individual parameter validations have passed,
+</span><span class="">  709: allowing you to enforce business logic that requires checking relationships between different fields.
+</span><span class="">  710: 
+</span><span class="">  711: Each cross-validation rule is a key-value pair where the key is a descriptive name for the validation
+</span><span class="">  712: and the value is a code reference that accepts a hash reference of all validated parameters.
+</span><span class="">  713: The subroutine should return C&lt;undef&gt; if the validation passes, or an error message string if it fails.
+</span><span class="">  714: 
+</span><span class="">  715:   my $schema = {
+</span><span class="">  716:     password =&gt; { type =&gt; &#39;string&#39;, min =&gt; 8 },
+</span><span class="">  717:     password_confirm =&gt; { type =&gt; &#39;string&#39; }
+</span><span class="">  718:   };
+</span><span class="">  719: 
+</span><span class="">  720:   my $cross_validation = {
+</span><span class="">  721:     passwords_match =&gt; sub {
+</span><span class="">  722:       my $params = shift;
+</span><span class="">  723:       return $params-&gt;{password} eq $params-&gt;{password_confirm}
+</span><span class="">  724:         ? undef : &quot;Passwords don&#39;t match&quot;;
+</span><span class="">  725:     }
+</span><span class="">  726:   };
+</span><span class="">  727: 
+</span><span class="">  728:   my $validated = validate_strict(
+</span><span class="">  729:     schema =&gt; $schema,
+</span><span class="">  730:     input =&gt; $input,
+</span><span class="">  731:     cross_validation =&gt; $cross_validation
+</span><span class="">  732:   );
+</span><span class="">  733: 
+</span><span class="">  734: Common use cases include password confirmation, date range validation, numeric comparisons,
+</span><span class="">  735: and conditional requirements:
+</span><span class="">  736: 
+</span><span class="">  737:   # Date range validation
+</span><span class="">  738:   my $cross_validation = {
+</span><span class="">  739:     date_range_valid =&gt; sub {
+</span><span class="">  740:       my $params = shift;
+</span><span class="">  741:       return $params-&gt;{start_date} le $params-&gt;{end_date}
+</span><span class="">  742:         ? undef : &quot;Start date must be before or equal to end date&quot;;
+</span><span class="">  743:     }
+</span><span class="">  744:   };
+</span><span class="">  745: 
+</span><span class="">  746:   # Price range validation
+</span><span class="">  747:   my $cross_validation = {
+</span><span class="">  748:     price_range_valid =&gt; sub {
+</span><span class="">  749:       my $params = shift;
+</span><span class="">  750:       return $params-&gt;{min_price} &lt;= $params-&gt;{max_price}
+</span><span class="">  751:         ? undef : &quot;Minimum price must be less than or equal to maximum price&quot;;
+</span><span class="">  752:     }
+</span><span class="">  753:   };
+</span><span class="">  754: 
+</span><span class="">  755:   # Conditional required field
+</span><span class="">  756:   my $cross_validation = {
+</span><span class="">  757:     address_required_for_delivery =&gt; sub {
+</span><span class="">  758:       my $params = shift;
+</span><span class="">  759:       if ($params-&gt;{shipping_method} eq &#39;delivery&#39; &amp;&amp; !$params-&gt;{delivery_address}) {
+</span><span class="">  760:         return &quot;Delivery address is required when shipping method is &#39;delivery&#39;&quot;;
+</span><span class="">  761:       }
+</span><span class="">  762:       return undef;
+</span><span class="">  763:     }
+</span><span class="">  764:   };
+</span><span class="">  765: 
+</span><span class="">  766: Multiple cross-validations can be defined in the same hash, and they are all checked in order.
+</span><span class="">  767: If any cross-validation fails, the function will C&lt;croak&gt; with the error message returned by the validation:
+</span><span class="">  768: 
+</span><span class="">  769:   my $cross_validation = {
+</span><span class="">  770:     passwords_match =&gt; sub {
+</span><span class="">  771:       my $params = shift;
+</span><span class="">  772:       return $params-&gt;{password} eq $params-&gt;{password_confirm}
+</span><span class="">  773:         ? undef : &quot;Passwords don&#39;t match&quot;;
+</span><span class="">  774:     },
+</span><span class="">  775:     emails_match =&gt; sub {
+</span><span class="">  776:       my $params = shift;
+</span><span class="">  777:       return $params-&gt;{email} eq $params-&gt;{email_confirm}
+</span><span class="">  778:         ? undef : &quot;Email addresses don&#39;t match&quot;;
+</span><span class="">  779:     },
+</span><span class="">  780:     age_matches_birth_year =&gt; sub {
+</span><span class="">  781:       my $params = shift;
+</span><span class="">  782:       my $current_year = (localtime)[5] + 1900;
+</span><span class="">  783:       my $calculated_age = $current_year - $params-&gt;{birth_year};
+</span><span class="">  784:       return abs($calculated_age - $params-&gt;{age}) &lt;= 1
+</span><span class="">  785:         ? undef : &quot;Age doesn&#39;t match birth year&quot;;
+</span><span class="">  786:     }
+</span><span class="">  787:   };
+</span><span class="">  788: 
+</span><span class="">  789: Cross-validations receive the parameters after individual validation and transformation have been applied,
+</span><span class="">  790: so you can rely on the data being in the correct format and type:
+</span><span class="">  791: 
+</span><span class="">  792:   my $schema = {
+</span><span class="">  793:     email =&gt; {
+</span><span class="">  794:       type =&gt; &#39;string&#39;,
+</span><span class="">  795:       transform =&gt; sub { lc($_[0]) }  # Lowercased before cross-validation
+</span><span class="">  796:     },
+</span><span class="">  797:     email_confirm =&gt; {
+</span><span class="">  798:       type =&gt; &#39;string&#39;,
+</span><span class="">  799:       transform =&gt; sub { lc($_[0]) }
+</span><span class="">  800:     }
+</span><span class="">  801:   };
+</span><span class="">  802: 
+</span><span class="">  803:   my $cross_validation = {
+</span><span class="">  804:     emails_match =&gt; sub {
+</span><span class="">  805:       my $params = shift;
+</span><span class="">  806:       # Both emails are already lowercased at this point
+</span><span class="">  807:       return $params-&gt;{email} eq $params-&gt;{email_confirm}
+</span><span class="">  808:         ? undef : &quot;Email addresses don&#39;t match&quot;;
+</span><span class="">  809:     }
+</span><span class="">  810:   };
+</span><span class="">  811: 
+</span><span class="">  812: Cross-validations can access nested structures and optional fields:
+</span><span class="">  813: 
+</span><span class="">  814:   my $cross_validation = {
+</span><span class="">  815:     guardian_required_for_minors =&gt; sub {
+</span><span class="">  816:       my $params = shift;
+</span><span class="">  817:       if ($params-&gt;{user}{age} &lt; 18 &amp;&amp; !$params-&gt;{guardian}) {
+</span><span class="">  818:         return &quot;Guardian information required for users under 18&quot;;
+</span><span class="">  819:       }
+</span><span class="">  820:       return undef;
+</span><span class="">  821:     }
+</span><span class="">  822:   };
+</span><span class="">  823: 
+</span><span class="">  824: =item * metadata
+</span><span class="">  825: 
+</span><span class="">  826: Fields starting with &lt;_&gt; are generated by L&lt;App::Test::Generator::SchemaExtractor&gt;,
+</span><span class="">  827: and are currently ignored.
+</span><span class="">  828: 
+</span><span class="">  829: =item * C&lt;semantic&gt;
+</span><span class="">  830: 
+</span><span class="">  831: A hint about the semantic meaning of the parameter value.
+</span><span class="">  832: Currently only C&lt;unix_timestamp&gt; is supported.
+</span><span class="">  833: 
+</span><span class="">  834:   ts =&gt; { type =&gt; &#39;integer&#39;, semantic =&gt; &#39;unix_timestamp&#39; }
+</span><span class="">  835: 
+</span><span class="">  836: When C&lt;semantic&gt; is C&lt;unix_timestamp&gt;, the value must be a non-negative integer no greater than
+</span><span class="">  837: C&lt;2147483647&gt; (i.e. a valid 32-bit Unix epoch timestamp).
+</span><span class="">  838: Values outside this range cause the function to C&lt;croak&gt;.
+</span><span class="">  839: 
+</span><span class="">  840: Unknown semantic values emit a warning but do not cause an error.
+</span><span class="">  841: 
+</span><span class="">  842: =item * schematic
+</span><span class="">  843: 
+</span><span class="">  844: TODO: gives an idea of what the field will be, e.g. C&lt;filename&gt;.
+</span><span class="">  845: 
+</span><span class="">  846: All cross-validations must pass for the overall validation to succeed.
+</span><span class="">  847: 
+</span><span class="">  848: =item * C&lt;relationships&gt;
+</span><span class="">  849: 
+</span><span class="">  850: A reference to an array that defines validation rules based on relationships between parameters.
+</span><span class="">  851: Relationship validations are performed after all individual parameter validations have passed,
+</span><span class="">  852: but before cross-validations.
+</span><span class="">  853: 
+</span><span class="">  854: Each relationship is a hash reference with a C&lt;type&gt; field and additional fields depending on the type:
+</span><span class="">  855: 
+</span><span class="">  856: =over 4
+</span><span class="">  857: 
+</span><span class="">  858: =item * B&lt;mutually_exclusive&gt;
+</span><span class="">  859: 
+</span><span class="">  860: Parameters that cannot be specified together.
+</span><span class="">  861: 
+</span><span class="">  862:   relationships =&gt; [
+</span><span class="">  863:     {
+</span><span class="">  864:       type =&gt; &#39;mutually_exclusive&#39;,
+</span><span class="">  865:       params =&gt; [&#39;file&#39;, &#39;content&#39;],
+</span><span class="">  866:       description =&gt; &#39;Cannot specify both file and content&#39;
+</span><span class="">  867:     }
+</span><span class="">  868:   ]
+</span><span class="">  869: 
+</span><span class="">  870: =item * B&lt;required_group&gt;
+</span><span class="">  871: 
+</span><span class="">  872: At least one parameter from the group must be specified.
+</span><span class="">  873: 
+</span><span class="">  874:   relationships =&gt; [
+</span><span class="">  875:     {
+</span><span class="">  876:       type =&gt; &#39;required_group&#39;,
+</span><span class="">  877:       params =&gt; [&#39;id&#39;, &#39;name&#39;],
+</span><span class="">  878:       logic =&gt; &#39;or&#39;,
+</span><span class="">  879:       description =&gt; &#39;Must specify either id or name&#39;
+</span><span class="">  880:     }
+</span><span class="">  881:   ]
+</span><span class="">  882: 
+</span><span class="">  883: =item * B&lt;conditional_requirement&gt;
+</span><span class="">  884: 
+</span><span class="">  885: If one parameter is specified, another becomes required.
+</span><span class="">  886: 
+</span><span class="">  887:   relationships =&gt; [
+</span><span class="">  888:     {
+</span><span class="">  889:       type =&gt; &#39;conditional_requirement&#39;,
+</span><span class="">  890:       if =&gt; &#39;async&#39;,
+</span><span class="">  891:       then_required =&gt; &#39;callback&#39;,
+</span><span class="">  892:       description =&gt; &#39;When async is specified, callback is required&#39;
+</span><span class="">  893:     }
+</span><span class="">  894:   ]
+</span><span class="">  895: 
+</span><span class="">  896: =item * B&lt;dependency&gt;
+</span><span class="">  897: 
+</span><span class="">  898: One parameter requires another to be present.
+</span><span class="">  899: 
+</span><span class="">  900:   relationships =&gt; [
+</span><span class="">  901:     {
+</span><span class="">  902:       type =&gt; &#39;dependency&#39;,
+</span><span class="">  903:       param =&gt; &#39;port&#39;,
+</span><span class="">  904:       requires =&gt; &#39;host&#39;,
+</span><span class="">  905:       description =&gt; &#39;port requires host to be specified&#39;
+</span><span class="">  906:     }
+</span><span class="">  907:   ]
+</span><span class="">  908: 
+</span><span class="">  909: =item * B&lt;value_constraint&gt;
+</span><span class="">  910: 
+</span><span class="">  911: Specific value requirements between parameters.
+</span><span class="">  912: 
+</span><span class="">  913:   relationships =&gt; [
+</span><span class="">  914:     {
+</span><span class="">  915:       type =&gt; &#39;value_constraint&#39;,
+</span><span class="">  916:       if =&gt; &#39;ssl&#39;,
+</span><span class="">  917:       then =&gt; &#39;port&#39;,
+</span><span class="">  918:       operator =&gt; &#39;==&#39;,
+</span><span class="">  919:       value =&gt; 443,
+</span><span class="">  920:       description =&gt; &#39;When ssl is specified, port must equal 443&#39;
+</span><span class="">  921:     }
+</span><span class="">  922:   ]
+</span><span class="">  923: 
+</span><span class="">  924: =item * B&lt;value_conditional&gt;
+</span><span class="">  925: 
+</span><span class="">  926: Parameter required when another has a specific value.
+</span><span class="">  927: 
+</span><span class="">  928:   relationships =&gt; [
+</span><span class="">  929:     {
+</span><span class="">  930:       type =&gt; &#39;value_conditional&#39;,
+</span><span class="">  931:       if =&gt; &#39;mode&#39;,
+</span><span class="">  932:       equals =&gt; &#39;secure&#39;,
+</span><span class="">  933:       then_required =&gt; &#39;key&#39;,
+</span><span class="">  934:       description =&gt; &quot;When mode equals &#39;secure&#39;, key is required&quot;
+</span><span class="">  935:     }
+</span><span class="">  936:   ]
+</span><span class="">  937: 
+</span><span class="">  938: =back
+</span><span class="">  939: 
+</span><span class="">  940: If a parameter is optional and its value is C&lt;undef&gt;,
+</span><span class="">  941: validation will be skipped for that parameter.
+</span><span class="">  942: 
+</span><span class="">  943: If the validation fails, the function will C&lt;croak&gt; with an error message describing the validation failure.
+</span><span class="">  944: 
+</span><span class="">  945: If the validation is successful, the function will return a reference to a new hash containing the validated and (where applicable) coerced parameters.  Integer and number parameters will be coerced to their respective types.
+</span><span class="">  946: 
+</span><span class="">  947: The C&lt;description&gt; field is optional but recommended for clearer error messages.
+</span><span class="">  948: 
+</span><span class="">  949: =back
+</span><span class="">  950: 
+</span><span class="">  951: =head2 Example Usage
+</span><span class="">  952: 
+</span><span class="">  953:   my $schema = {
+</span><span class="">  954:     host =&gt; { type =&gt; &#39;string&#39; },
+</span><span class="">  955:     port =&gt; { type =&gt; &#39;integer&#39; },
+</span><span class="">  956:     ssl =&gt; { type =&gt; &#39;boolean&#39; },
+</span><span class="">  957:     file =&gt; { type =&gt; &#39;string&#39;, optional =&gt; 1 },
+</span><span class="">  958:     content =&gt; { type =&gt; &#39;string&#39;, optional =&gt; 1 }
+</span><span class="">  959:   };
+</span><span class="">  960: 
+</span><span class="">  961:   my $relationships = [
+</span><span class="">  962:     {
+</span><span class="">  963:       type =&gt; &#39;mutually_exclusive&#39;,
+</span><span class="">  964:       params =&gt; [&#39;file&#39;, &#39;content&#39;]
+</span><span class="">  965:     }, {
+</span><span class="">  966:       type =&gt; &#39;required_group&#39;,
+</span><span class="">  967:       params =&gt; [&#39;host&#39;, &#39;file&#39;]
+</span><span class="">  968:     },
+</span><span class="">  969:     {
+</span><span class="">  970:       type =&gt; &#39;dependency&#39;,
+</span><span class="">  971:       param =&gt; &#39;port&#39;,
+</span><span class="">  972:       requires =&gt; &#39;host&#39;
+</span><span class="">  973:     },
+</span><span class="">  974:     {
+</span><span class="">  975:       type =&gt; &#39;value_constraint&#39;,
+</span><span class="">  976:       if =&gt; &#39;ssl&#39;,
+</span><span class="">  977:       then =&gt; &#39;port&#39;,
+</span><span class="">  978:       operator =&gt; &#39;==&#39;,
+</span><span class="">  979:       value =&gt; 443
+</span><span class="">  980:     }
+</span><span class="">  981:   ];
+</span><span class="">  982: 
+</span><span class="">  983:   my $validated = validate_strict(
+</span><span class="">  984:     schema =&gt; $schema,
+</span><span class="">  985:     input =&gt; $input,
+</span><span class="">  986:     relationships =&gt; $relationships
+</span><span class="">  987:   );
+</span><span class="">  988: 
+</span><span class="">  989: =head1 MIGRATION FROM LEGACY VALIDATORS
+</span><span class="">  990: 
+</span><span class="">  991: =head2 From L&lt;Params::Validate&gt;
+</span><span class="">  992: 
+</span><span class="">  993:     # Old style
+</span><span class="">  994:     validate(@_, {
+</span><span class="">  995:         name =&gt; { type =&gt; SCALAR },
+</span><span class="">  996:         age =&gt; { type =&gt; SCALAR, regex =&gt; qr/^\d+$/ }
+</span><span class="">  997:     });
+</span><span class="">  998: 
+</span><span class="">  999:     # New style
+</span><span class=""> 1000:     validate_strict(
+</span><span class=""> 1001:         schema =&gt; {	# or &quot;members&quot;
+</span><span class=""> 1002:             name =&gt; &#39;string&#39;,
+</span><span class=""> 1003:             age =&gt; { type =&gt; &#39;integer&#39;, min =&gt; 0 }
+</span><span class=""> 1004:         },
+</span><span class=""> 1005:         args =&gt; { @_ }
+</span><span class=""> 1006:     );
+</span><span class=""> 1007: 
+</span><span class=""> 1008: =head2 From L&lt;Type::Params&gt;
+</span><span class=""> 1009: 
+</span><span class=""> 1010:     # Old style
+</span><span class=""> 1011:     my ($name, $age) = validate_positional \@_, Str, Int;
+</span><span class=""> 1012: 
+</span><span class=""> 1013:     # New style - requires converting to named parameters first
+</span><span class=""> 1014:     my %args = (name =&gt; $_[0], age =&gt; $_[1]);
+</span><span class=""> 1015:     my $validated = validate_strict(
+</span><span class=""> 1016:         schema =&gt; { name =&gt; &#39;string&#39;, age =&gt; &#39;integer&#39; },
+</span><span class=""> 1017:         args =&gt; \%args
+</span><span class=""> 1018:     );
+</span><span class=""> 1019: 
+</span><span class=""> 1020: =cut
+</span><span class=""> 1021: 
+</span><span class=""> 1022: sub validate_strict
+</span><span class=""> 1023: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1024 → 1032 → 1040</span></span> 1024: 	my %args = (ref($_[0]) eq &#39;HASH&#39;) ? %{$_[0]} : @_;
+</span><span class=""> 1025: 	my $params = \%args;
 </span><span class=""> 1026: 
 </span><span class=""> 1027: 	my $schema = $params-&gt;{&#39;schema&#39;} || $params-&gt;{&#39;members&#39;};
 </span><span class=""> 1028: 	my $args = $params-&gt;{&#39;args&#39;} || $params-&gt;{&#39;input&#39;};
