@@ -11,7 +11,7 @@ use warnings;
 use Carp;
 use Exporter qw(import);	# Required for @EXPORT_OK
 use Encode qw(decode_utf8);
-use List::Util 1.33 qw(any);	# Required for memberof validation
+use List::Util 1.33 qw(all any);	# Required for memberof/matches validation
 use Readonly::Values::Boolean;
 use Scalar::Util;
 use Unicode::GCString;
@@ -1123,7 +1123,7 @@ sub validate_strict
 			if(ref($args) ne 'ARRAY') {
 				_error($logger, "::validate_strict: position $rules->{position} given for '$key', but args isn't an array");
 			}
-			$value = @{$args}[$rules->{'position'}];
+			$value = $args->[$rules->{'position'}];
 		} else {
 			$value = $args->{$key};
 		}
@@ -1523,8 +1523,8 @@ sub validate_strict
 					eval {
 						my $re = (ref($rule_value) eq 'Regexp') ? $rule_value : qr/\Q$rule_value\E/;
 						if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
-							my @matches = grep { $_ =~ $re } @{$value};
-							if(scalar(@matches) != scalar(@{$value})) {
+							# all{} short-circuits on first failure and allocates no temp array
+							unless(all { $_ =~ $re } @{$value}) {
 								_rule_error($logger, $rules, "$rule_description: All members of parameter '$key' [", join(', ', @{$value}), "] must match pattern '$rule_value'");
 							}
 						} elsif($value !~ $re) {
@@ -1545,8 +1545,8 @@ sub validate_strict
 					my $re = (ref($rule_value) eq 'Regexp') ? $rule_value : qr/\Q$rule_value\E/;
 					eval {
 						if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
-							my @matches = grep { $_ =~ $re } @{$value};
-							if(scalar(@matches)) {
+							# any{} short-circuits on first match and allocates no temp array
+							if(any { $_ =~ $re } @{$value}) {
 								_rule_error($logger, $rules, "$rule_description: No member of parameter '$key' [", join(', ', @{$value}), "] must match pattern '$rule_value'");
 							}
 						} elsif($value =~ $re) {
@@ -2071,18 +2071,56 @@ sub _rule_error
 	_error($logger, $rules->{'error_msg'} || join('', @default_parts));
 }
 
+# Package-level cache: maps "refaddr(list):mode" -> [weak_list_ref, lookup_hash].
+# Each entry holds a WEAK reference to the original list arrayref alongside the
+# compiled lookup hash.  When the list goes out of scope and is freed, the weak
+# reference becomes undef; the next access detects the stale entry and rebuilds,
+# preventing false cache hits after address reuse.
+my %_pvs_memberof_cache;
+
 # Return true if $value is present in $list, respecting numeric vs string
 # comparison and the case_sensitive flag.  Used by both memberof and notmemberof.
+# On the first call for a given ($list, mode) pair the lookup hash is built
+# (O(k)); subsequent calls with the same live list object are O(1).
 sub _value_in_list
 {
 	my ($value, $list, $type, $case_sensitive) = @_;
-	if(($type eq 'integer') || ($type eq 'number') || ($type eq 'float')) {
-		return List::Util::any { $_ == $value } @{$list};
+	my $is_numeric = ($type eq 'integer') || ($type eq 'number') || ($type eq 'float');
+	my $is_icase   = !$is_numeric && defined($case_sensitive) && !$case_sensitive;
+
+	# Key combines address and comparison mode so the same list object can be
+	# cached under multiple modes without collision.
+	my $ckey = Scalar::Util::refaddr($list) . ($is_numeric ? 'n' : $is_icase ? 'i' : 's');
+	my $entry = $_pvs_memberof_cache{$ckey};
+
+	# Stale check: if the weak ref is dead the list was freed and its address
+	# may have been reused by a different list — discard the cached hash.
+	if(defined($entry) && !defined($entry->[0])) {
+		delete $_pvs_memberof_cache{$ckey};
+		$entry = undef;
 	}
-	my $l = lc($value);
-	return List::Util::any {
-		(!defined($case_sensitive) || ($case_sensitive == 1)) ? $_ eq $value : lc($_) eq $l
-	} @{$list};
+
+	unless(defined $entry) {
+		my $lookup;
+		if($is_numeric) {
+			# Normalise to numeric value so "1" and "1.0" hash identically.
+			$lookup = { map { ($_ + 0) => 1 } @{$list} };
+		} elsif($is_icase) {
+			$lookup = { map { lc($_) => 1 } @{$list} };
+		} else {
+			$lookup = { map { $_ => 1 } @{$list} };
+		}
+		# Store [weak_ref_to_list, lookup_hash] — weak ref does not prevent GC.
+		my $weak = $list;
+		Scalar::Util::weaken($weak);
+		$_pvs_memberof_cache{$ckey} = [$weak, $lookup];
+		$entry = $_pvs_memberof_cache{$ckey};
+	}
+
+	my $lookup = $entry->[1];
+	return $is_numeric ? exists($lookup->{$value + 0})
+	     : $is_icase   ? exists($lookup->{lc($value)})
+	     :               exists($lookup->{$value});
 }
 
 # Return true when $args->{$param} is both present (exists) and defined.
