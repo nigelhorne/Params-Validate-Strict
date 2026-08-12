@@ -25,11 +25,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.37
+Version 0.38
 
 =cut
 
-our $VERSION = '0.37';
+our $VERSION = '0.38';
 
 =head1 SYNOPSIS
 
@@ -1367,7 +1367,6 @@ sub validate_strict
 								$value = &{$custom_type->{'transform'}}($value);
 							} else {
 								_error($logger, "$rule_description: transforms must be a code ref");
-								next;
 							}
 						}
 						validate_strict({ input => { $key => $value }, schema => { $key => $custom_type }, custom_types => $custom_types });
@@ -1620,7 +1619,6 @@ sub validate_strict
 									$member = &{$custom_type->{'transform'}}($member);
 								} else {
 									_error($logger, "$rule_description: transforms must be a code ref");
-									last;
 								}
 							}
 							if(($type eq 'string') || ($type eq 'Str')) {
@@ -1734,11 +1732,11 @@ sub validate_strict
 						$invalid_args{$key} = 1;
 					}
 				} elsif($rule_name eq 'position') {
-					if($rule_value =~ /\D/) {
-						_error($logger, "$rule_description: Parameter '$key': 'position' must be an integer");
-					}
 					if($rule_value < 0) {
 						_error($logger, "$rule_description: Parameter '$key': 'position' must be a positive integer, not $value");
+					}
+					if($rule_value =~ /\D/) {
+						_error($logger, "$rule_description: Parameter '$key': 'position' must be a positive integer");
 					}
 				} else {
 					_error($logger, "$rule_description: Unknown rule '$rule_name'");
@@ -1754,11 +1752,9 @@ sub validate_strict
 				foreach my $rule(@{$rules}) {
 					if(ref($rule) ne 'HASH') {
 						_error($logger, "$rule_description: Parameter '$key' rules must be a hash reference");
-						next;
 					}
 					if(!defined($rule->{'type'})) {
 						_error($logger, "$rule_description: Parameter '$key' is missing a type in an alternative");
-						next;
 					}
 					push @types, $rule->{'type'};
 					my $result;
@@ -2131,8 +2127,6 @@ sub _error
 		$logger->error(__PACKAGE__, ' line ', $call_details[2], ": $message");
 	}
 	croak(__PACKAGE__, ' line ', $call_details[2], ": $message");
-	# Be absolutely sure, sometimes croak doesn't die for me in Test::Most scripts
-	die (__PACKAGE__, ' line ', $call_details[2], ": $message");
 }
 
 # Helper to log warning or carp
