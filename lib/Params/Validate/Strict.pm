@@ -1184,18 +1184,10 @@ sub validate_strict
 
 		# Handle optional parameters
 		if((ref($rules) eq 'HASH') && $is_optional) {
-			my $look_for_default = 0;
-			if($are_positional_args == 1) {
-				# if(!defined(@{$args}[$rules->{'position'}])) {
-				if(!defined($args->[$rules->{position}])) {
-					$look_for_default = 1;
-				}
-			} else {
-				if(!exists($args->{$key})) {
-					$look_for_default = 1;
-				}
-			}
-			if($look_for_default) {
+			my $missing = ($are_positional_args == 1)
+				? !defined($args->[$rules->{position}])
+				: !exists($args->{$key});
+			if($missing) {
 				if($are_positional_args == 1) {
 					if(scalar(@{$args}) < $rules->{'position'}) {
 						# arg array is too short, so it must be missing
@@ -1256,7 +1248,7 @@ sub validate_strict
 				}
 			}
 
-			foreach my $rule_name (keys %$rules) {
+			foreach my $rule_name ('type', grep { $_ ne 'type' } keys %$rules) {
 				my $rule_value = $rules->{$rule_name};
 
 				if((ref($rule_value) eq 'CODE')
@@ -1388,7 +1380,7 @@ sub validate_strict
 					}
 					my $type = lc($rules->{'type'});
 					if(exists($custom_types->{$type}->{'min'}) || exists($custom_types->{$type}->{minimum})) {
-						$rule_value = $custom_types->{$type}->{'min'} // $custom_types->{$type}->{minumum};
+						$rule_value = $custom_types->{$type}->{'min'} // $custom_types->{$type}->{minimum};
 						$type = $custom_types->{$type}->{'type'};
 					}
 					if(($type eq 'string') || ($type eq 'str') || ($type eq 'stringref')) {
@@ -1411,12 +1403,10 @@ sub validate_strict
 						if(!defined($value)) {
 							next;	# Skip if array is undefined
 						}
-						if(ref($value) ne 'ARRAY') {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be an arrayref, not " . ref($value));
-						} elsif(scalar(@{$value}) < $rule_value) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must have at least $rule_value member" . (($rule_value > 1) ? 's' : ''));
-							$invalid_args{$key} = 1;
-						}
+						if(scalar(@{$value}) < $rule_value) {
+						_rule_error($logger, $rules, "$rule_description: Parameter '$key' must have at least $rule_value member" . (($rule_value > 1) ? 's' : ''));
+						$invalid_args{$key} = 1;
+					}
 					} elsif($type eq 'hashref') {
 						if(!defined($value)) {
 							next;	# Skip if hash is undefined
@@ -1475,9 +1465,6 @@ sub validate_strict
 					} elsif($type eq 'arrayref') {
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
-						}
-						if(ref($value) ne 'ARRAY') {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be an arrayref, not " . ref($value));
 						}
 						if(scalar(@{$value}) > $rule_value) {
 							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must contain no more than $rule_value items");
