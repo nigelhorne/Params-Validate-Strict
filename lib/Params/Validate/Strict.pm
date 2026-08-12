@@ -1540,13 +1540,23 @@ sub validate_strict
 					if(!defined($value)) {
 						next;	# Skip if string is undefined
 					}
-					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
-						my @matches = grep { /$rule_value/ } @{$value};
-						if(scalar(@matches)) {
-							_rule_error($logger, $rules, "$rule_description: No member of parameter '$key' [", join(', ', @{$value}), "] must match pattern '$rule_value'");
+					# Compile string patterns with \Q...\E so metacharacters are
+					# treated as literals, matching the behaviour of 'matches'.
+					my $re = (ref($rule_value) eq 'Regexp') ? $rule_value : qr/\Q$rule_value\E/;
+					eval {
+						if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
+							my @matches = grep { $_ =~ $re } @{$value};
+							if(scalar(@matches)) {
+								_rule_error($logger, $rules, "$rule_description: No member of parameter '$key' [", join(', ', @{$value}), "] must match pattern '$rule_value'");
+							}
+						} elsif($value =~ $re) {
+							_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must not match pattern '$rule_value'");
+							$invalid_args{$key} = 1;
 						}
-					} elsif($value =~ $rule_value) {
-						_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must not match pattern '$rule_value'");
+						1;
+					};
+					if($@) {
+						_rule_error($logger, $rules, "$rule_description: Parameter '$key' regex '$rule_value' error: $@");
 						$invalid_args{$key} = 1;
 					}
 				} elsif(($rule_name eq 'memberof') || ($rule_name eq 'enum') || ($rule_name eq 'values')) {
@@ -1637,7 +1647,7 @@ sub validate_strict
 									$invalid_args{$key} = 1;
 								}
 							} elsif(($type eq 'number') || ($rule_value eq 'float')) {
-								if(ref($member) || ($member !~ /^[-+]?(\d*\.\d+|\d+\.?\d*)$/)) {
+								if(ref($member) || ($member !~ /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)$/)) {
 									_rule_error($logger, $rules, "$key can only contain numbers (found $member)");
 									$invalid_args{$key} = 1;
 								}
