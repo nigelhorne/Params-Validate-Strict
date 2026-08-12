@@ -65,7 +65,9 @@ The schema can be plumbed into L<App::Test::Generator> to automatically create a
 
 =item * WAF
 
-The schema can be plumbed into a WAF to protect from random user input.
+The schema can be plumbed into a WAF,
+e.g., L<VWF|https://.github.com/VWF/>,
+to protect from random user input.
 
 =item * Improved API Documentation
 
@@ -74,7 +76,7 @@ the specification syntax can help with documentation.
 
 =item * I like it
 
-I find it fun to write this,
+I found it fun to write this,
 even if nobody else finds it useful,
 though I hope you will.
 
