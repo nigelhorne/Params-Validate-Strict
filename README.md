@@ -39,7 +39,7 @@ and I have a couple of other reasons for writing it.
 - WAF
 
     The schema can be plumbed into a WAF,
-    e.g., [VWF](https://.github.com/VWF/),
+    e.g., [VWF](https://github.com/nigelhorne/VWF/),
     to protect from random user input.
 
 - Improved API Documentation
