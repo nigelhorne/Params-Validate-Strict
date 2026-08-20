@@ -4,6 +4,31 @@ package Params::Validate::Strict;
 # TODO: better use of the description parameter in error messages
 # FIXME: ensure paramaters such as min => 1 length constraint applies to all values. In this case, undef should not pass through without a croak.
 # TODO: As well as type => [ 'string', 'arrayref' ], allow type => 'string|arrayref'
+# TODO: Allow a BNF definition of a string
+# e.g.
+#	schema => {
+#		na_tel_no => {
+#			type => 'string',
+#			bnf => [
+#				'<telephone-number> ::= <country-code-opt> <area-code> <separator-opt>',
+#				'<central-office-code> <separator-opt> <station-code>',
+#
+#				'<country-code-opt> ::= "" | "+1" | "1"',
+#
+#				'<separator-opt> ::= "" | "-" | " " | "."',
+#
+#				'<area-code> ::= <digit2-9> <digit0-9> <digit0-9>',
+#
+#				'<central-office-code> ::= <digit2-9> <digit0-9> <digit0-9>',
+#
+#				'<station-code> ::= <digit0-9> <digit0-9> <digit0-9> <digit0-9>',
+#
+#				'<digit0-9> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"',
+#
+#				'<digit2-9> ::= "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"',
+#			]
+#		}
+#	}
 
 use strict;
 use warnings;
