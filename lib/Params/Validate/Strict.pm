@@ -1663,6 +1663,11 @@ sub validate_strict
 									_rule_error($logger, $rules, "$key can only contain numbers (found $member)");
 									$invalid_args{$key} = 1;
 								}
+							} elsif($type eq 'object') {
+								if(!Scalar::Util::blessed($member)) {
+									_rule_error($logger, $rules, "$key can only contain objects (found $member)");
+									$invalid_args{$key} = 1;
+								}
 							} else {
 								_error($logger, "BUG: Add $type to element_type list");
 							}
