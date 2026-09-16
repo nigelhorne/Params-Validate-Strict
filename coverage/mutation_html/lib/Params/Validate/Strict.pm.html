@@ -294,7 +294,7 @@ a.intra-dot:hover { color: #7700bb; }
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
 TER1 (Statement): 89.51%<br>
-TER2 (Branch): 89.83%<br>
+TER2 (Branch): 90.00%<br>
 TER3 (LCSAJ): 100.0% (26/26)<br>
 Approximate LCSAJ segments: 581<br>
 </div>
@@ -1565,7 +1565,7 @@ Approximate LCSAJ segments: 581<br>
 </span><span class=""> 1224: 				}
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1225: 				if(exists($rules-&gt;{&#39;default&#39;})) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1226: 					# Populate missing optional parameters with the specified output values
-</span><span class=""> 1227: 					$validated_args{$key} = $rules-&gt;{&#39;default&#39;};
+</span><span class=""> 1227: 					$validated_args{$key} //= $rules-&gt;{&#39;default&#39;};
 </span><span class=""> 1228: 					next;	# default wins; do not fall through to the schema branch
 </span><span class=""> 1229: 				}
 </span><span class=""> 1230: 
@@ -2082,10 +2082,10 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1706: 							foreach my $member(@{$value}) {
 </span><span class=""> 1707: 								# Distinguish two schema forms:
 </span><span class=""> 1708: 								# (a) Rule hash   &acirc;&#128;&#148; has a top-level &#39;type&#39; key, e.g. { type=&gt;&#39;string&#39;, matches=&gt;qr/.../ }
-</span><span class=""> 1709: 								#     &acirc;&#134;&#146; validate each element against that rule directly.
+</span><span class=""> 1709: 								#     =&gt; validate each element against that rule directly.
 </span><span class=""> 1710: 								# (b) Field-schema hash &acirc;&#128;&#148; keys are field names whose values are rule hashes,
 </span><span class=""> 1711: 								#     e.g. { name=&gt;{type=&gt;&#39;string&#39;}, age=&gt;{type=&gt;&#39;integer&#39;} }
-</span><span class=""> 1712: 								#     &acirc;&#134;&#146; validate each hashref element against the field schema directly.
+</span><span class=""> 1712: 								#     =&gt; validate each hashref element against the field schema directly.
 </span><span class=""> 1713: 								my $is_field_schema = (ref($rule_value) eq &#39;HASH&#39;) &amp;&amp; !exists($rule_value-&gt;{&#39;type&#39;});
 </span><span class=""> 1714: 								my %inner = (custom_types =&gt; $custom_types);
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1715: 								if($is_field_schema) {
@@ -2293,7 +2293,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1917: 		my $rules = $schema-&gt;{$key};
 </span><span class=""> 1918: 
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1919: 		if (ref $rules eq &#39;HASH&#39; &amp;&amp; exists $rules-&gt;{default} &amp;&amp; !exists $result{$key}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1920: 			$result{$key} = $rules-&gt;{default};
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1920: 			$result{$key} //= $rules-&gt;{default};
 </span><span class=""> 1921: 		}
 </span><span class=""> 1922: 
 </span><span class=""> 1923: 		# Recursively handle nested schema
