@@ -1224,7 +1224,7 @@ sub validate_strict
 				}
 				if(exists($rules->{'default'})) {
 					# Populate missing optional parameters with the specified output values
-					$validated_args{$key} = $rules->{'default'};
+					$validated_args{$key} //= $rules->{'default'};
 					next;	# default wins; do not fall through to the schema branch
 				}
 
@@ -1706,10 +1706,10 @@ sub validate_strict
 							foreach my $member(@{$value}) {
 								# Distinguish two schema forms:
 								# (a) Rule hash   — has a top-level 'type' key, e.g. { type=>'string', matches=>qr/.../ }
-								#     → validate each element against that rule directly.
+								#     => validate each element against that rule directly.
 								# (b) Field-schema hash — keys are field names whose values are rule hashes,
 								#     e.g. { name=>{type=>'string'}, age=>{type=>'integer'} }
-								#     → validate each hashref element against the field schema directly.
+								#     => validate each hashref element against the field schema directly.
 								my $is_field_schema = (ref($rule_value) eq 'HASH') && !exists($rule_value->{'type'});
 								my %inner = (custom_types => $custom_types);
 								if($is_field_schema) {
@@ -1917,7 +1917,7 @@ sub _apply_nested_defaults {
 		my $rules = $schema->{$key};
 
 		if (ref $rules eq 'HASH' && exists $rules->{default} && !exists $result{$key}) {
-			$result{$key} = $rules->{default};
+			$result{$key} //= $rules->{default};
 		}
 
 		# Recursively handle nested schema
