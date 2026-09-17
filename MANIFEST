@@ -47,6 +47,7 @@ t/strict.t
 t/string.t
 t/t_union_type.t
 t/transform.t
+t/unicode.t
 t/unit.t
 t/validate.t
 t/vars.t
