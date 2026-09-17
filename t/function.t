@@ -4,7 +4,6 @@
 # Each private helper is exercised directly via its full package name.
 # mock_scoped is used as a scope-guard (RAII): store the return value to keep
 # the mock live, let it go out of scope to restore the original.
-# Unicode::GCString is mocked for the non-ASCII character-counting subtest.
 # Logger methods are mocked for the _error/_warn subtests.
 
 use strict;
@@ -40,14 +39,6 @@ use Params::Validate::Strict qw(validate_strict);
 	sub warn  { }
 }
 
-# Lightweight Unicode::GCString stand-in used by the non-ASCII test.
-# Defined as a real package so that mocking only new() is needed —
-# length() avoids the ($) prototype that the real module carries.
-{
-	package PVS::Test::GCString;
-	sub new    { bless {}, shift }
-	sub length { 5 }
-}
 
 # ── Test helpers ──────────────────────────────────────────────────────────────
 
@@ -84,19 +75,27 @@ subtest '_number_of_characters: ASCII strings use core length()' => sub {
 	is(Params::Validate::Strict::_number_of_characters('a' x 80), 80,  '80-char ASCII string');
 };
 
-subtest '_number_of_characters: non-ASCII delegates to Unicode::GCString' => sub {
-	# Use a Perl character string (utf8 flag set) so the decode_utf8 branch is
-	# skipped and we go straight to Unicode::GCString->new($value)->length().
-	my $unicode = "\x{00e9}l\x{00e8}ve";	# élève — 5 grapheme clusters
-	# Mock only new() — returning a PVS::Test::GCString whose length() has no
-	# prototype avoids the ($) prototype mismatch on the real module's length.
-	my $m_new = mock_scoped('Unicode::GCString', 'new',
-		sub { PVS::Test::GCString->new });
-	is(
-		Params::Validate::Strict::_number_of_characters($unicode),
-		5, 'returns GCString->length for non-ASCII character string'
-	);
-	# $m_new goes out of scope at end of subtest → new() restored
+subtest '_number_of_characters: non-ASCII counted with \X grapheme clusters' => sub {
+	# élève — 5 grapheme clusters, 7 UTF-8 bytes
+	my $eleve = "\x{00e9}l\x{00e8}ve";
+	is(Params::Validate::Strict::_number_of_characters($eleve), 5,
+		'élève: 5 grapheme clusters');
+
+	# ZWJ family emoji — 5 code points, 1 grapheme cluster under Unicode 9.0+
+	# Perl 5.26+ ships Unicode 9.0 so \X correctly collapses this to 1.
+	my $family = "\x{1F468}\x{200D}\x{1F469}\x{200D}\x{1F467}";
+	is(Params::Validate::Strict::_number_of_characters($family), 1,
+		'ZWJ family emoji: 1 grapheme cluster');
+
+	# Skin-tone modifier — 2 code points, 1 grapheme cluster under Unicode 8.0+
+	my $thumbs = "\x{1F44D}\x{1F3FD}";
+	is(Params::Validate::Strict::_number_of_characters($thumbs), 1,
+		'skin-tone thumbs-up: 1 grapheme cluster');
+
+	# 3 plain emoji — 3 grapheme clusters
+	my $plain3 = "\x{1F600}\x{1F601}\x{1F602}";
+	is(Params::Validate::Strict::_number_of_characters($plain3), 3,
+		'3 plain emoji: 3 grapheme clusters');
 };
 
 # ══════════════════════════════════════════════════════════════════════════════

@@ -1,5 +1,28 @@
 Revision history for Params-Validate-Strict
 
+0.40	Thu Sep 17 2026
+	[Bug Fixes]
+	- min/max constraints on string parameters now correctly count grapheme
+	  clusters for ZWJ emoji sequences (e.g. 👨‍👩‍👧) and emoji skin-tone modifier
+	  sequences (e.g. 👍🏽), both of which Unicode::GCString 2013.10 could not
+	  handle.  _number_of_characters now uses Perl's built-in \X regex (extended
+	  grapheme cluster) instead of Unicode::GCString.  Perl ships updated Unicode
+	  tables with each release, so the fix is self-maintaining.
+	- Removed FIXME comment: "{max} doesn't play ball with non-ascii strings"
+	  (resolved by the above change).
+	[Enhancements]
+	- Unicode::GCString dependency removed from PREREQ_PM; no external module
+	  is now required for grapheme-cluster counting.
+	[Tests]
+	- t/unicode.t: new file — comprehensive min/max tests for non-ASCII strings
+	  including accented/Latin-extended characters, CJK, plain emoji, ZWJ family
+	  sequences, skin-tone modifier sequences, and mixed ASCII+emoji strings.
+	- t/default.t: added test that a supplied value overrides the default.
+	- t/integration.t: GCString integration subtests replaced with \X-based
+	  equivalents; two new subtests for ZWJ and skin-tone grapheme counting.
+	- t/function.t, t/unit.t: GCString mocks removed; non-ASCII counting subtests
+	  updated to test \X behaviour directly.
+
 0.39	Fri Aug 21 11:43:35 AM EDT 2026
 	[ Bug Fixes ]
 	- Added "object" to element_type, when checking if an argument an

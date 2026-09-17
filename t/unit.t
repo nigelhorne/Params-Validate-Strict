@@ -2,8 +2,7 @@
 
 # Black-box unit tests for the public API of Params::Validate::Strict.
 # Each subtest drives validate_strict through its documented interface only.
-# Test::Mockingbird (RAII guards) is used to mock the non-core logger and
-# Unicode::GCString dependencies.
+# Test::Mockingbird (RAII guards) is used to mock the non-core logger.
 
 use strict;
 use warnings;
@@ -27,13 +26,6 @@ use Params::Validate::Strict qw(validate_strict);
 	sub warn  { }		# stub
 }
 
-# Lightweight Unicode::GCString replacement used in the non-ASCII min/max test.
-# A plain length() sub avoids the ($) prototype the real module carries.
-{
-	package Unit::GCString;
-	sub new    { bless {}, shift }
-	sub length { 3 }	# fixed at 3 grapheme clusters for that one test
-}
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Return-value contract
@@ -737,17 +729,15 @@ subtest 'max: string longer than maximum → croaks' => sub {
 	} qr/too long/, 'croaks when string exceeds max';
 };
 
-subtest 'min/max: non-ASCII string length counted in characters not bytes' => sub {
-	# Mock Unicode::GCString::new so the returned object reports 3 grapheme
-	# clusters — verifying that the module delegates length to GCString rather
-	# than using byte-count length().
-	my $m = mock_scoped('Unicode::GCString', 'new', sub { Unit::GCString->new });
+subtest 'min/max: non-ASCII string length counted in grapheme clusters not bytes' => sub {
+	# "\x{00e9}l\x{00e8}" = élè — 3 grapheme clusters, 5 UTF-8 bytes.
+	# min=>4 should reject it based on grapheme count (3), not byte count (5).
 	throws_ok {
 		validate_strict(
 			schema => { s => { type => 'string', min => 4 } },
-			input  => { s => "\x{00e9}l\x{00e8}" },	# 3-char Unicode string
+			input  => { s => "\x{00e9}l\x{00e8}" },
 		)
-	} qr/too short/, 'character count (not byte count) used for non-ASCII min';
+	} qr/too short/, 'grapheme count (not byte count) used for non-ASCII min';
 };
 
 subtest 'min: integer below minimum → croaks' => sub {

@@ -109,44 +109,32 @@ subtest 'min — simple emoji' => sub {
 # back to byte-counting or code-point-counting.
 # ---------------------------------------------------------------------------
 
-subtest 'max — ZWJ emoji family (counted by installed Unicode::GCString)' => sub {
+subtest 'max+min — ZWJ emoji family (1 grapheme cluster)' => sub {
 	# U+1F468 ZWJ U+1F469 ZWJ U+1F467 = family-man-woman-girl
-	# 5 code points, but Unicode::GCString 2013.10 reports 3 grapheme clusters.
+	# 5 code points, 1 grapheme cluster under Unicode 9.0+ (Perl 5.26+).
 	my $family = "\x{1F468}\x{200D}\x{1F469}\x{200D}\x{1F467}";
-	my $g = do {
-		require Unicode::GCString;
-		Unicode::GCString->new($family)->length();
-	};
-	note "ZWJ family sequence: Unicode::GCString reports $g grapheme cluster(s)";
 
-	# Whatever the count, it should not equal the raw code-point count (5)
-	# or the byte count — the module must use grapheme clusters.
-	cmp_ok($g, '<', 5, 'ZWJ family grapheme count is less than code-point count (not byte-counting)');
+	ok_validate({ type => 'string', max => 1 }, $family, 'ZWJ family passes max=>1');
+	throws_validate({ type => 'string', max => 1 }, $family x 2, qr/too long/,
+		'double ZWJ family fails max=>1');
 
-	# Validate exactly as many copies as the grapheme count — should pass max=>$g
-	my $schema_maxg = { type => 'string', max => $g };
-	ok_validate($schema_maxg, $family, "single ZWJ family passes max=>$g");
-
-	# One more copy should fail
-	throws_validate($schema_maxg, $family x 2, qr/too long/, "double ZWJ family fails max=>$g");
+	ok_validate({ type => 'string', min => 1 }, $family, 'ZWJ family passes min=>1');
+	throws_validate({ type => 'string', min => 2 }, $family, qr/too short/,
+		'single ZWJ family (1 cluster) fails min=>2');
 };
 
-subtest 'max — skin-tone modifier sequence (counted by installed Unicode::GCString)' => sub {
+subtest 'max+min — skin-tone modifier sequence (1 grapheme cluster)' => sub {
 	# U+1F44D U+1F3FD = thumbs-up + medium skin-tone
-	# 2 code points; Unicode::GCString 2013.10 reports 2 grapheme clusters.
+	# 2 code points, 1 grapheme cluster under Unicode 8.0+ (Perl 5.26+).
 	my $thumbs = "\x{1F44D}\x{1F3FD}";
-	my $g = do {
-		require Unicode::GCString;
-		Unicode::GCString->new($thumbs)->length();
-	};
-	note "Skin-tone thumbs-up: Unicode::GCString reports $g grapheme cluster(s)";
 
-	cmp_ok($g, '<=', 2, 'skin-tone sequence grapheme count is at most 2 (not byte-counting)');
+	ok_validate({ type => 'string', max => 1 }, $thumbs, 'skin-tone thumbs passes max=>1');
+	throws_validate({ type => 'string', max => 1 }, $thumbs x 2, qr/too long/,
+		'double skin-tone thumbs fails max=>1');
 
-	my $schema_maxg = { type => 'string', max => $g };
-	ok_validate($schema_maxg, $thumbs, "skin-tone thumbs passes max=>$g");
-	throws_validate($schema_maxg, $thumbs x ($g + 1), qr/too long/,
-		"skin-tone thumbs repeated too many times fails max=>$g");
+	ok_validate({ type => 'string', min => 1 }, $thumbs, 'skin-tone thumbs passes min=>1');
+	throws_validate({ type => 'string', min => 2 }, $thumbs, qr/too short/,
+		'single skin-tone thumbs (1 cluster) fails min=>2');
 };
 
 # ---------------------------------------------------------------------------

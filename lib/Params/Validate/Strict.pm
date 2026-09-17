@@ -38,7 +38,6 @@ use Encode qw(decode_utf8);
 use List::Util 1.33 qw(all any);	# Required for memberof/matches validation
 use Readonly::Values::Boolean;
 use Scalar::Util;
-use Unicode::GCString;
 
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(validate_strict);
@@ -53,7 +52,7 @@ Version 0.39
 
 =cut
 
-our $VERSION = '0.39';
+our $VERSION = '0.40';
 
 =head1 SYNOPSIS
 
@@ -1901,11 +1900,11 @@ sub _number_of_characters
 	# Decode only if it's not already a Perl character string
 	$value = decode_utf8($value) unless utf8::is_utf8($value);
 
-	# Count grapheme clusters (visible characters)
-	# The pseudo-operator () = forces list context to count matches
-	# return scalar( () = $value =~ /\X/g );
-
-	return Unicode::GCString->new($value)->length();
+	# Count grapheme clusters (visible characters).
+	# \X matches one extended grapheme cluster; Perl's Unicode tables are kept
+	# current with each release, correctly handling ZWJ sequences and emoji
+	# modifier sequences that Unicode::GCString 2013.10 could not.
+	return scalar(() = $value =~ /\X/g);
 }
 
 sub _apply_nested_defaults {
