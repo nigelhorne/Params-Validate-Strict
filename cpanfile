@@ -9,7 +9,6 @@ requires 'ExtUtils::MakeMaker', '6.64';   # Minimum version for TEST_REQUIRES
 requires 'List::Util', '1.33';   # Minimum version for any()
 requires 'Readonly::Values::Boolean';
 requires 'Scalar::Util';
-requires 'Unicode::GCString';
 requires 'strict';
 requires 'warnings';
 

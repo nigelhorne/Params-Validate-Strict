@@ -1,7 +1,6 @@
 package Params::Validate::Strict;
 
-# TODO: better use of the description parameter in error messages
-# FIXME: ensure paramaters such as min => 1 length constraint applies to all values. In this case, undef should not pass through without a croak.
+# FIXME: ensure parameters such as min => 1 length constraint applies to all values. In this case, undef should not pass through without a croak.
 # TODO: As well as type => [ 'string', 'arrayref' ], allow type => 'string|arrayref'
 # TODO: Allow a BNF definition of a string
 # e.g.
@@ -1166,10 +1165,11 @@ sub validate_strict
 		my $is_optional = 0;
 
 		my $rule_description = $schema_description;	# Can be overridden in each element
+		my $param_label = "'$key'";
 
 		if(ref($rules) eq 'HASH') {
 			if(exists($rules->{'description'})) {
-				$rule_description = $rules->{'description'};
+				$param_label = "'$key' ($rules->{description})";
 			}
 			# For stringref: validate and dereference before transform so that
 			# transform (and all subsequent rule handlers) see the plain string.
@@ -1179,7 +1179,7 @@ sub validate_strict
 			if($is_stringref_type) {
 				if(ref($value) ne 'SCALAR') {
 					my $got = ref($value) ? 'a ' . ref($value) . ' reference' : 'a plain scalar';
-					_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be a string reference, not $got");
+					_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a string reference, not $got");
 				}
 				$value = ${$value};
 			}
@@ -1216,7 +1216,7 @@ sub validate_strict
 				if($are_positional_args == 1) {
 					if(scalar(@{$args}) < $rules->{'position'}) {
 						# arg array is too short, so it must be missing
-						_error($logger, "$rule_description: Required parameter '$key' is missing");
+						_error($logger, "$rule_description: Required parameter $param_label is missing");
 						next;
 					}
 				}
@@ -1237,7 +1237,7 @@ sub validate_strict
 		} elsif((ref($args) eq 'HASH') && !exists($args->{$key})) {
 			# The parameter is required
 			# Use exists rather than defined, so that an undefined value can be passed, but the key is there
-			_error($logger, "$rule_description: Required parameter '$key' is missing");
+			_error($logger, "$rule_description: Required parameter $param_label is missing");
 		}
 
 		# Normalise union type shorthand: { type => ['string', 'integer'], ... }
@@ -1249,7 +1249,7 @@ sub validate_strict
 			my %base = %{$rules};
 			my @type_list = @{delete $base{'type'}};
 			if(!@type_list) {
-				_error($logger, "$rule_description: Parameter '$key': union type list must not be empty");
+				_error($logger, "$rule_description: Parameter $param_label: union type list must not be empty");
 			}
 			# Expand into one full rule hash per candidate type
 			$rules = [ map { { %base, type => $_ } } @type_list ];
@@ -1295,17 +1295,17 @@ sub validate_strict
 
 					if(($type eq 'string') || ($type eq 'str')) {
 						if(ref($value)) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be a string");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a string");
 						}
 						unless((ref($value) eq '') || (defined($value) && length($value))) {	# Allow undef for optional strings
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be a string");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a string");
 						}
 					} elsif(($type eq 'integer') || ($type eq 'int')) {
 						if(!defined($value)) {
 							next;	# Skip if number is undefined
 						}
 						if(!Scalar::Util::looks_like_number($value) || ($value - $value) != 0 || $value != int($value)) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must be an integer");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must be an integer");
 						}
 						$value = int($value); # Coerce to integer
 					} elsif(($type eq 'number') || ($type eq 'float') || ($type eq 'num') || ($type eq 'double')) {
@@ -1313,7 +1313,7 @@ sub validate_strict
 							next;	# Skip if number is undefined
 						}
 						if(!Scalar::Util::looks_like_number($value)) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be a number");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a number");
 						}
 						# $value = eval $value; # Coerce to number (be careful with eval)
 						$value = 0 + $value;	# Numeric coercion
@@ -1322,21 +1322,21 @@ sub validate_strict
 							next;	# Skip if arrayref is undefined
 						}
 						if(ref($value) ne 'ARRAY') {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be an arrayref, not " . ref($value));
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be an arrayref, not " . ref($value));
 						}
 					} elsif($type eq 'hashref') {
 						if(!defined($value)) {
 							next;	# Skip if hashref is undefined
 						}
 						if(ref($value) ne 'HASH') {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be an hashref");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be an hashref");
 						}
 					} elsif($type eq 'scalar') {
 						if(!defined($value)) {
 							next;	# Skip if undefined
 						}
 						if(ref($value)) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be a scalar, not a " . ref($value) . ' reference');
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a scalar, not a " . ref($value) . ' reference');
 						}
 					} elsif($type eq 'scalarref') {
 						if(!defined($value)) {
@@ -1344,7 +1344,7 @@ sub validate_strict
 						}
 						if(ref($value) ne 'SCALAR') {
 							my $got = ref($value) ? 'a ' . ref($value) . ' reference' : 'a plain scalar';
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be a scalar reference, not $got");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a scalar reference, not $got");
 						}
 					} elsif($type eq 'stringref') {
 						if(!defined($value)) {
@@ -1353,14 +1353,14 @@ sub validate_strict
 						# The early-deref block validated the SCALAR ref and set $value to the
 						# plain string.  If transform subsequently returned a reference, reject it.
 						if(ref($value)) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' stringref transform must return a plain string, not a " . ref($value) . ' reference');
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label stringref transform must return a plain string, not a " . ref($value) . ' reference');
 						}
 					} elsif($type eq 'void') {
 						if(scalar(keys %{$schema}) != 1) {
 							_error($logger, "$rule_description: type 'void' requires exactly one parameter in the schema");
 						}
 						if(defined($value)) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be undef (void type accepts no value)");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be undef (void type accepts no value)");
 						}
 					} elsif(($type eq 'boolean') || ($type eq 'bool')) {
 						if(!defined($value)) {
@@ -1369,21 +1369,21 @@ sub validate_strict
 						if(defined(my $b = $Readonly::Values::Boolean::booleans{$value})) {
 							$value = $b;
 						} else {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must be a boolean");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must be a boolean");
 						}
 					} elsif($type eq 'coderef') {
 						if(!defined($value)) {
 							next;	# Skip if code is undefined
 						}
 						if(ref($value) ne 'CODE') {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be a coderef, not a ref to " . ref($value));
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a coderef, not a ref to " . ref($value));
 						}
 					} elsif($type eq 'object') {
 						if(!defined($value)) {
 							next;	# Skip if object is undefined
 						}
 						if(!Scalar::Util::blessed($value)) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must be an object");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be an object");
 						}
 					} elsif(my $custom_type = $custom_types->{$type}) {
 						if($custom_type->{'transform'}) {
@@ -1400,7 +1400,7 @@ sub validate_strict
 					}
 				} elsif(($rule_name eq 'min') || ($rule_name eq 'minimum')) {
 					if(!defined($rules->{'type'})) {
-						_error($logger, "$rule_description: Don't know type of '$key' to determine its minimum value $rule_value");
+						_error($logger, "$rule_description: Don't know type of $param_label to determine its minimum value $rule_value");
 					}
 					my $type = lc($rules->{'type'});
 					if(exists($custom_types->{$type}->{'min'}) || exists($custom_types->{$type}->{minimum})) {
@@ -1409,18 +1409,18 @@ sub validate_strict
 					}
 					if(($type eq 'string') || ($type eq 'str') || ($type eq 'stringref')) {
 						if($rule_value < 0) {
-							_rule_error($logger, $rules, "$rule_description: String parameter '$key' has meaningless minimum value that is less than zero");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label has meaningless minimum value that is less than zero");
 						}
 						if(!defined($value)) {
 							next;	# Skip if string is undefined
 						}
 						if(defined(my $len = _number_of_characters($value))) {
 							if($len < $rule_value) {
-								_rule_error($logger, $rules, "$rule_description: String parameter '$key' too short, ($len characters), must be at least $rule_value characters");
+								_rule_error($logger, $rules, "$rule_description: Parameter $param_label too short, ($len characters), must be at least $rule_value characters");
 								$invalid_args{$key} = 1;
 							}
 						} else {
-							_rule_error($logger, $rules, "$rule_description: '$key' can't be decoded");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label can't be decoded");
 							$invalid_args{$key} = 1;
 						}
 					} elsif($type eq 'arrayref') {
@@ -1428,7 +1428,7 @@ sub validate_strict
 							next;	# Skip if array is undefined
 						}
 						if(scalar(@{$value}) < $rule_value) {
-						_rule_error($logger, $rules, "$rule_description: Parameter '$key' must have at least $rule_value member" . (($rule_value > 1) ? 's' : ''));
+						_rule_error($logger, $rules, "$rule_description: Parameter $param_label must have at least $rule_value member" . (($rule_value > 1) ? 's' : ''));
 						$invalid_args{$key} = 1;
 					}
 					} elsif($type eq 'hashref') {
@@ -1436,7 +1436,7 @@ sub validate_strict
 							next;	# Skip if hash is undefined
 						}
 						if(scalar(keys(%{$value})) < $rule_value) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must contain at least $rule_value keys");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must contain at least $rule_value keys");
 							$invalid_args{$key} = 1;
 						}
 					} elsif(($type eq 'integer') || ($type eq 'number') || ($type eq 'float')) {
@@ -1448,25 +1448,25 @@ sub validate_strict
 								if($rules->{'error_msg'}) {
 									_error($logger, $rules->{'error_msg'});
 								} elsif(($type eq 'integer') && ($value == 0)) {
-									_error($logger, "$rule_description: Parameter '$key' ($value) must be a positive number");
+									_error($logger, "$rule_description: Parameter $param_label ($value) must be a positive number");
 								} elsif(($type eq 'integer') && ($value == 1)) {
-									_error($logger, "$rule_description: Parameter '$key' ($value) must be a positive, non-zero number");
+									_error($logger, "$rule_description: Parameter $param_label ($value) must be a positive, non-zero number");
 								} else {
-									_error($logger, "$rule_description: Parameter '$key' ($value) must be at least $rule_value");
+									_error($logger, "$rule_description: Parameter $param_label ($value) must be at least $rule_value");
 								}
 								$invalid_args{$key} = 1;
 								next;
 							}
 						} else {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must be a number");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must be a number");
 							next;
 						}
 					} else {
-						_error($logger, "$rule_description: Parameter '$key' of type '$type' has meaningless min value $rule_value");
+						_error($logger, "$rule_description: Parameter $param_label of type '$type' has meaningless min value $rule_value");
 					}
 				} elsif($rule_name eq 'max') {
 					if(!defined($rules->{'type'})) {
-						_error($logger, "$rule_description: Don't know type of '$key' to determine its maximum value $rule_value");
+						_error($logger, "$rule_description: Don't know type of $param_label to determine its maximum value $rule_value");
 					}
 					my $type = lc($rules->{'type'});
 					if(exists($custom_types->{$type}->{'max'})) {
@@ -1479,11 +1479,11 @@ sub validate_strict
 						}
 						if(defined(my $len = _number_of_characters($value))) {
 							if($len > $rule_value) {
-								_rule_error($logger, $rules, "$rule_description: String parameter '$key' too long, ($len characters), must be no longer than $rule_value");
+								_rule_error($logger, $rules, "$rule_description: Parameter $param_label too long, ($len characters), must be no longer than $rule_value");
 								$invalid_args{$key} = 1;
 							}
 						} else {
-							_rule_error($logger, $rules, "$rule_description: '$key' can't be decoded");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label can't be decoded");
 							$invalid_args{$key} = 1;
 						}
 					} elsif($type eq 'arrayref') {
@@ -1491,7 +1491,7 @@ sub validate_strict
 							next;	# Skip if string is undefined
 						}
 						if(scalar(@{$value}) > $rule_value) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must contain no more than $rule_value items");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must contain no more than $rule_value items");
 							$invalid_args{$key} = 1;
 						}
 					} elsif($type eq 'hashref') {
@@ -1499,7 +1499,7 @@ sub validate_strict
 							next;	# Skip if hash is undefined
 						}
 						if(scalar(keys(%{$value})) > $rule_value) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' must contain no more than $rule_value keys");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must contain no more than $rule_value keys");
 							$invalid_args{$key} = 1;
 						}
 					} elsif(($type eq 'integer') || ($type eq 'number') || ($type eq 'float')) {
@@ -1511,21 +1511,21 @@ sub validate_strict
 								if($rules->{'error_msg'}) {
 									_error($logger, $rules->{'error_msg'});
 								} elsif(($type eq 'integer') && ($value == 0)) {
-									_error($logger, "$rule_description: Parameter '$key' ($value) must be a negative number");
+									_error($logger, "$rule_description: Parameter $param_label ($value) must be a negative number");
 								} elsif(($type eq 'integer') && ($value == -1)) {
-									_error($logger, "$rule_description: Parameter '$key' ($value) must be a negative, non-zero number");
+									_error($logger, "$rule_description: Parameter $param_label ($value) must be a negative, non-zero number");
 								} else {
-									_error($logger, "$rule_description: Parameter '$key' ($value) must be no more than $rule_value");
+									_error($logger, "$rule_description: Parameter $param_label ($value) must be no more than $rule_value");
 								}
 								$invalid_args{$key} = 1;
 								next;
 							}
 						} else {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must be a number");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must be a number");
 							next;
 						}
 					} else {
-						_error($logger, "$rule_description: Parameter '$key' of type '$type' has meaningless max value $rule_value");
+						_error($logger, "$rule_description: Parameter $param_label of type '$type' has meaningless max value $rule_value");
 					}
 				} elsif(($rule_name eq 'matches') || ($rule_name eq 'regex')) {
 					if(!defined($value)) {
@@ -1536,15 +1536,15 @@ sub validate_strict
 						if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
 							# all{} short-circuits on first failure and allocates no temp array
 							unless(all { $_ =~ $re } @{$value}) {
-								_rule_error($logger, $rules, "$rule_description: All members of parameter '$key' [", join(', ', @{$value}), "] must match pattern '$rule_value'");
+								_rule_error($logger, $rules, "$rule_description: All members of parameter $param_label [", join(', ', @{$value}), "] must match pattern '$rule_value'");
 							}
 						} elsif($value !~ $re) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must match pattern '$re'");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must match pattern '$re'");
 						}
 						1;
 					};
 					if($@) {
-						_rule_error($logger, $rules, "$rule_description: Parameter '$key' regex '$rule_value' error: $@");
+						_rule_error($logger, $rules, "$rule_description: Parameter $param_label regex '$rule_value' error: $@");
 						$invalid_args{$key} = 1;
 					}
 				} elsif($rule_name eq 'nomatch') {
@@ -1558,16 +1558,16 @@ sub validate_strict
 						if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
 							# any{} short-circuits on first match and allocates no temp array
 							if(any { $_ =~ $re } @{$value}) {
-								_rule_error($logger, $rules, "$rule_description: No member of parameter '$key' [", join(', ', @{$value}), "] must match pattern '$rule_value'");
+								_rule_error($logger, $rules, "$rule_description: No member of parameter $param_label [", join(', ', @{$value}), "] must match pattern '$rule_value'");
 							}
 						} elsif($value =~ $re) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must not match pattern '$rule_value'");
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must not match pattern '$rule_value'");
 							$invalid_args{$key} = 1;
 						}
 						1;
 					};
 					if($@) {
-						_rule_error($logger, $rules, "$rule_description: Parameter '$key' regex '$rule_value' error: $@");
+						_rule_error($logger, $rules, "$rule_description: Parameter $param_label regex '$rule_value' error: $@");
 						$invalid_args{$key} = 1;
 					}
 				} elsif(($rule_name eq 'memberof') || ($rule_name eq 'enum') || ($rule_name eq 'values')) {
@@ -1576,11 +1576,11 @@ sub validate_strict
 					}
 					if(ref($rule_value) eq 'ARRAY') {
 						unless(_value_in_list($value, $rule_value, $rules->{'type'} // '', $rules->{'case_sensitive'})) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must be one of ", join(', ', @{$rule_value}));
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must be one of ", join(', ', @{$rule_value}));
 							$invalid_args{$key} = 1;
 						}
 					} else {
-						_rule_error($logger, $rules, "$rule_description: Parameter '$key' rule ($rule_value) must be an array reference");
+						_rule_error($logger, $rules, "$rule_description: Parameter $param_label rule ($rule_value) must be an array reference");
 					}
 				} elsif($rule_name eq 'notmemberof') {
 					if(!defined($value)) {
@@ -1588,11 +1588,11 @@ sub validate_strict
 					}
 					if(ref($rule_value) eq 'ARRAY') {
 						if(_value_in_list($value, $rule_value, $rules->{'type'} // '', $rules->{'case_sensitive'})) {
-							_rule_error($logger, $rules, "$rule_description: Parameter '$key' ($value) must not be one of ", join(', ', @{$rule_value}));
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must not be one of ", join(', ', @{$rule_value}));
 							$invalid_args{$key} = 1;
 						}
 					} else {
-						_rule_error($logger, $rules, "$rule_description: Parameter '$key' rule ($rule_value) must be an array reference");
+						_rule_error($logger, $rules, "$rule_description: Parameter $param_label rule ($rule_value) must be an array reference");
 					}
 				} elsif($rule_name eq 'isa') {
 					if(!defined($value)) {
@@ -1600,11 +1600,11 @@ sub validate_strict
 					}
 					if($rules->{'type'} eq 'object') {
 						if(!$value->isa($rule_value)) {
-							_error($logger, "$rule_description: Parameter '$key' must be a '$rule_value' object got a " . (ref($value) ? ref($value) : $value) . ' object instead');
+							_error($logger, "$rule_description: Parameter $param_label must be a '$rule_value' object got a " . (ref($value) ? ref($value) : $value) . ' object instead');
 							$invalid_args{$key} = 1;
 						}
 					} else {
-						_error($logger, "$rule_description: Parameter '$key' has meaningless isa value $rule_value");
+						_error($logger, "$rule_description: Parameter $param_label has meaningless isa value $rule_value");
 					}
 				} elsif($rule_name eq 'can') {
 					if(!defined($value)) {
@@ -1615,20 +1615,20 @@ sub validate_strict
 							# List of methods
 							foreach my $method(@{$rule_value}) {
 								if(!$value->can($method)) {
-									_error($logger, "$rule_description: Parameter '$key' must be an object that understands the $method method");
+									_error($logger, "$rule_description: Parameter $param_label must be an object that understands the $method method");
 									$invalid_args{$key} = 1;
 								}
 							}
 						} elsif(!ref($rule_value)) {
 							if(!$value->can($rule_value)) {
-								_error($logger, "$rule_description: Parameter '$key' must be an object that understands the $rule_value method");
+								_error($logger, "$rule_description: Parameter $param_label must be an object that understands the $rule_value method");
 								$invalid_args{$key} = 1;
 							}
 						} else {
-							_error($logger, "$rule_description: 'can' rule for Parameter '$key must be either a scalar or an arrayref");
+							_error($logger, "$rule_description: 'can' rule for Parameter $param_label must be either a scalar or an arrayref");
 						}
 					} else {
-						_error($logger, "$rule_description: Parameter '$key' has meaningless can value '$rule_value' for parameter type $rules->{type}");
+						_error($logger, "$rule_description: Parameter $param_label has meaningless can value '$rule_value' for parameter type $rules->{type}");
 					}
 				} elsif($rule_name eq 'element_type') {
 					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
@@ -1648,22 +1648,22 @@ sub validate_strict
 							}
 							if(($type eq 'string') || ($type eq 'Str')) {
 								if(ref($member)) {
-									_rule_error($logger, $rules, "$key can only contain strings");
+									_rule_error($logger, $rules, "$param_label can only contain strings");
 									$invalid_args{$key} = 1;
 								}
 							} elsif($type eq 'integer') {
 								if(ref($member) || ($member =~ /\D/)) {
-									_rule_error($logger, $rules, "$key can only contain integers (found $member)");
+									_rule_error($logger, $rules, "$param_label can only contain integers (found $member)");
 									$invalid_args{$key} = 1;
 								}
 							} elsif(($type eq 'number') || ($rule_value eq 'float')) {
 								if(ref($member) || ($member !~ /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)$/)) {
-									_rule_error($logger, $rules, "$key can only contain numbers (found $member)");
+									_rule_error($logger, $rules, "$param_label can only contain numbers (found $member)");
 									$invalid_args{$key} = 1;
 								}
 							} elsif($type eq 'object') {
 								if(!Scalar::Util::blessed($member)) {
-									_rule_error($logger, $rules, "$key can only contain objects (found $member)");
+									_rule_error($logger, $rules, "$param_label can only contain objects (found $member)");
 									$invalid_args{$key} = 1;
 								}
 							} else {
@@ -1671,7 +1671,7 @@ sub validate_strict
 							}
 						}
 					} else {
-						_error($logger, "$rule_description: Parameter '$key' has meaningless element_type value $rule_value");
+						_error($logger, "$rule_description: Parameter $param_label has meaningless element_type value $rule_value");
 					}
 				} elsif($rule_name eq 'optional') {
 					# Already handled at the beginning of the loop
@@ -1739,34 +1739,34 @@ sub validate_strict
 							_error($logger, "$rule_description: nested schema: Parameter '$value' must be an hashref");
 						}
 					} else {
-						_error($logger, "$rule_description: Parameter '$key': 'schema' only supports arrayref and hashref, not $rules->{type}");
+						_error($logger, "$rule_description: Parameter $param_label: 'schema' only supports arrayref and hashref, not $rules->{type}");
 					}
 				} elsif(($rule_name eq 'validate') || ($rule_name eq 'validator')) {
 					if(ref($rule_value) eq 'CODE') {
 						if(my $error = &{$rule_value}($args)) {
-							_error($logger, "$rule_description: $key not valid: $error");
+							_error($logger, "$rule_description: $param_label not valid: $error");
 							$invalid_args{$key} = 1;
 						}
 					} else {
-						# _error($logger, "$rule_description: Parameter '$key': 'validate' only supports coderef, not $value");
-						_error($logger, "$rule_description: Parameter '$key': 'validate' only supports coderef, not " . ref($rule_value) // $rule_value);
+						# _error($logger, "$rule_description: Parameter $param_label: 'validate' only supports coderef, not $value");
+						_error($logger, "$rule_description: Parameter $param_label: 'validate' only supports coderef, not " . ref($rule_value) // $rule_value);
 					}
 				} elsif ($rule_name eq 'callback') {
 					# Custom validation code
 					unless (defined &$rule_value) {
-						_error($logger, "$rule_description: callback for '$key' must be a code reference");
+						_error($logger, "$rule_description: callback for $param_label must be a code reference");
 					}
 					my $res = $rule_value->($value, $args, $schema);
 					unless ($res) {
-						_rule_error($logger, $rules, "$rule_description: Parameter '$key' failed custom validation");
+						_rule_error($logger, $rules, "$rule_description: Parameter $param_label failed custom validation");
 						$invalid_args{$key} = 1;
 					}
 				} elsif($rule_name eq 'position') {
 					if($rule_value < 0) {
-						_error($logger, "$rule_description: Parameter '$key': 'position' must be a positive integer, not $value");
+						_error($logger, "$rule_description: Parameter $param_label: 'position' must be a positive integer, not $value");
 					}
 					if($rule_value =~ /\D/) {
-						_error($logger, "$rule_description: Parameter '$key': 'position' must be a positive integer");
+						_error($logger, "$rule_description: Parameter $param_label: 'position' must be a positive integer");
 					}
 				} else {
 					_error($logger, "$rule_description: Unknown rule '$rule_name'");
@@ -1781,10 +1781,10 @@ sub validate_strict
 				my @types;
 				foreach my $rule(@{$rules}) {
 					if(ref($rule) ne 'HASH') {
-						_error($logger, "$rule_description: Parameter '$key' rules must be a hash reference");
+						_error($logger, "$rule_description: Parameter $param_label rules must be a hash reference");
 					}
 					if(!defined($rule->{'type'})) {
-						_error($logger, "$rule_description: Parameter '$key' is missing a type in an alternative");
+						_error($logger, "$rule_description: Parameter $param_label is missing a type in an alternative");
 					}
 					push @types, $rule->{'type'};
 					my $result;
@@ -1800,11 +1800,11 @@ sub validate_strict
 					}
 				}
 				if(!$rc) {
-					_error($logger, "$rule_description: Parameter: '$key': must be one of " . join(', ', @types));
+					_error($logger, "$rule_description: Parameter $param_label must be one of " . join(', ', @types));
 					$invalid_args{$key} = 1;
 				}
 			} else {
-				_error($logger, "$rule_description: Parameter: '$key': schema is empty arrayref");
+				_error($logger, "$rule_description: Parameter $param_label schema is empty arrayref");
 			}
 		} elsif(ref($rules)) {
 			_error($logger, 'rules must be a hash reference or string');

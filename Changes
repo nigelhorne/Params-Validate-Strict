@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.40	Thu Sep 17 2026
+0.40
 	[Bug Fixes]
 	- min/max constraints on string parameters now correctly count grapheme
 	  clusters for ZWJ emoji sequences (e.g. 👨‍👩‍👧) and emoji skin-tone modifier
@@ -13,6 +13,10 @@ Revision history for Params-Validate-Strict
 	[Enhancements]
 	- Unicode::GCString dependency removed from PREREQ_PM; no external module
 	  is now required for grapheme-cluster counting.
+	- description field on a per-parameter rule now appears parenthetically with
+	  the parameter name in error messages (e.g. "Parameter 'x' (UserAge) must
+	  be an integer") rather than replacing the schema-level context prefix.
+	  The schema description is now always present in error output.
 	[Tests]
 	- t/unicode.t: new file — comprehensive min/max tests for non-ASCII strings
 	  including accented/Latin-extended characters, CJK, plain emoji, ZWJ family
@@ -22,6 +26,8 @@ Revision history for Params-Validate-Strict
 	  equivalents; two new subtests for ZWJ and skin-tone grapheme counting.
 	- t/function.t, t/unit.t: GCString mocks removed; non-ASCII counting subtests
 	  updated to test \X behaviour directly.
+	- t/array.t: updated element_type error regex to match new quoted parameter
+	  name format.
 
 0.39	Fri Aug 21 11:43:35 AM EDT 2026
 	[ Bug Fixes ]
