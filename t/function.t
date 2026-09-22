@@ -1077,6 +1077,50 @@ subtest 'validate_strict: min — arrayref shorter than min → croaks' => sub {
 	);
 };
 
+subtest 'validate_strict: min > 0 — undef string croaks' => sub {
+	_vs_throws(
+		{ schema => { s => { type => 'string', min => 1 } }, input => { s => undef } },
+		qr/undefined.*must be at least 1 character|must be at least 1 character/i,
+		'undef string fails min => 1'
+	);
+};
+
+subtest 'validate_strict: min => 0 — undef string passes' => sub {
+	lives_ok {
+		_vs({ schema => { s => { type => 'string', min => 0 } }, input => { s => undef } });
+	} 'undef string passes min => 0';
+};
+
+subtest 'validate_strict: min > 0 — optional undef string passes' => sub {
+	lives_ok {
+		_vs({ schema => { s => { type => 'string', min => 1, optional => 1 } }, input => { s => undef } });
+	} 'optional undef string passes min => 1 (undef means not provided)';
+};
+
+subtest 'validate_strict: min > 0 — undef integer croaks' => sub {
+	_vs_throws(
+		{ schema => { n => { type => 'integer', min => 1 } }, input => { n => undef } },
+		qr/undefined.*must be at least 1|must be at least 1/i,
+		'undef integer fails min => 1'
+	);
+};
+
+subtest 'validate_strict: min > 0 — undef arrayref croaks' => sub {
+	_vs_throws(
+		{ schema => { a => { type => 'arrayref', min => 1 } }, input => { a => undef } },
+		qr/undefined.*must have at least 1 member|must have at least 1 member/i,
+		'undef arrayref fails min => 1'
+	);
+};
+
+subtest 'validate_strict: min > 0 — undef hashref croaks' => sub {
+	_vs_throws(
+		{ schema => { h => { type => 'hashref', min => 1 } }, input => { h => undef } },
+		qr/undefined.*must contain at least 1 keys|must contain at least 1 keys/i,
+		'undef hashref fails min => 1'
+	);
+};
+
 # ══════════════════════════════════════════════════════════════════════════════
 # validate_strict — matches / nomatch
 # ══════════════════════════════════════════════════════════════════════════════

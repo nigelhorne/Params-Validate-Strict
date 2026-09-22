@@ -1,6 +1,5 @@
 package Params::Validate::Strict;
 
-# FIXME: ensure parameters such as min => 1 length constraint applies to all values. In this case, undef should not pass through without a croak.
 # TODO: As well as type => [ 'string', 'arrayref' ], allow type => 'string|arrayref'
 # TODO: Allow a BNF definition of a string
 # e.g.
@@ -1412,7 +1411,11 @@ sub validate_strict
 							_rule_error($logger, $rules, "$rule_description: Parameter $param_label has meaningless minimum value that is less than zero");
 						}
 						if(!defined($value)) {
-							next;	# Skip if string is undefined
+							if($rule_value > 0 && !$is_optional) {
+								_rule_error($logger, $rules, "$rule_description: Parameter $param_label is undefined, but must be at least $rule_value character" . ($rule_value == 1 ? '' : 's'));
+								$invalid_args{$key} = 1;
+							}
+							next;
 						}
 						if(defined(my $len = _number_of_characters($value))) {
 							if($len < $rule_value) {
@@ -1425,7 +1428,11 @@ sub validate_strict
 						}
 					} elsif($type eq 'arrayref') {
 						if(!defined($value)) {
-							next;	# Skip if array is undefined
+							if($rule_value > 0 && !$is_optional) {
+								_rule_error($logger, $rules, "$rule_description: Parameter $param_label is undefined, but must have at least $rule_value member" . ($rule_value > 1 ? 's' : ''));
+								$invalid_args{$key} = 1;
+							}
+							next;
 						}
 						if(scalar(@{$value}) < $rule_value) {
 						_rule_error($logger, $rules, "$rule_description: Parameter $param_label must have at least $rule_value member" . (($rule_value > 1) ? 's' : ''));
@@ -1433,7 +1440,11 @@ sub validate_strict
 					}
 					} elsif($type eq 'hashref') {
 						if(!defined($value)) {
-							next;	# Skip if hash is undefined
+							if($rule_value > 0 && !$is_optional) {
+								_rule_error($logger, $rules, "$rule_description: Parameter $param_label is undefined, but must contain at least $rule_value keys");
+								$invalid_args{$key} = 1;
+							}
+							next;
 						}
 						if(scalar(keys(%{$value})) < $rule_value) {
 							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must contain at least $rule_value keys");
@@ -1441,7 +1452,11 @@ sub validate_strict
 						}
 					} elsif(($type eq 'integer') || ($type eq 'number') || ($type eq 'float')) {
 						if(!defined($value)) {
-							next;	# Skip if hash is undefined
+							if($rule_value > 0 && !$is_optional) {
+								_rule_error($logger, $rules, "$rule_description: Parameter $param_label is undefined, but must be at least $rule_value");
+								$invalid_args{$key} = 1;
+							}
+							next;
 						}
 						if(Scalar::Util::looks_like_number($value)) {
 							if($value < $rule_value) {

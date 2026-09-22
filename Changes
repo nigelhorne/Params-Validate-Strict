@@ -17,6 +17,11 @@ Revision history for Params-Validate-Strict
 	  the parameter name in error messages (e.g. "Parameter 'x' (UserAge) must
 	  be an integer") rather than replacing the schema-level context prefix.
 	  The schema description is now always present in error output.
+	- min > 0 constraint now rejects undef values for required fields across
+	  all types (string, integer, number, float, arrayref, hashref).  Previously
+	  undef was silently passed through regardless of any minimum.  Optional
+	  fields with undef still pass (undef is treated as "not provided").
+	  min => 0 also retains the old behaviour: undef passes.
 	[Tests]
 	- t/unicode.t: new file — comprehensive min/max tests for non-ASCII strings
 	  including accented/Latin-extended characters, CJK, plain emoji, ZWJ family
@@ -28,6 +33,8 @@ Revision history for Params-Validate-Strict
 	  updated to test \X behaviour directly.
 	- t/array.t: updated element_type error regex to match new quoted parameter
 	  name format.
+	- t/function.t: five new subtests covering undef behaviour under min > 0
+	  (string, integer, arrayref, hashref) and min => 0 (undef still passes).
 
 0.39	Fri Aug 21 11:43:35 AM EDT 2026
 	[ Bug Fixes ]
