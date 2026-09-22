@@ -22,6 +22,9 @@ Revision history for Params-Validate-Strict
 	  undef was silently passed through regardless of any minimum.  Optional
 	  fields with undef still pass (undef is treated as "not provided").
 	  min => 0 also retains the old behaviour: undef passes.
+	- Union types can now be written as a pipe-separated string in addition to
+	  an arrayref: type => 'string|integer' is equivalent to
+	  type => ['string', 'integer'].  Whitespace around the pipe is ignored.
 	[Tests]
 	- t/unicode.t: new file — comprehensive min/max tests for non-ASCII strings
 	  including accented/Latin-extended characters, CJK, plain emoji, ZWJ family
@@ -33,8 +36,9 @@ Revision history for Params-Validate-Strict
 	  updated to test \X behaviour directly.
 	- t/array.t: updated element_type error regex to match new quoted parameter
 	  name format.
-	- t/function.t: five new subtests covering undef behaviour under min > 0
-	  (string, integer, arrayref, hashref) and min => 0 (undef still passes).
+	- t/function.t: subtests covering undef behaviour under min > 0 (string,
+	  integer, arrayref, hashref), min => 0, optional+undef, and four new
+	  subtests for the pipe-separated union type syntax.
 
 0.39	Fri Aug 21 11:43:35 AM EDT 2026
 	[ Bug Fixes ]

@@ -1518,6 +1518,38 @@ subtest 'validate_strict: union type — shared constraints applied per branch' 
 	);
 };
 
+subtest 'validate_strict: union type — pipe-separated string accepted' => sub {
+	my $r = _vs({
+		schema => { x => { type => 'string|arrayref' } },
+		input  => { x => 'hello' },
+	});
+	is($r->{x}, 'hello', 'string branch of pipe union type accepted');
+};
+
+subtest 'validate_strict: union type — pipe-separated string, second branch' => sub {
+	my $r = _vs({
+		schema => { x => { type => 'string|arrayref' } },
+		input  => { x => ['a', 'b'] },
+	});
+	is_deeply($r->{x}, ['a', 'b'], 'arrayref branch of pipe union type accepted');
+};
+
+subtest 'validate_strict: union type — pipe-separated string, no branch matches → croaks' => sub {
+	_vs_throws(
+		{ schema => { x => { type => 'string|arrayref' } }, input => { x => {} } },
+		qr/must be one of/,
+		'croaks when no branch of pipe union type matches'
+	);
+};
+
+subtest 'validate_strict: union type — pipe-separated with whitespace around pipe' => sub {
+	my $r = _vs({
+		schema => { x => { type => 'integer | string' } },
+		input  => { x => 42 },
+	});
+	is($r->{x}, 42, 'pipe union with spaces normalised correctly');
+};
+
 # ══════════════════════════════════════════════════════════════════════════════
 # validate_strict — explicit array-of-rules  (rules as arrayref of hashes)
 # ══════════════════════════════════════════════════════════════════════════════

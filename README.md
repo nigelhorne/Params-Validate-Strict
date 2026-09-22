@@ -198,15 +198,16 @@ The schema can define the following rules for each parameter:
           ]
         };
 
-    As a shorthand, `type` itself may be an arrayref of type name strings (a _union type_)
-    when all other constraints are shared between the alternatives:
+    As a shorthand, `type` itself may be an arrayref of type name strings (a _union type_),
+    or a pipe-separated string, when all other constraints are shared between the alternatives:
 
         $schema = {
           data => { type => ['string', 'arrayref'] },
-          id   => { type => ['string', 'integer'], optional => 1 },
+          id   => { type => 'string|integer', optional => 1 },
         };
 
     This is equivalent to the full array-of-rules form but more concise.
+    Whitespace around the `|` is ignored, so `'string | arrayref'` is the same as `'string|arrayref'`.
     Every other key in the rule hash (`optional`, `min`, `max`, `matches`, etc.)
     is inherited by each candidate type and validated independently against it.
     Type names are tried left-to-right; the first match wins and its coercion
