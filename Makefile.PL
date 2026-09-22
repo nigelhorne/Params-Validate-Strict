@@ -42,6 +42,7 @@ WriteMakefile(
 		'Readonly' => 0,
 		'Test::Compile' => 0,
 		'Test::DescribeMe' => 0,
+		'Test::Memory::Cycle' => 0,
 		'Test::Mockingbird' => 0.13,
 		'Test::Most' => 0,
 		'Test::Needs' => 0,
