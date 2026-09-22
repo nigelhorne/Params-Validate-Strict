@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.40
+0.40	Mon Sep 21 09:22:05 PM EDT 2026
 	[Bug Fixes]
 	- min/max constraints on string parameters now correctly count grapheme
 	  clusters for ZWJ emoji sequences (e.g. 👨‍👩‍👧) and emoji skin-tone modifier

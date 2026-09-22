@@ -19,7 +19,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.39
+Version 0.40
 
 =cut
 
