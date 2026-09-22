@@ -25,6 +25,11 @@ Version 0.39
 
 our $VERSION = '0.40';
 
+# Recursion depth counter — localised on every entry so it unwinds automatically.
+# Protects against mutations (or bugs) that turn the pipe-normalisation guard into
+# an infinite loop through the union-type ARRAY handler.
+our $_depth = 0;
+
 =head1 SYNOPSIS
 
     my $schema = {
@@ -1049,6 +1054,10 @@ The C<description> field is optional but recommended for clearer error messages.
 
 sub validate_strict
 {
+	local $_depth = $_depth + 1;
+	Carp::croak('validate_strict: maximum call depth exceeded — possible infinite recursion in union-type schema')
+		if $_depth > 20;
+
 	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 	my $params = \%args;
 

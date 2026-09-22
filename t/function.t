@@ -2144,6 +2144,31 @@ use Test::Returns;
 use Test::Memory::Cycle;
 use Params::Validate::Strict::BNF qw(bnf_to_matcher);
 
+# ══════════════════════════════════════════════════════════════════════════════
+# validate_strict: recursion-depth guard
+# ══════════════════════════════════════════════════════════════════════════════
+
+subtest 'validate_strict: depth guard — normal call is at depth 1' => sub {
+	# $_depth is localised on every entry and restored on exit; after a normal
+	# call it must be back to 0 (not leaked).
+	validate_strict(
+		schema => { x => { type => 'string' } },
+		input  => { x => 'ok' },
+	);
+	is($Params::Validate::Strict::_depth, 0, '$_depth restored to 0 after call returns');
+};
+
+subtest 'validate_strict: depth guard — croaks above limit of 20' => sub {
+	# Simulate the runaway condition by locally pinning $_depth to the threshold.
+	local $Params::Validate::Strict::_depth = 20;
+	throws_ok {
+		validate_strict(
+			schema => { x => { type => 'string' } },
+			input  => { x => 'ok' },
+		);
+	} qr/maximum call depth exceeded/, 'croaks with depth-exceeded message at depth 21';
+};
+
 # ── _parse_rhs ────────────────────────────────────────────────────────────────
 
 subtest 'BNF::_parse_rhs: returns an arrayref' => sub {
