@@ -2132,4 +2132,322 @@ subtest 'validate_strict: type void — error_msg override honoured' => sub {
 	);
 };
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Params::Validate::Strict::BNF
+# White-box coverage of all three subs: _parse_rhs, _rule_to_regex,
+# and the public bnf_to_matcher.  The private helpers are called directly via
+# their full package name.  mock_scoped is used to isolate each layer.
+# ══════════════════════════════════════════════════════════════════════════════
+
+use Scalar::Util   qw(refaddr);
+use Test::Returns;
+use Test::Memory::Cycle;
+use Params::Validate::Strict::BNF qw(bnf_to_matcher);
+
+# ── _parse_rhs ────────────────────────────────────────────────────────────────
+
+subtest 'BNF::_parse_rhs: returns an arrayref' => sub {
+	# Verify the contract: callers expect an arrayref-of-arrayrefs structure.
+	my $result = Params::Validate::Strict::BNF::_parse_rhs('"hello"');
+	returns_ok($result, { type => 'arrayref' }, '_parse_rhs returns arrayref');
+};
+
+subtest 'BNF::_parse_rhs: single quoted terminal' => sub {
+	my $alts = Params::Validate::Strict::BNF::_parse_rhs('"hello"');
+	is(scalar @$alts,          1,          'one alternative');
+	is(scalar @{$alts->[0]},   1,          'one token in that alternative');
+	is($alts->[0][0]{type},    'terminal', 'token type is terminal');
+	is($alts->[0][0]{value},   'hello',    'terminal value correct');
+	diag("_parse_rhs result: ", explain($alts)) if $ENV{TEST_VERBOSE};
+};
+
+subtest 'BNF::_parse_rhs: empty terminal stores empty string, not undef' => sub {
+	# An empty terminal "" is the BNF idiom for epsilon (matches nothing).
+	my $alts = Params::Validate::Strict::BNF::_parse_rhs('""');
+	is($alts->[0][0]{type},  'terminal', 'token type is terminal');
+	is($alts->[0][0]{value}, '',         'value is empty string, not undef');
+	ok(defined $alts->[0][0]{value},     'value is defined');
+};
+
+subtest 'BNF::_parse_rhs: two alternatives separated by pipe' => sub {
+	my $alts = Params::Validate::Strict::BNF::_parse_rhs('"yes" | "no"');
+	is(scalar @$alts,        2,     'two alternatives produced');
+	is($alts->[0][0]{value}, 'yes', 'first alternative value');
+	is($alts->[1][0]{value}, 'no',  'second alternative value');
+};
+
+subtest 'BNF::_parse_rhs: nonterminal token' => sub {
+	my $alts = Params::Validate::Strict::BNF::_parse_rhs('<foo>');
+	is($alts->[0][0]{type}, 'nonterminal', 'token type is nonterminal');
+	is($alts->[0][0]{name}, '<foo>',       'nonterminal name stored in {name}, not {value}');
+	ok(!exists $alts->[0][0]{value},       '{value} key absent for nonterminal');
+};
+
+subtest 'BNF::_parse_rhs: sequence of mixed tokens' => sub {
+	# A sequence is a single alternative containing multiple tokens in order.
+	my $alts = Params::Validate::Strict::BNF::_parse_rhs('"a" <mid> "b"');
+	my $seq   = $alts->[0];
+	is(scalar @$seq,  3,             'three tokens in sequence');
+	is($seq->[0]{type}, 'terminal',    'first token is terminal');
+	is($seq->[1]{type}, 'nonterminal', 'second token is nonterminal');
+	is($seq->[2]{type}, 'terminal',    'third token is terminal');
+	is($seq->[1]{name}, '<mid>',       'nonterminal name correct');
+};
+
+subtest 'BNF::_parse_rhs: terminal with regex metacharacters stored verbatim' => sub {
+	# quotemeta is applied by _rule_to_regex, not by _parse_rhs.
+	# _parse_rhs must store the raw value so _rule_to_regex can escape it.
+	my $alts = Params::Validate::Strict::BNF::_parse_rhs('"a.b+c"');
+	is($alts->[0][0]{value}, 'a.b+c', 'metacharacters stored as-is');
+};
+
+subtest 'BNF::_parse_rhs: pipe with whitespace around it splits correctly' => sub {
+	# split /\s*\|\s*/ must strip whitespace so "a | b" and "a|b" are equivalent.
+	my $alts_spaced  = Params::Validate::Strict::BNF::_parse_rhs('"x" | "y"');
+	my $alts_nospace = Params::Validate::Strict::BNF::_parse_rhs('"x"|"y"');
+	is(scalar @$alts_spaced,  2, 'spaced pipe produces two alternatives');
+	is(scalar @$alts_nospace, 2, 'unspaced pipe produces two alternatives');
+	is($alts_spaced->[0][0]{value},  $alts_nospace->[0][0]{value}, 'first values equal');
+	is($alts_spaced->[1][0]{value},  $alts_nospace->[1][0]{value}, 'second values equal');
+};
+
+# ── _rule_to_regex ─────────────────────────────────────────────────────────────
+
+# Helper: build a minimal parsed-rules hashref from a plain terminal string.
+sub _rules_terminal {
+	my ($name, $value) = @_;
+	return { $name => [ [ { type => 'terminal', value => $value } ] ] };
+}
+
+subtest 'BNF::_rule_to_regex: returns a string' => sub {
+	my $re = Params::Validate::Strict::BNF::_rule_to_regex(
+		'<x>', _rules_terminal('<x>', 'hi'), {}
+	);
+	returns_ok($re, { type => 'string' }, '_rule_to_regex returns a string');
+};
+
+subtest 'BNF::_rule_to_regex: single alternative — no (?:...) grouping' => sub {
+	# A single-alternative rule produces a bare fragment; grouping is wasted
+	# overhead and makes the compiled regex harder to read when debugging.
+	my $re = Params::Validate::Strict::BNF::_rule_to_regex(
+		'<x>', _rules_terminal('<x>', 'hi'), {}
+	);
+	is($re, 'hi', 'single alternative: no wrapping group');
+};
+
+subtest 'BNF::_rule_to_regex: two alternatives wrapped in (?:...)' => sub {
+	my $rules = {
+		'<x>' => [
+			[ { type => 'terminal', value => 'yes' } ],
+			[ { type => 'terminal', value => 'no'  } ],
+		],
+	};
+	my $re = Params::Validate::Strict::BNF::_rule_to_regex('<x>', $rules, {});
+	is($re, '(?:yes|no)', 'two alternatives joined inside non-capturing group');
+};
+
+subtest 'BNF::_rule_to_regex: terminal with metacharacters escaped by quotemeta' => sub {
+	my $re = Params::Validate::Strict::BNF::_rule_to_regex(
+		'<x>', _rules_terminal('<x>', 'a.b+c'), {}
+	);
+	# quotemeta('a.b+c') = 'a\.b\+c'
+	is($re, quotemeta('a.b+c'), 'metacharacters escaped');
+};
+
+subtest 'BNF::_rule_to_regex: empty terminal produces empty regex fragment' => sub {
+	# Empty string in regex is zero-width — valid for epsilon productions.
+	my $re = Params::Validate::Strict::BNF::_rule_to_regex(
+		'<x>', _rules_terminal('<x>', ''), {}
+	);
+	is($re, '', 'empty terminal → empty fragment');
+	is(length $re, 0, 'fragment has zero length');
+};
+
+subtest 'BNF::_rule_to_regex: nonterminal expands recursively inline' => sub {
+	my $rules = {
+		'<ab>' => [ [
+			{ type => 'nonterminal', name => '<a>' },
+			{ type => 'nonterminal', name => '<b>' },
+		] ],
+		'<a>'  => [ [ { type => 'terminal', value => 'a' } ] ],
+		'<b>'  => [ [ { type => 'terminal', value => 'b' } ] ],
+	};
+	my $re = Params::Validate::Strict::BNF::_rule_to_regex('<ab>', $rules, {});
+	is($re, 'ab', 'nonterminals expanded inline without grouping');
+};
+
+subtest 'BNF::_rule_to_regex: undefined rule croaks with rule name' => sub {
+	throws_ok {
+		Params::Validate::Strict::BNF::_rule_to_regex('<missing>', {}, {})
+	} qr/undefined rule.*<missing>/i, 'undefined rule error includes the rule name';
+};
+
+subtest 'BNF::_rule_to_regex: recursive rule croaks with rule name' => sub {
+	my $rules = {
+		'<a>' => [ [ { type => 'nonterminal', name => '<a>' } ] ],
+	};
+	throws_ok {
+		Params::Validate::Strict::BNF::_rule_to_regex('<a>', $rules, {})
+	} qr/recursive rule.*<a>/i, 'recursive rule error includes the rule name';
+};
+
+subtest 'BNF::_rule_to_regex: $seen entry is local — sibling rule reuse ok' => sub {
+	# After _rule_to_regex('<a>', ...) returns, '<b>' must no longer be in $seen,
+	# so that '<b>' can also be referenced directly from the parent rule.
+	# This tests that `local $seen->{$rule_name}` correctly unwinds on return.
+	my $rules = {
+		'<root>' => [ [
+			{ type => 'nonterminal', name => '<a>' },
+			{ type => 'nonterminal', name => '<b>' },	# second reference to <b>
+		] ],
+		'<a>'    => [ [ { type => 'nonterminal', name => '<b>' } ] ],	# first via <a>
+		'<b>'    => [ [ { type => 'terminal',    value => 'x'  } ] ],
+	};
+	my $re;
+	lives_ok {
+		$re = Params::Validate::Strict::BNF::_rule_to_regex('<root>', $rules, {})
+	} '<b> reachable from both <a> and directly (local scoping correct)';
+	is($re, 'xx', 'both expansions of <b> each contribute "x"');
+};
+
+# ── bnf_to_matcher ────────────────────────────────────────────────────────────
+
+subtest 'BNF::bnf_to_matcher: returns a coderef' => sub {
+	my $m = bnf_to_matcher(['<x> ::= "hello"']);
+	returns_ok($m, { type => 'coderef' }, 'bnf_to_matcher returns a coderef');
+};
+
+subtest 'BNF::_parse_rhs: result data structure has no memory cycles' => sub {
+	# Test::Memory::Cycle / Devel::Cycle cannot inspect compiled qr// objects,
+	# so we test the intermediate data structures that feed into the closure
+	# rather than the closure itself.
+	my $alts = Params::Validate::Strict::BNF::_parse_rhs('"a" | <foo> | "b"');
+	memory_cycle_ok($alts, '_parse_rhs result (nested arrayrefs/hashrefs) has no cycles');
+};
+
+subtest 'BNF::bnf_to_matcher: validate_strict called with correct schema' => sub {
+	# White-box: verify argument validation delegates to validate_strict
+	# with the schema that enforces type=>arrayref, min=>1.
+	my @captured;
+	my $mock = mock_scoped(
+		'Params::Validate::Strict::BNF', 'validate_strict',
+		# validate_strict is called with a single hashref in BNF.pm, so $_[0] is that ref.
+		sub { push @captured, $_[0]; return {} }
+	);
+	# Grammar compilation will still run; the mock returns {} (no validation failure).
+	eval { bnf_to_matcher(['<z> ::= "z"']) };
+	is(scalar @captured, 1, 'validate_strict called exactly once');
+	is($captured[0]{schema}{grammar_lines}{type}, 'arrayref', 'schema type is arrayref');
+	is($captured[0]{schema}{grammar_lines}{min},  1,          'schema min is 1');
+	diag("captured validate_strict call: ", explain(\@captured)) if $ENV{TEST_VERBOSE};
+};
+
+subtest 'BNF::bnf_to_matcher: grammar with no ::= lines croaks after input validation' => sub {
+	# An arrayref with only non-rule lines passes validate_strict (it is non-empty),
+	# but then @rule_order stays empty and the manual croak fires.
+	throws_ok { bnf_to_matcher(['plain text with no rule definition']) }
+		qr/no rules found/i, 'no-rule grammar croaks with "no rules found"';
+};
+
+subtest 'BNF::bnf_to_matcher: _parse_rhs called once per rule on cache miss' => sub {
+	# Verify the compile path: each rule's RHS is parsed exactly once.
+	# $orig is captured before mock_scoped replaces the symbol, so calling
+	# $orig->(@_) inside the mock does not recurse back into the mock.
+	my $orig       = \&Params::Validate::Strict::BNF::_parse_rhs;
+	my $call_count = 0;
+	my $mock = mock_scoped(
+		'Params::Validate::Strict::BNF', '_parse_rhs',
+		sub { $call_count++; $orig->(@_) }
+	);
+	bnf_to_matcher([
+		'<p> ::= "p"',
+		'<q> ::= "q"',
+		'<root_unique_1> ::= <p> <q>',
+	]);
+	is($call_count, 3, '_parse_rhs called once for each of the 3 rules');
+};
+
+subtest 'BNF::bnf_to_matcher: cache hit — _parse_rhs not called again' => sub {
+	# On a cache hit the compiled regex is returned immediately; no re-parsing.
+	my @g = ('<cache_hit_sentinel> ::= "cached"');
+	bnf_to_matcher(\@g);	# prime the cache
+
+	my $orig  = \&Params::Validate::Strict::BNF::_parse_rhs;
+	my $calls = 0;
+	my $mock = mock_scoped(
+		'Params::Validate::Strict::BNF', '_parse_rhs',
+		sub { $calls++; $orig->(@_) }
+	);
+	bnf_to_matcher(\@g);
+	is($calls, 0, '_parse_rhs not called on cache hit');
+};
+
+subtest 'BNF::bnf_to_matcher: same grammar content returns identical closure' => sub {
+	# Content-addressed cache: equal grammar lines => same compiled closure.
+	my @g = ('<same_content_test> ::= "equal"');
+	my $m1 = bnf_to_matcher(\@g);
+	my $m2 = bnf_to_matcher(\@g);
+	is(refaddr($m1), refaddr($m2), 'same closure refaddr on second call');
+};
+
+subtest 'BNF::bnf_to_matcher: different grammar content returns distinct closures' => sub {
+	my $m1 = bnf_to_matcher(['<d1> ::= "alpha"']);
+	my $m2 = bnf_to_matcher(['<d2> ::= "beta"']);
+	isnt(refaddr($m1), refaddr($m2), 'distinct grammars produce distinct closures');
+};
+
+subtest 'BNF::bnf_to_matcher: continuation line joined to preceding rule' => sub {
+	# White-box: _parse_rhs should see the joined RHS, not the raw separate lines.
+	my $orig     = \&Params::Validate::Strict::BNF::_parse_rhs;
+	my @rhs_seen;
+	my $mock = mock_scoped(
+		'Params::Validate::Strict::BNF', '_parse_rhs',
+		sub { push @rhs_seen, $_[0]; $orig->(@_) }
+	);
+	bnf_to_matcher([
+		'<cont_test> ::= "a"',
+		'"b"',			# continuation — no ::=
+	]);
+	is(scalar @rhs_seen, 1,         '_parse_rhs called once, not once per raw line');
+	like($rhs_seen[0], qr/"a"/,     'first part present in joined RHS');
+	like($rhs_seen[0], qr/"b"/,     'continuation part present in joined RHS');
+};
+
+subtest 'BNF::bnf_to_matcher: blank continuation lines ignored (whitespace-only)' => sub {
+	# A line that contains only whitespace must not be appended to the RHS.
+	my $orig     = \&Params::Validate::Strict::BNF::_parse_rhs;
+	my @rhs_seen;
+	my $mock = mock_scoped(
+		'Params::Validate::Strict::BNF', '_parse_rhs',
+		sub { push @rhs_seen, $_[0]; $orig->(@_) }
+	);
+	bnf_to_matcher([
+		'<blank_cont> ::= "a"',
+		'   ',			# whitespace-only — must be skipped
+		'"b"',
+	]);
+	is(scalar @rhs_seen, 1, '_parse_rhs called once');
+	like($rhs_seen[0], qr/"b"/, 'non-blank continuation still appended');
+	unlike($rhs_seen[0], qr/   /, 'whitespace-only line not appended');
+};
+
+subtest 'BNF::bnf_to_matcher: _rule_to_regex called with start rule name' => sub {
+	# The start rule is the first rule defined; _rule_to_regex must receive it.
+	# $orig is captured first so the mock can delegate without calling itself.
+	# Recursive nonterminal expansions also flow through the mock, so
+	# $names_seen[0] is the first (outermost) call — the start rule.
+	my $orig       = \&Params::Validate::Strict::BNF::_rule_to_regex;
+	my @names_seen;
+	my $mock = mock_scoped(
+		'Params::Validate::Strict::BNF', '_rule_to_regex',
+		sub { push @names_seen, $_[0]; $orig->(@_) }
+	);
+	bnf_to_matcher([
+		'<start_rule_marker> ::= "s"',
+		'<second_rule>       ::= "t"',
+	]);
+	is($names_seen[0], '<start_rule_marker>',
+		'_rule_to_regex first called with the first-defined (start) rule');
+};
+
 done_testing;
