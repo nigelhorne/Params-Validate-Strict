@@ -1,31 +1,5 @@
 package Params::Validate::Strict;
 
-# TODO: Allow a BNF definition of a string
-# e.g.
-#	schema => {
-#		na_tel_no => {
-#			type => 'string',
-#			bnf => [
-#				'<telephone-number> ::= <country-code-opt> <area-code> <separator-opt>',
-#				'<central-office-code> <separator-opt> <station-code>',
-#
-#				'<country-code-opt> ::= "" | "+1" | "1"',
-#
-#				'<separator-opt> ::= "" | "-" | " " | "."',
-#
-#				'<area-code> ::= <digit2-9> <digit0-9> <digit0-9>',
-#
-#				'<central-office-code> ::= <digit2-9> <digit0-9> <digit0-9>',
-#
-#				'<station-code> ::= <digit0-9> <digit0-9> <digit0-9> <digit0-9>',
-#
-#				'<digit0-9> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"',
-#
-#				'<digit2-9> ::= "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"',
-#			]
-#		}
-#	}
-
 use strict;
 use warnings;
 
@@ -441,6 +415,37 @@ Checks all members of arrayrefs.
 
 A regular expression that the parameter value must not match.
 Checks all members of arrayrefs.
+
+=item * C<bnf>
+
+An arrayref of BNF grammar lines that defines the set of strings the
+parameter value must belong to.
+The first rule in the grammar is the start rule; the value must match it
+exactly (anchored).
+
+Each element is either a rule definition (C<< <name> ::= ... >>) or a
+continuation of the previous rule.  Terminals are double-quoted; non-terminals
+use angle brackets.  Alternatives are separated by C<|>.
+
+  $schema = {
+    na_tel_no => {
+      type => 'string',
+      bnf  => [
+        '<telephone-number> ::= <country-code-opt> <area-code> <separator-opt>',
+        '<central-office-code> <separator-opt> <station-code>',
+        '<country-code-opt> ::= "" | "+1" | "1"',
+        '<separator-opt>    ::= "" | "-" | " " | "."',
+        '<area-code>        ::= <digit2-9> <digit0-9> <digit0-9>',
+        '<central-office-code> ::= <digit2-9> <digit0-9> <digit0-9>',
+        '<station-code>     ::= <digit0-9> <digit0-9> <digit0-9> <digit0-9>',
+        '<digit0-9> ::= "0"|"1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"',
+        '<digit2-9> ::= "2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"',
+      ],
+    },
+  };
+
+Implemented by L<Params::Validate::Strict::BNF>.  Recursive grammars are not
+supported.
 
 =item * C<position>
 
@@ -1587,6 +1592,19 @@ sub validate_strict
 					};
 					if($@) {
 						_rule_error($logger, $rules, "$rule_description: Parameter $param_label regex '$rule_value' error: $@");
+						$invalid_args{$key} = 1;
+					}
+				} elsif($rule_name eq 'bnf') {
+					if(!defined($value)) {
+						next;	# Skip if value is undefined
+					}
+					if(ref($rule_value) ne 'ARRAY') {
+						_error($logger, "$rule_description: Parameter $param_label 'bnf' rule must be an arrayref of grammar lines");
+					}
+					require Params::Validate::Strict::BNF;
+					my $matcher = Params::Validate::Strict::BNF::bnf_to_matcher($rule_value);
+					unless($matcher->($value)) {
+						_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) does not match the BNF grammar");
 						$invalid_args{$key} = 1;
 					}
 				} elsif(($rule_name eq 'memberof') || ($rule_name eq 'enum') || ($rule_name eq 'values')) {

@@ -383,6 +383,37 @@ The schema can define the following rules for each parameter:
     A regular expression that the parameter value must not match.
     Checks all members of arrayrefs.
 
+- `bnf`
+
+    An arrayref of BNF grammar lines that defines the set of strings the
+    parameter value must belong to.
+    The first rule in the grammar is the start rule; the value must match it
+    exactly (anchored).
+
+    Each element is either a rule definition (`<name> ::= ...`) or a
+    continuation of the previous rule.  Terminals are double-quoted; non-terminals
+    use angle brackets.  Alternatives are separated by `|`.
+
+        $schema = {
+          na_tel_no => {
+            type => 'string',
+            bnf  => [
+              '<telephone-number> ::= <country-code-opt> <area-code> <separator-opt>',
+              '<central-office-code> <separator-opt> <station-code>',
+              '<country-code-opt> ::= "" | "+1" | "1"',
+              '<separator-opt>    ::= "" | "-" | " " | "."',
+              '<area-code>        ::= <digit2-9> <digit0-9> <digit0-9>',
+              '<central-office-code> ::= <digit2-9> <digit0-9> <digit0-9>',
+              '<station-code>     ::= <digit0-9> <digit0-9> <digit0-9> <digit0-9>',
+              '<digit0-9> ::= "0"|"1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"',
+              '<digit2-9> ::= "2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"',
+            ],
+          },
+        };
+
+    Implemented by [Params::Validate::Strict::BNF](https://metacpan.org/pod/Params%3A%3AValidate%3A%3AStrict%3A%3ABNF).  Recursive grammars are not
+    supported.
+
 - `position`
 
     For routines and methods that take positional args,

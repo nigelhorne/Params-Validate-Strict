@@ -25,6 +25,10 @@ Revision history for Params-Validate-Strict
 	- Union types can now be written as a pipe-separated string in addition to
 	  an arrayref: type => 'string|integer' is equivalent to
 	  type => ['string', 'integer'].  Whitespace around the pipe is ignored.
+	- New 'bnf' rule key: a string parameter can now be validated against a
+	  BNF grammar supplied as an arrayref of grammar lines.  The first rule in
+	  the grammar is the start rule; the value must match it exactly.
+	  Implemented in Params::Validate::Strict::BNF, lazy-loaded on first use.
 	[Tests]
 	- t/unicode.t: new file — comprehensive min/max tests for non-ASCII strings
 	  including accented/Latin-extended characters, CJK, plain emoji, ZWJ family
@@ -39,6 +43,10 @@ Revision history for Params-Validate-Strict
 	- t/function.t: subtests covering undef behaviour under min > 0 (string,
 	  integer, arrayref, hashref), min => 0, optional+undef, and four new
 	  subtests for the pipe-separated union type syntax.
+	- t/bnf.t: new file — 14 unit subtests for Params::Validate::Strict::BNF
+	  (terminals, alternatives, empty terminal, sequences, nonterminals,
+	  continuation lines, anchoring, caching, error cases) and 5 integration
+	  subtests for the 'bnf' rule key in validate_strict.
 
 0.39	Fri Aug 21 11:43:35 AM EDT 2026
 	[ Bug Fixes ]
