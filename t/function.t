@@ -2140,7 +2140,6 @@ subtest 'validate_strict: type void — error_msg override honoured' => sub {
 # ══════════════════════════════════════════════════════════════════════════════
 
 use Scalar::Util   qw(refaddr);
-use Test::Returns;
 use Test::Memory::Cycle;
 use Params::Validate::Strict::BNF qw(bnf_to_matcher);
 
@@ -2174,7 +2173,7 @@ subtest 'validate_strict: depth guard — croaks above limit of 20' => sub {
 subtest 'BNF::_parse_rhs: returns an arrayref' => sub {
 	# Verify the contract: callers expect an arrayref-of-arrayrefs structure.
 	my $result = Params::Validate::Strict::BNF::_parse_rhs('"hello"');
-	returns_ok($result, { type => 'arrayref' }, '_parse_rhs returns arrayref');
+	ok(ref($result) eq 'ARRAY');
 };
 
 subtest 'BNF::_parse_rhs: single quoted terminal' => sub {
@@ -2248,7 +2247,7 @@ subtest 'BNF::_rule_to_regex: returns a string' => sub {
 	my $re = Params::Validate::Strict::BNF::_rule_to_regex(
 		'<x>', _rules_terminal('<x>', 'hi'), {}
 	);
-	returns_ok($re, { type => 'string' }, '_rule_to_regex returns a string');
+	ok(!ref($re));
 };
 
 subtest 'BNF::_rule_to_regex: single alternative — no (?:...) grouping' => sub {
@@ -2339,7 +2338,7 @@ subtest 'BNF::_rule_to_regex: $seen entry is local — sibling rule reuse ok' =>
 
 subtest 'BNF::bnf_to_matcher: returns a coderef' => sub {
 	my $m = bnf_to_matcher(['<x> ::= "hello"']);
-	returns_ok($m, { type => 'coderef' }, 'bnf_to_matcher returns a coderef');
+	ok(ref($m) eq 'CODE');
 };
 
 subtest 'BNF::_parse_rhs: result data structure has no memory cycles' => sub {
