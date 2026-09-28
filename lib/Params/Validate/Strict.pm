@@ -3,6 +3,8 @@ package Params::Validate::Strict;
 use strict;
 use warnings;
 
+# TODO: test cases - check 1e20 and -1e20 are accepted as integers
+
 use Carp;
 use Exporter qw(import);	# Required for @EXPORT_OK
 use Encode qw(decode_utf8);
