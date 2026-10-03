@@ -2169,6 +2169,66 @@ my %ledger = (
 	'compile_schema: validates correctly'        => 1,
 	'compile_schema: same result as validate_strict' => 1,
 	'compile_schema: opts forwarded'             => 1,
+
+	# type => 'regex'
+	'type regex: qr// accepted'                  => 1,
+	'type regex: plain string rejected'          => 1,
+	'type regex: undef optional passes'          => 1,
+
+	# type => 'handle'
+	'type handle: STDOUT glob accepted'          => 1,
+	'type handle: plain string rejected'         => 1,
+	'type handle: undef optional passes'         => 1,
+
+	# type => 'arraylike'
+	'type arraylike: arrayref accepted'          => 1,
+	'type arraylike: plain scalar rejected'      => 1,
+
+	# type => 'hashlike'
+	'type hashlike: hashref accepted'            => 1,
+	'type hashlike: plain scalar rejected'       => 1,
+
+	# type => 'codelike'
+	'type codelike: coderef accepted'            => 1,
+	'type codelike: plain scalar rejected'       => 1,
+
+	# type => 'invocant'
+	'type invocant: class name string accepted'  => 1,
+	'type invocant: blessed object accepted'     => 1,
+	'type invocant: plain string rejected'       => 1,
+
+	# semantic => 'identifier'
+	'semantic identifier: valid bareword passes'         => 1,
+	'semantic identifier: invalid string rejected'       => 1,
+	'semantic identifier: package name rejected'         => 1,
+
+	# semantic => 'class_name'
+	'semantic class_name: simple name passes'            => 1,
+	'semantic class_name: nested name passes'            => 1,
+	'semantic class_name: leading :: rejected'           => 1,
+
+	# classisa rule
+	'classisa: derived class passes'             => 1,
+	'classisa: unrelated class rejected'         => 1,
+	'classisa: undef optional passes'            => 1,
+
+	# subclass rule
+	'subclass: strict subclass passes'           => 1,
+	'subclass: same class rejected'              => 1,
+
+	# classdoes rule
+	'classdoes: class with DOES passes'          => 1,
+	'classdoes: class without DOES rejected'     => 1,
+
+	# does rule
+	'does: object with DOES passes'              => 1,
+	'does: object without DOES rejected'         => 1,
+	'does: non-object type rejects does rule'    => 1,
+
+	# driver rule
+	'driver: loadable subclass passes'           => 1,
+	'driver: invalid class name rejected'        => 1,
+	'driver: non-subclass rejected'              => 1,
 );
 
 # ── type: void ───────────────────────────────────────────────────────────────
@@ -2668,6 +2728,325 @@ subtest 'ledger: compile_schema — opts forwarded' => sub {
 	lives_ok { $r = $v->({ n => 1, extra => 'ignored' }) } 'unknown_parameter_handler opt forwarded';
 	is($r->{n}, 1, 'valid param returned');
 	delete $ledger{'compile_schema: opts forwarded'};
+};
+
+# ── type => 'regex' ───────────────────────────────────────────────────────────
+
+subtest 'ledger: type regex — qr// accepted' => sub {
+	my $re = qr/foo/;
+	my $r = validate_strict(schema => { pat => { type => 'regex' } }, input => { pat => $re });
+	is(ref($r->{pat}), 'Regexp', 'qr// value returned unchanged');
+	delete $ledger{'type regex: qr// accepted'};
+};
+
+subtest 'ledger: type regex — plain string rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { pat => { type => 'regex' } }, input => { pat => 'foo' });
+	} qr/must be a compiled regex/i, 'plain string rejected as regex type';
+	delete $ledger{'type regex: plain string rejected'};
+};
+
+subtest 'ledger: type regex — undef optional passes' => sub {
+	lives_ok {
+		validate_strict(schema => { pat => { type => 'regex', optional => 1 } }, input => { pat => undef });
+	} 'undef optional regex passes';
+	delete $ledger{'type regex: undef optional passes'};
+};
+
+# ── type => 'handle' ──────────────────────────────────────────────────────────
+
+subtest 'ledger: type handle — STDOUT glob accepted' => sub {
+	lives_ok {
+		validate_strict(schema => { fh => { type => 'handle' } }, input => { fh => \*STDOUT });
+	} 'STDOUT glob reference accepted as handle';
+	delete $ledger{'type handle: STDOUT glob accepted'};
+};
+
+subtest 'ledger: type handle — plain string rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { fh => { type => 'handle' } }, input => { fh => 'not a handle' });
+	} qr/must be a file handle/i, 'plain string rejected as handle';
+	delete $ledger{'type handle: plain string rejected'};
+};
+
+subtest 'ledger: type handle — undef optional passes' => sub {
+	lives_ok {
+		validate_strict(schema => { fh => { type => 'handle', optional => 1 } }, input => { fh => undef });
+	} 'undef optional handle passes';
+	delete $ledger{'type handle: undef optional passes'};
+};
+
+# ── type => 'arraylike' ───────────────────────────────────────────────────────
+
+subtest 'ledger: type arraylike — arrayref accepted' => sub {
+	my $r = validate_strict(schema => { a => { type => 'arraylike' } }, input => { a => [1, 2, 3] });
+	is_deeply($r->{a}, [1, 2, 3], 'plain arrayref accepted');
+	delete $ledger{'type arraylike: arrayref accepted'};
+};
+
+subtest 'ledger: type arraylike — plain scalar rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { a => { type => 'arraylike' } }, input => { a => 'scalar' });
+	} qr/must be an array reference or array-like/i, 'plain scalar rejected for arraylike';
+	delete $ledger{'type arraylike: plain scalar rejected'};
+};
+
+# ── type => 'hashlike' ────────────────────────────────────────────────────────
+
+subtest 'ledger: type hashlike — hashref accepted' => sub {
+	my $r = validate_strict(schema => { h => { type => 'hashlike' } }, input => { h => { x => 1 } });
+	is_deeply($r->{h}, { x => 1 }, 'plain hashref accepted');
+	delete $ledger{'type hashlike: hashref accepted'};
+};
+
+subtest 'ledger: type hashlike — plain scalar rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { h => { type => 'hashlike' } }, input => { h => 'scalar' });
+	} qr/must be a hash reference or hash-like/i, 'plain scalar rejected for hashlike';
+	delete $ledger{'type hashlike: plain scalar rejected'};
+};
+
+# ── type => 'codelike' ────────────────────────────────────────────────────────
+
+subtest 'ledger: type codelike — coderef accepted' => sub {
+	my $sub = sub { 1 };
+	my $r = validate_strict(schema => { cb => { type => 'codelike' } }, input => { cb => $sub });
+	is($r->{cb}, $sub, 'plain coderef accepted');
+	delete $ledger{'type codelike: coderef accepted'};
+};
+
+subtest 'ledger: type codelike — plain scalar rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { cb => { type => 'codelike' } }, input => { cb => 'scalar' });
+	} qr/must be a code reference or code-like/i, 'plain scalar rejected for codelike';
+	delete $ledger{'type codelike: plain scalar rejected'};
+};
+
+# ── type => 'invocant' ────────────────────────────────────────────────────────
+
+subtest 'ledger: type invocant — class name string accepted' => sub {
+	lives_ok {
+		validate_strict(schema => { inv => { type => 'invocant' } }, input => { inv => 'POSIX' });
+	} 'class name string accepted as invocant';
+	delete $ledger{'type invocant: class name string accepted'};
+};
+
+subtest 'ledger: type invocant — blessed object accepted' => sub {
+	my $obj = bless {}, 'SomeClass';
+	lives_ok {
+		validate_strict(schema => { inv => { type => 'invocant' } }, input => { inv => $obj });
+	} 'blessed object accepted as invocant';
+	delete $ledger{'type invocant: blessed object accepted'};
+};
+
+subtest 'ledger: type invocant — plain string rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { inv => { type => 'invocant' } }, input => { inv => '123invalid' });
+	} qr/must be a blessed object or a class name/i, 'invalid string rejected as invocant';
+	delete $ledger{'type invocant: plain string rejected'};
+};
+
+# ── semantic => 'identifier' ──────────────────────────────────────────────────
+
+subtest 'ledger: semantic identifier — valid bareword passes' => sub {
+	lives_ok {
+		validate_strict(schema => { name => { type => 'string', semantic => 'identifier' } },
+			input => { name => 'my_func' });
+	} 'valid identifier passes';
+	delete $ledger{'semantic identifier: valid bareword passes'};
+};
+
+subtest 'ledger: semantic identifier — invalid string rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { name => { type => 'string', semantic => 'identifier' } },
+			input => { name => '1invalid' });
+	} qr/Invalid Perl identifier/i, 'string starting with digit rejected';
+	delete $ledger{'semantic identifier: invalid string rejected'};
+};
+
+subtest 'ledger: semantic identifier — package name rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { name => { type => 'string', semantic => 'identifier' } },
+			input => { name => 'Foo::Bar' });
+	} qr/Invalid Perl identifier/i, 'package name (contains ::) rejected as identifier';
+	delete $ledger{'semantic identifier: package name rejected'};
+};
+
+# ── semantic => 'class_name' ──────────────────────────────────────────────────
+
+subtest 'ledger: semantic class_name — simple name passes' => sub {
+	lives_ok {
+		validate_strict(schema => { cls => { type => 'string', semantic => 'class_name' } },
+			input => { cls => 'MyClass' });
+	} 'simple class name passes';
+	delete $ledger{'semantic class_name: simple name passes'};
+};
+
+subtest 'ledger: semantic class_name — nested name passes' => sub {
+	lives_ok {
+		validate_strict(schema => { cls => { type => 'string', semantic => 'class_name' } },
+			input => { cls => 'Foo::Bar::Baz' });
+	} 'nested class name passes';
+	delete $ledger{'semantic class_name: nested name passes'};
+};
+
+subtest 'ledger: semantic class_name — leading :: rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { cls => { type => 'string', semantic => 'class_name' } },
+			input => { cls => '::BadName' });
+	} qr/Invalid Perl class name/i, 'leading :: rejected';
+	delete $ledger{'semantic class_name: leading :: rejected'};
+};
+
+# ── classisa rule ─────────────────────────────────────────────────────────────
+{
+	package t::unit::Animal;
+	package t::unit::Dog;
+	our @ISA = ('t::unit::Animal');
+}
+
+subtest 'ledger: classisa — derived class passes' => sub {
+	lives_ok {
+		validate_strict(schema => { cls => { type => 'string', classisa => 't::unit::Animal' } },
+			input => { cls => 't::unit::Dog' });
+	} 'derived class passes classisa';
+	delete $ledger{'classisa: derived class passes'};
+};
+
+subtest 'ledger: classisa — unrelated class rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { cls => { type => 'string', classisa => 't::unit::Animal' } },
+			input => { cls => 'POSIX' });
+	} qr/must be a class that isa/i, 'unrelated class rejected by classisa';
+	delete $ledger{'classisa: unrelated class rejected'};
+};
+
+subtest 'ledger: classisa — undef optional passes' => sub {
+	lives_ok {
+		validate_strict(schema => { cls => { type => 'string', classisa => 't::unit::Animal', optional => 1 } },
+			input => { cls => undef });
+	} 'undef optional classisa passes';
+	delete $ledger{'classisa: undef optional passes'};
+};
+
+# ── subclass rule ─────────────────────────────────────────────────────────────
+
+subtest 'ledger: subclass — strict subclass passes' => sub {
+	lives_ok {
+		validate_strict(schema => { cls => { type => 'string', subclass => 't::unit::Animal' } },
+			input => { cls => 't::unit::Dog' });
+	} 'strict subclass passes';
+	delete $ledger{'subclass: strict subclass passes'};
+};
+
+subtest 'ledger: subclass — same class rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { cls => { type => 'string', subclass => 't::unit::Animal' } },
+			input => { cls => 't::unit::Animal' });
+	} qr/must be a strict subclass/i, 'same class rejected by subclass rule';
+	delete $ledger{'subclass: same class rejected'};
+};
+
+# ── classdoes rule ────────────────────────────────────────────────────────────
+{
+	package t::unit::Printable;
+	sub DOES {
+		my ($self, $role) = @_;
+		return 1 if $role eq 't::unit::Printable';
+		return $self->SUPER::DOES($role);
+	}
+}
+
+subtest 'ledger: classdoes — class with DOES passes' => sub {
+	lives_ok {
+		validate_strict(schema => { cls => { type => 'string', classdoes => 't::unit::Printable' } },
+			input => { cls => 't::unit::Printable' });
+	} 'class passing DOES check accepted';
+	delete $ledger{'classdoes: class with DOES passes'};
+};
+
+subtest 'ledger: classdoes — class without DOES rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { cls => { type => 'string', classdoes => 't::unit::Printable' } },
+			input => { cls => 't::unit::Animal' });
+	} qr/must be a class that does/i, 'class failing DOES check rejected';
+	delete $ledger{'classdoes: class without DOES rejected'};
+};
+
+# ── does rule (instance) ──────────────────────────────────────────────────────
+{
+	package t::unit::PrintableObj;
+	sub new { bless {}, shift }
+	sub DOES {
+		my ($self, $role) = @_;
+		return 1 if $role eq 't::unit::PrintableObj';
+		return $self->SUPER::DOES($role);
+	}
+}
+
+subtest 'ledger: does — object with DOES passes' => sub {
+	my $obj = t::unit::PrintableObj->new();
+	lives_ok {
+		validate_strict(schema => { obj => { type => 'object', does => 't::unit::PrintableObj' } },
+			input => { obj => $obj });
+	} 'object passing DOES check accepted';
+	delete $ledger{'does: object with DOES passes'};
+};
+
+subtest 'ledger: does — object without DOES rejected' => sub {
+	my $obj = bless {}, 't::unit::PlainObj';
+	throws_ok {
+		validate_strict(schema => { obj => { type => 'object', does => 't::unit::PrintableObj' } },
+			input => { obj => $obj });
+	} qr/must be an object that does/i, 'object failing DOES check rejected';
+	delete $ledger{'does: object without DOES rejected'};
+};
+
+subtest 'ledger: does — non-object type rejects does rule' => sub {
+	throws_ok {
+		validate_strict(schema => { s => { type => 'string', does => 'SomeRole' } },
+			input => { s => 'foo' });
+	} qr/meaningless does value/i, 'does rule on non-object type croaks';
+	delete $ledger{'does: non-object type rejects does rule'};
+};
+
+# ── driver rule ───────────────────────────────────────────────────────────────
+{
+	package t::unit::StoreBase;
+	package t::unit::MyStore;
+	our @ISA = ('t::unit::StoreBase');
+}
+
+subtest 'ledger: driver — loadable subclass passes' => sub {
+	# Use a module we know exists and its known subclass relationship via @INC
+	# Scalar::Util::blessed is always available; use a real module pair.
+	# We test that the driver rule works when the module is already loaded.
+	# Simulate a class already in %INC so require is a no-op.
+	local $INC{'t/unit/StoreBase.pm'} = 1;
+	local $INC{'t/unit/MyStore.pm'} = 1;
+	lives_ok {
+		validate_strict(schema => { drv => { type => 'string', driver => 't::unit::StoreBase' } },
+			input => { drv => 't::unit::MyStore' });
+	} 'known subclass passes driver rule when module already loaded';
+	delete $ledger{'driver: loadable subclass passes'};
+};
+
+subtest 'ledger: driver — invalid class name rejected' => sub {
+	throws_ok {
+		validate_strict(schema => { drv => { type => 'string', driver => 'SomeBase' } },
+			input => { drv => '123BadName' });
+	} qr/must be a valid class name/i, 'invalid class name rejected by driver rule';
+	delete $ledger{'driver: invalid class name rejected'};
+};
+
+subtest 'ledger: driver — non-subclass rejected' => sub {
+	# t::unit::Animal does not inherit from t::unit::StoreBase
+	local $INC{'t/unit/Animal.pm'} = 1;
+	throws_ok {
+		validate_strict(schema => { drv => { type => 'string', driver => 't::unit::StoreBase' } },
+			input => { drv => 't::unit::Animal' });
+	} qr/must be a class that isa/i, 'non-subclass rejected by driver rule';
+	delete $ledger{'driver: non-subclass rejected'};
 };
 
 # ── Ledger assertion ──────────────────────────────────────────────────────────

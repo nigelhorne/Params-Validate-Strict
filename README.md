@@ -189,7 +189,7 @@ The schema can define the following rules for each parameter:
 - `type`
 
     The data type of the parameter.
-    Valid types are `string`, `integer`, `number`, `float` `boolean`, `scalar`, `scalarref`, `stringref`, `hashref`, `arrayref`, `object`, `coderef` and `void`.
+    Valid types are `string`, `integer`, `number`, `float`, `boolean`, `scalar`, `scalarref`, `stringref`, `hashref`, `arrayref`, `object`, `coderef`, `regex`, `handle`, `arraylike`, `hashlike`, `codelike`, `invocant` and `void`.
     `scalar` accepts any plain scalar value (string, number, boolean, etc.) but rejects references (arrayrefs, hashrefs, coderefs, objects).
     `scalarref` accepts a reference to a scalar value (e.g. `\$var`) but rejects plain scalars, arrayrefs, hashrefs, coderefs, and objects.
     `stringref` accepts a reference to a scalar that contains a plain string (e.g. `\$str`) and rejects plain scalars, references-to-references, arrayrefs, hashrefs, coderefs, and objects.
@@ -198,6 +198,12 @@ The schema can define the following rules for each parameter:
     The `min`/`max` constraints apply to the **length** (in characters) of the referenced string.
     All other string rules (`matches`, `nomatch`, `memberof`, etc.) operate on the dereferenced string value.
     The validated return value is the dereferenced plain string.
+    `regex` accepts a compiled regular expression (`qr//` object); the value is returned unchanged.
+    `handle` accepts a file handle: a glob reference with a defined `fileno`, an `IO::Handle` subclass instance, or any value for which `fileno` returns a defined value.
+    `arraylike` accepts an array reference or a blessed object that overloads `@{}` array dereferencing.
+    `hashlike` accepts a hash reference or a blessed object that overloads `%{}` hash dereferencing.
+    `codelike` accepts a code reference or a blessed object that overloads `&{}` code dereferencing.
+    `invocant` accepts either a blessed object instance or a plain string that is a syntactically valid Perl class name (e.g. `'MyApp::Widget'`).
 
     A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
 
@@ -244,6 +250,54 @@ The schema can define the following rules for each parameter:
 - `isa`
 
     The parameter must be an object of type `isa`.
+    Requires `type => 'object'`.
+
+- `does`
+
+    The parameter must be a blessed object that satisfies the role via `->DOES`.
+    Requires `type => 'object'`.
+
+    ```perl
+    handler => { type => 'object', does => 'My::Role::Printable' }
+    ```
+
+- `classisa`
+
+    The parameter must be a string holding a syntactically valid Perl class name
+    that passes `->isa('Base::Class')`.
+    The class must already be loaded (its `@ISA` must be reachable).
+    Does not accept blessed object references; use `isa` for those.
+
+    ```perl
+    backend => { type => 'string', classisa => 'My::Backend::Base' }
+    ```
+
+- `subclass`
+
+    Like `classisa`, but requires a _strict_ subclass: the value must not equal
+    the base class name itself.
+
+    ```perl
+    plugin => { type => 'string', subclass => 'My::Plugin::Base' }
+    ```
+
+- `classdoes`
+
+    Like `classisa`, but tests `->DOES` (role consumption) instead of `->isa`.
+
+    ```perl
+    consumer => { type => 'string', classdoes => 'My::Role::Loggable' }
+    ```
+
+- `driver`
+
+    The parameter must be a valid class name that: (1) can be loaded via `require`,
+    and (2) passes `->isa('Base::Class')`.
+    The module is actually loaded as a side effect of validation.
+
+    ```perl
+    store => { type => 'string', driver => 'Cache::Store' }
+    ```
 
 - `memberof`
 
@@ -937,15 +991,25 @@ The schema can define the following rules for each parameter:
 - `semantic`
 
     A hint about the semantic meaning of the parameter value.
-    Currently only `unix_timestamp` is supported.
+    Supported values: `unix_timestamp`, `identifier`, `class_name`.
 
     ```perl
-    ts => { type => 'integer', semantic => 'unix_timestamp' }
+    ts     => { type => 'integer', semantic => 'unix_timestamp' }
+    func   => { type => 'string',  semantic => 'identifier' }
+    module => { type => 'string',  semantic => 'class_name' }
     ```
 
     When `semantic` is `unix_timestamp`, the value must be a non-negative integer no greater than
     `2147483647` (i.e. a valid 32-bit Unix epoch timestamp).
     Values outside this range cause the function to `croak`.
+
+    When `semantic` is `identifier`, the value must match `/\A[A-Za-z_]\w*\z/`, a single
+    valid Perl bareword identifier.  Package separators (`::`) are not permitted; use
+    `class_name` for those.
+
+    When `semantic` is `class_name`, the value must match
+    `/\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/`, a syntactically valid Perl class name such
+    as `'Foo'` or `'Foo::Bar::Baz'`.  The class does not need to be loaded.
 
     Unknown semantic values emit a warning but do not cause an error.
 

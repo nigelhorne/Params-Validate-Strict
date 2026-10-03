@@ -5,6 +5,25 @@ use warnings;
 
 # TODO: test cases - check 1e20 and -1e20 are accepted as integers
 
+# TODOs inspired by Params::Smart (see SEE ALSO):
+#
+# TODO: named_only => 1 rule — marks a parameter as keyword-only; it may not
+#   be supplied by position even when the schema uses positional mode.  Mirrors
+#   the '+name' sigil in Params::Smart.  Useful for flags that would be
+#   dangerous or ambiguous if accidentally supplied by position (e.g. a boolean
+#   that happens to sit at the same index as a required string on a different
+#   call path).
+#
+# TODO: auto-detect positional vs named calling — allow a single schema to
+#   accept both f(1, 2, 3) and f(a=>1, b=>2, c=>3) by inspecting @_ at
+#   runtime and choosing the appropriate mode.  Params::Smart's heuristic
+#   checks whether the first element of @_ is a known parameter name; if so,
+#   named mode is assumed, otherwise positional.  Caveats: the heuristic can
+#   misfire when a positional value happens to be a string matching a param
+#   name — callers should be able to pass a hint (e.g. force_named => 1) to
+#   override.  The return value should include a '_named' key (as Params::Smart
+#   does) so the caller can diagnose which mode was used.
+
 use Carp;
 use Exporter qw(import);	# Required for @EXPORT_OK
 use Encode qw(decode_utf8);
@@ -25,7 +44,7 @@ Version 0.41
 
 =cut
 
-our $VERSION = '0.41';
+our $VERSION = '0.42';
 
 # Recursion depth counter — localised on every entry so it unwinds automatically.
 # Protects against mutations (or bugs) that turn the pipe-normalisation guard into
@@ -219,7 +238,7 @@ The schema can define the following rules for each parameter:
 =item * C<type>
 
 The data type of the parameter.
-Valid types are C<string>, C<integer>, C<number>, C<float> C<boolean>, C<scalar>, C<scalarref>, C<stringref>, C<hashref>, C<arrayref>, C<object>, C<coderef> and C<void>.
+Valid types are C<string>, C<integer>, C<number>, C<float>, C<boolean>, C<scalar>, C<scalarref>, C<stringref>, C<hashref>, C<arrayref>, C<object>, C<coderef>, C<regex>, C<handle>, C<arraylike>, C<hashlike>, C<codelike>, C<invocant> and C<void>.
 C<scalar> accepts any plain scalar value (string, number, boolean, etc.) but rejects references (arrayrefs, hashrefs, coderefs, objects).
 C<scalarref> accepts a reference to a scalar value (e.g. C<\$var>) but rejects plain scalars, arrayrefs, hashrefs, coderefs, and objects.
 C<stringref> accepts a reference to a scalar that contains a plain string (e.g. C<\$str>) and rejects plain scalars, references-to-references, arrayrefs, hashrefs, coderefs, and objects.
@@ -228,6 +247,12 @@ When C<void> is used the schema must contain exactly one parameter.
 The C<min>/C<max> constraints apply to the B<length> (in characters) of the referenced string.
 All other string rules (C<matches>, C<nomatch>, C<memberof>, etc.) operate on the dereferenced string value.
 The validated return value is the dereferenced plain string.
+C<regex> accepts a compiled regular expression (C<qr//> object); the value is returned unchanged.
+C<handle> accepts a file handle: a glob reference with a defined C<fileno>, an C<IO::Handle> subclass instance, or any value for which C<fileno> returns a defined value.
+C<arraylike> accepts an array reference or a blessed object that overloads C<@{}> array dereferencing.
+C<hashlike> accepts a hash reference or a blessed object that overloads C<%{}> hash dereferencing.
+C<codelike> accepts a code reference or a blessed object that overloads C<&{}> code dereferencing.
+C<invocant> accepts either a blessed object instance or a plain string that is a syntactically valid Perl class name (e.g. C<'MyApp::Widget'>).
 
 A type can be an arrayref when a parameter could have different types (e.g. a string or an object).
 
@@ -268,6 +293,44 @@ or an arrayref of a list of method names, all of which must be supported by the 
 =item * C<isa>
 
 The parameter must be an object of type C<isa>.
+Requires C<type =E<gt> 'object'>.
+
+=item * C<does>
+
+The parameter must be a blessed object that satisfies the role via C<-E<gt>DOES>.
+Requires C<type =E<gt> 'object'>.
+
+  handler => { type => 'object', does => 'My::Role::Printable' }
+
+=item * C<classisa>
+
+The parameter must be a string holding a syntactically valid Perl class name
+that passes C<-E<gt>isa('Base::Class')>.
+The class must already be loaded (its C<@ISA> must be reachable).
+Does not accept blessed object references; use C<isa> for those.
+
+  backend => { type => 'string', classisa => 'My::Backend::Base' }
+
+=item * C<subclass>
+
+Like C<classisa>, but requires a I<strict> subclass: the value must not equal
+the base class name itself.
+
+  plugin => { type => 'string', subclass => 'My::Plugin::Base' }
+
+=item * C<classdoes>
+
+Like C<classisa>, but tests C<-E<gt>DOES> (role consumption) instead of C<-E<gt>isa>.
+
+  consumer => { type => 'string', classdoes => 'My::Role::Loggable' }
+
+=item * C<driver>
+
+The parameter must be a valid class name that: (1) can be loaded via C<require>,
+and (2) passes C<-E<gt>isa('Base::Class')>.
+The module is actually loaded as a side effect of validation.
+
+  store => { type => 'string', driver => 'Cache::Store' }
 
 =item * C<memberof>
 
@@ -903,13 +966,23 @@ and are currently ignored.
 =item * C<semantic>
 
 A hint about the semantic meaning of the parameter value.
-Currently only C<unix_timestamp> is supported.
+Supported values: C<unix_timestamp>, C<identifier>, C<class_name>.
 
-  ts => { type => 'integer', semantic => 'unix_timestamp' }
+  ts     => { type => 'integer', semantic => 'unix_timestamp' }
+  func   => { type => 'string',  semantic => 'identifier' }
+  module => { type => 'string',  semantic => 'class_name' }
 
 When C<semantic> is C<unix_timestamp>, the value must be a non-negative integer no greater than
 C<2147483647> (i.e. a valid 32-bit Unix epoch timestamp).
 Values outside this range cause the function to C<croak>.
+
+When C<semantic> is C<identifier>, the value must match C</\A[A-Za-z_]\w*\z/>, a single
+valid Perl bareword identifier.  Package separators (C<::>) are not permitted; use
+C<class_name> for those.
+
+When C<semantic> is C<class_name>, the value must match
+C</\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/>, a syntactically valid Perl class name such
+as C<'Foo'> or C<'Foo::Bar::Baz'>.  The class does not need to be loaded.
 
 Unknown semantic values emit a warning but do not cause an error.
 
@@ -1474,6 +1547,57 @@ sub validate_strict
 						if(ref($value) ne 'CODE') {
 							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a coderef, not a ref to " . ref($value));
 						}
+					} elsif($type eq 'regex') {
+						if(!defined($value)) {
+							next;
+						}
+						if(ref($value) ne 'Regexp') {
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a compiled regex (qr//)" .
+								(ref($value) ? ", not a " . ref($value) . " reference" : ", not a plain scalar"));
+						}
+					} elsif($type eq 'handle') {
+						if(!defined($value)) {
+							next;
+						}
+						my $is_handle = 0;
+						if(ref($value) eq 'GLOB' && defined(fileno($value))) {
+							$is_handle = 1;
+						} elsif(Scalar::Util::blessed($value) && $value->isa('IO::Handle')) {
+							$is_handle = 1;
+						} else {
+							$is_handle = defined(eval { fileno($value) });
+						}
+						unless($is_handle) {
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a file handle");
+						}
+					} elsif($type eq 'arraylike') {
+						if(!defined($value)) {
+							next;
+						}
+						unless(ref($value) eq 'ARRAY' || (Scalar::Util::blessed($value) && overload::Method($value, '@{}'))) {
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be an array reference or array-like object");
+						}
+					} elsif($type eq 'hashlike') {
+						if(!defined($value)) {
+							next;
+						}
+						unless(ref($value) eq 'HASH' || (Scalar::Util::blessed($value) && overload::Method($value, '%{}'))) {
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a hash reference or hash-like object");
+						}
+					} elsif($type eq 'codelike') {
+						if(!defined($value)) {
+							next;
+						}
+						unless(ref($value) eq 'CODE' || (Scalar::Util::blessed($value) && overload::Method($value, '&{}'))) {
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a code reference or code-like object");
+						}
+					} elsif($type eq 'invocant') {
+						if(!defined($value)) {
+							next;
+						}
+						unless(Scalar::Util::blessed($value) || (!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/)) {
+							_rule_error($logger, $rules, "$rule_description: Parameter $param_label must be a blessed object or a class name");
+						}
 					} elsif($type eq 'object') {
 						if(!defined($value)) {
 							next;	# Skip if object is undefined
@@ -1755,6 +1879,64 @@ sub validate_strict
 					} else {
 						_error($logger, "$rule_description: Parameter $param_label has meaningless can value '$rule_value' for parameter type $rules->{type}");
 					}
+				} elsif($rule_name eq 'does') {
+					if(!defined($value)) {
+						next;	# Skip if object not given
+					}
+					if($rules->{'type'} eq 'object') {
+						unless(Scalar::Util::blessed($value) && $value->DOES($rule_value)) {
+							_error($logger, "$rule_description: Parameter $param_label must be an object that does '$rule_value'");
+							$invalid_args{$key} = 1;
+						}
+					} else {
+						_error($logger, "$rule_description: Parameter $param_label has meaningless does value '$rule_value' for parameter type $rules->{type}");
+					}
+				} elsif($rule_name eq 'classisa') {
+					if(!defined($value)) {
+						next;
+					}
+					unless(!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/ && $value->isa($rule_value)) {
+						_error($logger, "$rule_description: Parameter $param_label ($value) must be a class that isa '$rule_value'");
+						$invalid_args{$key} = 1;
+					}
+				} elsif($rule_name eq 'subclass') {
+					if(!defined($value)) {
+						next;
+					}
+					unless(!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/
+						&& $value ne $rule_value && $value->isa($rule_value)) {
+						_error($logger, "$rule_description: Parameter $param_label ($value) must be a strict subclass of '$rule_value'");
+						$invalid_args{$key} = 1;
+					}
+				} elsif($rule_name eq 'classdoes') {
+					if(!defined($value)) {
+						next;
+					}
+					unless(!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/ && $value->DOES($rule_value)) {
+						_error($logger, "$rule_description: Parameter $param_label ($value) must be a class that does '$rule_value'");
+						$invalid_args{$key} = 1;
+					}
+				} elsif($rule_name eq 'driver') {
+					if(!defined($value)) {
+						next;
+					}
+					unless(!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/) {
+						_error($logger, "$rule_description: Parameter $param_label must be a valid class name");
+						$invalid_args{$key} = 1;
+						next;
+					}
+					(my $file = $value) =~ s{::}{/}g;
+					$file .= '.pm';
+					eval { require $file };
+					if($@) {
+						_error($logger, "$rule_description: Parameter $param_label ($value) could not be loaded: $@");
+						$invalid_args{$key} = 1;
+						next;
+					}
+					unless($value->isa($rule_value)) {
+						_error($logger, "$rule_description: Parameter $param_label ($value) must be a class that isa '$rule_value'");
+						$invalid_args{$key} = 1;
+					}
 				} elsif($rule_name eq 'element_type') {
 					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
 						my $type = $rule_value;
@@ -1818,6 +2000,14 @@ sub validate_strict
 					if($rule_value eq 'unix_timestamp') {
 						if($value < 0 || $value > 2147483647) {
 							_error($logger, "Invalid Unix timestamp: $value");
+						}
+					} elsif($rule_value eq 'identifier') {
+						if(defined($value) && $value !~ /\A[A-Za-z_]\w*\z/) {
+							_error($logger, "Invalid Perl identifier: $value");
+						}
+					} elsif($rule_value eq 'class_name') {
+						if(defined($value) && $value !~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/) {
+							_error($logger, "Invalid Perl class name: $value");
 						}
 					} else {
 						_warn($logger, "semantic type $rule_value is not yet supported");
@@ -2500,6 +2690,10 @@ validated value in an HTTP response, HTML page, or structured log entry.
 =item * L<Params::Smart>
 
 This is where the ideas for C<aliases>, C<slurp> and C<compile_schema> came from.
+
+=item * L<Params::Util>
+
+This is where the idead for C<egex>, C<handle>, C<arraylike>, C<hashlike>, C<codelike>, C<invocant came from.
 
 =item * L<Params::Validate>
 
