@@ -2710,7 +2710,7 @@ This is where the ideas for C<aliases>, C<slurp> and C<compile_schema> came from
 
 =item * L<Params::Util>
 
-This is where the idead for C<egex>, C<handle>, C<arraylike>, C<hashlike>, C<codelike>, C<invocant came from.
+This is where the idead for C<egex>, C<handle>, C<arraylike>, C<hashlike>, C<codelike>, C<invocant> came from.
 
 =item * L<Params::Validate>
 

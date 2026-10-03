@@ -1383,6 +1383,10 @@ validated value in an HTTP response, HTML page, or structured log entry.
 
     This is where the ideas for `aliases`, `slurp` and `compile_schema` came from.
 
+- [Params::Util](https://metacpan.org/pod/Params%3A%3AUtil)
+
+    This is where the idead for `egex`, `handle`, `arraylike`, `hashlike`, `codelike`, `invocant` came from.
+
 - [Params::Validate](https://metacpan.org/pod/Params%3A%3AValidate)
 - [Return::Set](https://metacpan.org/pod/Return%3A%3ASet)
 - [App::Test::Generator](https://metacpan.org/pod/App%3A%3ATest%3A%3AGenerator)
