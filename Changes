@@ -1,5 +1,27 @@
 Revision history for Params-Validate-Strict
 
+0.41
+	[Enhancements]
+	- New 'aliases' rule key: a named parameter can now be found under one or
+	  more alternative input-key names.  Aliased keys are never treated as
+	  unknown parameters.  The validated result always uses the canonical key.
+	  Only named (hashref) input supports aliases; positional input ignores them.
+	- New 'slurp' rule key (positional schemas only): collects all remaining
+	  positional arguments from 'position' onwards into an arrayref, enabling
+	  variadic positional signatures such as ($level, @messages).  The
+	  parameter is implicitly optional (yields an empty arrayref when no args
+	  remain); combine with min => 1 to require at least one element.
+	- New 'compile_schema' function (exported on request): captures a schema
+	  and optional keyword arguments into a reusable validator closure.
+	  Equivalent to validate_strict(schema => ..., input => ...) but avoids
+	  repeated argument-parsing overhead in hot paths.
+	[Tests]
+	- t/unit.t: 19 new subtests covering aliases (canonical key, alias
+	  accepted, canonical precedence, unknown-param exemption, missing-both
+	  croaks), slurp (basic collection, empty slice, min=1 enforcement, no-min
+	  pass), and compile_schema (return type, non-ref schema croak,
+	  validation, result identity, opts forwarding).
+
 0.40	Mon Sep 21 09:22:05 PM EDT 2026
 	[Bug Fixes]
 	- min/max constraints on string parameters now correctly count grapheme

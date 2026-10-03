@@ -13,7 +13,7 @@ use Readonly::Values::Boolean;
 use Scalar::Util;
 
 our @ISA = qw(Exporter);
-our @EXPORT_OK = qw(validate_strict);
+our @EXPORT_OK = qw(validate_strict compile_schema);
 
 =head1 NAME
 
@@ -21,11 +21,11 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.40
+Version 0.41
 
 =cut
 
-our $VERSION = '0.40';
+our $VERSION = '0.41';
 
 # Recursion depth counter — localised on every entry so it unwinds automatically.
 # Protects against mutations (or bugs) that turn the pipe-normalisation guard into
@@ -460,6 +460,45 @@ For routines and methods that take positional args,
 this integer value defines which position the argument will be in.
 If this is set for all arguments,
 C<validate_strict> will return a reference to an array, rather than a reference to a hash.
+
+=item * C<slurp>
+
+Valid only in positional-argument schemas (those where every parameter has a
+C<position> value).  When C<slurp =E<gt> 1> is set, this parameter collects
+I<all> remaining positional arguments starting from C<position> into an
+arrayref, rather than taking only the single element at that index.
+
+  # sub log_message($level, @messages)
+  my $schema = {
+    level    => { type => 'string',   position => 0 },
+    messages => { type => 'arrayref', position => 1, slurp => 1 },
+  };
+
+The slurp parameter is implicitly optional: if there are no arguments at or
+beyond C<position>, the value is an empty arrayref.  Combine with C<min =E<gt>
+1> to require at least one element:
+
+  messages => { type => 'arrayref', position => 1, slurp => 1, min => 1 }
+
+At most one slurp parameter may be defined per schema, and it must have the
+highest C<position> value.  The return value at that position is an arrayref.
+
+=item * C<aliases>
+
+An arrayref of alternative input-key names that are also accepted for this
+parameter.  When any alias is found in the input the parameter is stored
+under its canonical schema key; if both the canonical name and an alias are
+present the canonical name takes precedence.  Aliases are not treated as
+unknown parameters regardless of the C<unknown_parameter_handler> setting.
+
+  colour => {
+    type    => 'string',
+    aliases => ['color'],
+    memberof => ['red', 'green', 'blue'],
+  }
+
+Only named (hashref) input supports aliases; positional (arrayref) input
+ignores them.
 
 =item * C<regex>
 
@@ -1110,9 +1149,18 @@ sub validate_strict
 	}
 
 	if(ref($args) eq 'HASH') {
-		# Named args
+		# Named args: build alias reverse-map first so aliased keys are not
+		# treated as unknown parameters.
+		my %_alias_to_canonical;
+		foreach my $canonical (keys %{$schema}) {
+			my $r = $schema->{$canonical};
+			if(ref($r) eq 'HASH' && ref($r->{'aliases'}) eq 'ARRAY') {
+				$_alias_to_canonical{$_} = $canonical for @{$r->{'aliases'}};
+			}
+		}
+
 		foreach my $key (keys %{$args}) {
-			if(!exists($schema->{$key})) {
+			if(!exists($schema->{$key}) && !exists($_alias_to_canonical{$key})) {
 				if($unknown_parameter_handler eq 'die') {
 					_error($logger, "$schema_description: Unknown parameter '$key'");
 				} elsif($unknown_parameter_handler eq 'warn') {
@@ -1135,6 +1183,9 @@ sub validate_strict
 	foreach my $key (keys %{$schema}) {
 		if(defined(my $rules = $schema->{$key})) {
 			if(ref($rules) eq 'HASH') {
+				if($rules->{'slurp'} && !defined($rules->{'position'})) {
+					_error($logger, "::validate_strict: slurp parameter '$key' requires a 'position'");
+				}
 				if(!defined($rules->{'position'})) {
 					if($are_positional_args == 1) {
 						_error($logger, "::validate_strict: $key is missing position value");
@@ -1157,14 +1208,34 @@ sub validate_strict
 	my %invalid_args;
 	foreach my $key (keys %{$schema}) {
 		my $rules = $schema->{$key};
+
+		# For named-arg schemas: resolve which input key provides this parameter.
+		# If the canonical name is absent, try each alias in order.
+		my $lookup_key = $key;
+		if($are_positional_args != 1 && ref($rules) eq 'HASH'
+		   && ref($rules->{'aliases'}) eq 'ARRAY'
+		   && !exists($args->{$key})) {
+			for my $alias (@{$rules->{'aliases'}}) {
+				if(exists($args->{$alias})) {
+					$lookup_key = $alias;
+					last;
+				}
+			}
+		}
+
 		my $value;
 		if($are_positional_args == 1) {
 			if(ref($args) ne 'ARRAY') {
 				_error($logger, "::validate_strict: position $rules->{position} given for '$key', but args isn't an array");
 			}
-			$value = $args->[$rules->{'position'}];
+			if(ref($rules) eq 'HASH' && $rules->{'slurp'}) {
+				my $pos = $rules->{'position'};
+				$value = [@{$args}[$pos .. $#$args]];
+			} else {
+				$value = $args->[$rules->{'position'}];
+			}
 		} else {
-			$value = $args->{$key};
+			$value = $args->{$lookup_key};
 		}
 
 		if(!defined($rules)) {	# Allow anything
@@ -1219,14 +1290,20 @@ sub validate_strict
 				$is_optional = $rules->{'nullable'};
 			} elsif(defined($rules->{'type'}) && !ref($rules->{'type'}) && lc($rules->{'type'}) eq 'void') {
 				$is_optional = 1;
+			} elsif($rules->{'slurp'}) {
+				$is_optional = 1;
 			}
 		}
 
 		# Handle optional parameters
 		if((ref($rules) eq 'HASH') && $is_optional) {
-			my $missing = ($are_positional_args == 1)
-				? !defined($args->[$rules->{position}])
-				: !exists($args->{$key});
+			my $missing;
+			if($are_positional_args == 1) {
+				# A slurp parameter is never missing: at worst it yields an empty arrayref.
+				$missing = $rules->{'slurp'} ? 0 : !defined($args->[$rules->{position}]);
+			} else {
+				$missing = !exists($args->{$lookup_key});
+			}
 			if($missing) {
 				if($are_positional_args == 1) {
 					if(scalar(@{$args}) < $rules->{'position'}) {
@@ -1249,7 +1326,7 @@ sub validate_strict
 					next;	# optional and missing
 				}
 			}
-		} elsif((ref($args) eq 'HASH') && !exists($args->{$key})) {
+		} elsif((ref($args) eq 'HASH') && !exists($args->{$lookup_key})) {
 			# The parameter is required
 			# Use exists rather than defined, so that an undefined value can be passed, but the key is there
 			_error($logger, "$rule_description: Required parameter $param_label is missing");
@@ -1816,6 +1893,13 @@ sub validate_strict
 					if($rule_value =~ /\D/) {
 						_error($logger, "$rule_description: Parameter $param_label: 'position' must be a positive integer");
 					}
+				} elsif($rule_name eq 'slurp') {
+					if($rule_value && $are_positional_args != 1) {
+						_error($logger, "$rule_description: Parameter $param_label: 'slurp' is only valid in positional-argument schemas (all parameters need a 'position')");
+					}
+					# Pre-processed: value was already collected as arrayref of remaining positional args
+				} elsif($rule_name eq 'aliases') {
+					# Pre-processed: alternative input-key names resolved during value fetch
 				} else {
 					_error($logger, "$rule_description: Unknown rule '$rule_name'");
 				}
@@ -1903,6 +1987,63 @@ sub validate_strict
 		return \@rc;
 	}
 	return \%validated_args;
+}
+
+=head2 compile_schema
+
+  my $validator = compile_schema(\%schema);
+  my $result    = $validator->(\%input);
+
+  # with optional keyword args
+  my $validator = compile_schema(\%schema,
+      description            => 'User registration',
+      custom_types           => \%types,
+      unknown_parameter_handler => 'warn',
+  );
+
+Pre-captures a schema (and any optional keyword arguments accepted by
+C<validate_strict>) into a reusable validator closure.  Calling the returned
+coderef is equivalent to:
+
+  validate_strict(schema => \%schema, input => \%input, %opts);
+
+but avoids the overhead of argument parsing on every call - useful when the
+same schema is applied repeatedly in a hot path.
+
+=head3 Arguments
+
+=over 4
+
+=item * C<\%schema> (required)
+
+The validation schema as a hashref or arrayref, identical to the C<schema>
+argument of C<validate_strict>.
+
+=item * C<%opts> (optional)
+
+Any keyword arguments accepted by C<validate_strict> other than C<schema>
+and C<input>: C<description>, C<custom_types>,
+C<unknown_parameter_handler>, C<logger>, C<relationships>,
+C<cross_validation>, etc.
+
+=back
+
+=head3 Returns
+
+A code reference C<sub ($input) -E<gt> \%validated>.
+
+=cut
+
+sub compile_schema
+{
+	my ($schema, %opts) = @_;
+	unless(ref($schema) eq 'HASH' || ref($schema) eq 'ARRAY') {
+		Carp::croak('compile_schema: schema must be a hash or array reference');
+	}
+	return sub {
+		my $input = shift;
+		return validate_strict(schema => $schema, input => $input, %opts);
+	};
 }
 
 # _schema_from_arrayref($arrayref, $logger)
@@ -2357,6 +2498,8 @@ validated value in an HTTP response, HTML page, or structured log entry.
 =item * L<Params::Get>
 
 =item * L<Params::Smart>
+
+This is where the ideas for C<aliases>, C<slurp> and C<compile_schema> came from.
 
 =item * L<Params::Validate>
 

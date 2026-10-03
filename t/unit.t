@@ -11,7 +11,7 @@ use Test::Most;
 use Test::Mockingbird  qw(mock_scoped);
 use Scalar::Util       qw(refaddr);
 
-use Params::Validate::Strict     qw(validate_strict);
+use Params::Validate::Strict     qw(validate_strict compile_schema);
 use Params::Validate::Strict::BNF qw(bnf_to_matcher);
 
 # ── Test support classes ──────────────────────────────────────────────────────
@@ -2149,6 +2149,26 @@ my %ledger = (
 	'bnf_to_matcher: continuation works'     => 1,
 	'bnf_to_matcher: cache same closure'     => 1,
 	'bnf_to_matcher: empty terminal'         => 1,
+
+	# aliases rule
+	'aliases: canonical key used in output'     => 1,
+	'aliases: alias accepted for required param' => 1,
+	'aliases: canonical takes precedence'        => 1,
+	'aliases: alias not reported as unknown'     => 1,
+	'aliases: missing canonical and alias croaks' => 1,
+
+	# slurp rule
+	'slurp: collects remaining positional args'  => 1,
+	'slurp: empty slice when no remaining args'  => 1,
+	'slurp: min=1 enforced on collected arrayref' => 1,
+	'slurp: absent with no min passes'           => 1,
+
+	# compile_schema
+	'compile_schema: returns coderef'            => 1,
+	'compile_schema: non-ref schema croaks'      => 1,
+	'compile_schema: validates correctly'        => 1,
+	'compile_schema: same result as validate_strict' => 1,
+	'compile_schema: opts forwarded'             => 1,
 );
 
 # ── type: void ───────────────────────────────────────────────────────────────
@@ -2501,6 +2521,153 @@ subtest 'ledger: bnf_to_matcher — empty terminal matches empty string' => sub 
 	my $m = bnf_to_matcher(['<e> ::= ""']);
 	is($m->(''), 1, 'empty terminal matches empty string');
 	delete $ledger{'bnf_to_matcher: empty terminal'};
+};
+
+# ── aliases rule ─────────────────────────────────────────────────────────────
+# An aliased parameter is stored under the canonical schema key.
+
+subtest 'ledger: aliases — canonical key used in output' => sub {
+	my $r = validate_strict(
+		schema => { colour => { type => 'string', aliases => ['color'] } },
+		input  => { colour => 'red' },
+	);
+	is($r->{colour}, 'red', 'canonical key present in result');
+	ok(!exists $r->{color}, 'alias key absent from result');
+	delete $ledger{'aliases: canonical key used in output'};
+};
+
+subtest 'ledger: aliases — alias accepted for required param' => sub {
+	my $r = validate_strict(
+		schema => { colour => { type => 'string', aliases => ['color'] } },
+		input  => { color => 'blue' },
+	);
+	is($r->{colour}, 'blue', 'value supplied via alias stored under canonical key');
+	delete $ledger{'aliases: alias accepted for required param'};
+};
+
+subtest 'ledger: aliases — canonical takes precedence when both present' => sub {
+	# When canonical AND an alias are in the input, canonical value wins.
+	my $r = validate_strict(
+		schema => { colour => {
+			type    => 'string',
+			aliases => ['color'],
+		} },
+		input  => { colour => 'red', color => 'blue' },
+		unknown_parameter_handler => 'ignore',
+	);
+	is($r->{colour}, 'red', 'canonical key value wins over alias');
+	delete $ledger{'aliases: canonical takes precedence'};
+};
+
+subtest 'ledger: aliases — alias not reported as unknown' => sub {
+	# Default handler is 'die'; the alias must not trigger it.
+	lives_ok {
+		validate_strict(
+			schema => { x => { type => 'string', aliases => ['y'] } },
+			input  => { y => 'hello' },
+		);
+	} 'alias key accepted without unknown-parameter error';
+	delete $ledger{'aliases: alias not reported as unknown'};
+};
+
+subtest 'ledger: aliases — missing canonical and alias croaks' => sub {
+	throws_ok {
+		validate_strict(
+			schema => { x => { type => 'string', aliases => ['y'] } },
+			input  => {},
+		);
+	} qr/Required parameter/i, 'neither canonical nor alias present: required param missing';
+	delete $ledger{'aliases: missing canonical and alias croaks'};
+};
+
+# ── slurp rule ───────────────────────────────────────────────────────────────
+# slurp collects remaining positional args into an arrayref.
+
+subtest 'ledger: slurp — collects remaining positional args' => sub {
+	my $schema = {
+		level => { type => 'string',   position => 0 },
+		msgs  => { type => 'arrayref', position => 1, slurp => 1 },
+	};
+	my $r = validate_strict(schema => $schema, input => ['warn', 'foo', 'bar', 'baz']);
+	is($r->[0], 'warn', 'position-0 value correct');
+	is_deeply($r->[1], ['foo', 'bar', 'baz'], 'slurp collects remaining args');
+	delete $ledger{'slurp: collects remaining positional args'};
+};
+
+subtest 'ledger: slurp — empty slice when no remaining args' => sub {
+	my $schema = {
+		level => { type => 'string',   position => 0 },
+		msgs  => { type => 'arrayref', position => 1, slurp => 1 },
+	};
+	my $r = validate_strict(schema => $schema, input => ['info']);
+	is($r->[0], 'info', 'position-0 correct');
+	is_deeply($r->[1], [], 'slurp with no remaining args yields empty arrayref');
+	delete $ledger{'slurp: empty slice when no remaining args'};
+};
+
+subtest 'ledger: slurp — min=1 enforced on collected arrayref' => sub {
+	my $schema = {
+		level => { type => 'string',   position => 0 },
+		msgs  => { type => 'arrayref', position => 1, slurp => 1, min => 1 },
+	};
+	throws_ok {
+		validate_strict(schema => $schema, input => ['info']);
+	} qr/must have at least 1 member/i, 'min=1 rejects empty slurp';
+	delete $ledger{'slurp: min=1 enforced on collected arrayref'};
+};
+
+subtest 'ledger: slurp — absent with no min passes' => sub {
+	my $schema = {
+		level => { type => 'string',   position => 0 },
+		msgs  => { type => 'arrayref', position => 1, slurp => 1 },
+	};
+	lives_ok {
+		validate_strict(schema => $schema, input => ['debug']);
+	} 'slurp with no args and no min passes without error';
+	delete $ledger{'slurp: absent with no min passes'};
+};
+
+# ── compile_schema ────────────────────────────────────────────────────────────
+# compile_schema captures a schema into a reusable validator closure.
+
+subtest 'ledger: compile_schema — returns coderef' => sub {
+	my $v = compile_schema({ name => { type => 'string' } });
+	is(ref($v), 'CODE', 'compile_schema returns a CODE ref');
+	delete $ledger{'compile_schema: returns coderef'};
+};
+
+subtest 'ledger: compile_schema — non-ref schema croaks' => sub {
+	throws_ok { compile_schema('not a ref') }
+		qr/schema must be a hash or array reference/i,
+		'scalar schema croaks at compile time';
+	delete $ledger{'compile_schema: non-ref schema croaks'};
+};
+
+subtest 'ledger: compile_schema — validates correctly' => sub {
+	my $v = compile_schema({ age => { type => 'integer', min => 0 } });
+	throws_ok { $v->({ age => -1 }) } qr/must be at least 0/i, 'invalid input rejected';
+	lives_ok  { $v->({ age => 25 }) } 'valid input accepted';
+	delete $ledger{'compile_schema: validates correctly'};
+};
+
+subtest 'ledger: compile_schema — same result as validate_strict' => sub {
+	my $schema = { x => { type => 'integer' } };
+	my $v = compile_schema($schema);
+	my $direct  = validate_strict(schema => $schema, input => { x => '42' });
+	my $compiled = $v->({ x => '42' });
+	is_deeply($direct, $compiled, 'compile_schema result identical to validate_strict');
+	delete $ledger{'compile_schema: same result as validate_strict'};
+};
+
+subtest 'ledger: compile_schema — opts forwarded' => sub {
+	my $v = compile_schema(
+		{ n => { type => 'integer' } },
+		unknown_parameter_handler => 'ignore',
+	);
+	my $r;
+	lives_ok { $r = $v->({ n => 1, extra => 'ignored' }) } 'unknown_parameter_handler opt forwarded';
+	is($r->{n}, 1, 'valid param returned');
+	delete $ledger{'compile_schema: opts forwarded'};
 };
 
 # ── Ledger assertion ──────────────────────────────────────────────────────────
