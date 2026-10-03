@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.42
+0.41 
 	[Enhancements]
 	- New types 'regex', 'handle', 'arraylike', 'hashlike', 'codelike', 'invocant'
 	  inspired by Params::Util.  'regex' validates a compiled qr// object.
@@ -20,11 +20,6 @@ Revision history for Params-Validate-Strict
 	  consumption.  Requires type => 'object'.
 	- New rule key 'driver': validates a class-name string, loads the module via
 	  require, and confirms ->isa of a given base class.
-	[Tests]
-	- t/unit.t: subtests covering all new types, semantics, and rule keys.
-
-0.41
-	[Enhancements]
 	- New 'aliases' rule key: a named parameter can now be found under one or
 	  more alternative input-key names.  Aliased keys are never treated as
 	  unknown parameters.  The validated result always uses the canonical key.
@@ -44,6 +39,7 @@ Revision history for Params-Validate-Strict
 	  croaks), slurp (basic collection, empty slice, min=1 enforcement, no-min
 	  pass), and compile_schema (return type, non-ref schema croak,
 	  validation, result identity, opts forwarding).
+	- t/unit.t: subtests covering all new types, semantics, and rule keys.
 
 0.40	Mon Sep 21 09:22:05 PM EDT 2026
 	[Bug Fixes]

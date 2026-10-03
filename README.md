@@ -1257,7 +1257,10 @@ Nigel Horne, `<njh at nigelhorne.com>`
 
 ValidationRule ::= SimpleType | ComplexRule | UnionType
 
-SimpleType ::= string | integer | number | scalar | scalarref | stringref | arrayref | hashref | coderef | object
+SimpleType ::= string | integer | number | float | boolean | scalar
+           | scalarref | stringref | arrayref | hashref | coderef
+           | object | void | regex | handle
+           | arraylike | hashlike | codelike | invocant
 
 UnionType ::= seq SimpleType    -- at least two members; written as type => ['a', 'b']
 
@@ -1275,7 +1278,19 @@ ComplexRule == [
     notmemberof: seq VALUE;
     callback: FUNCTION;
     isa: TYPE_NAME;
-    can: METHOD_NAME
+    does: ROLE_NAME;
+    can: METHOD_NAME | seq METHOD_NAME;
+    classisa: TYPE_NAME;
+    subclass: TYPE_NAME;
+    classdoes: ROLE_NAME;
+    driver: TYPE_NAME;
+    semantic: 'unix_timestamp' | 'identifier' | 'class_name';
+    aliases: seq PARAM_NAME;
+    slurp: 𝔹;
+    position: ℕ₀;
+    default: VALUE;
+    transform: FUNCTION;
+    error_msg: STRING
 ]
 
 Schema == PARAM_NAME ⇸ ValidationRule
@@ -1385,7 +1400,11 @@ validated value in an HTTP response, HTML page, or structured log entry.
 
 - [Params::Util](https://metacpan.org/pod/Params%3A%3AUtil)
 
-    This is where the idead for `egex`, `handle`, `arraylike`, `hashlike`, `codelike`, `invocant` came from.
+    This is where the ideas for `regex`, `handle`, `arraylike`, `hashlike`, `codelike`, `invocant` came from.
+
+- [Params::SomeUtil](https://metacpan.org/pod/Params%3A%3ASomeUtil)
+
+    A maintained fork of [Params::Util](https://metacpan.org/pod/Params%3A%3AUtil) 1.07 with bug fixes.  The same type-predicate ideas apply.
 
 - [Params::Validate](https://metacpan.org/pod/Params%3A%3AValidate)
 - [Return::Set](https://metacpan.org/pod/Return%3A%3ASet)

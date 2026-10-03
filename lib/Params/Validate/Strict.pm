@@ -51,13 +51,18 @@ use warnings;
 #   new 'element_isa' rule key processed inside the arrayref branch of the
 #   rule-dispatch loop, iterating each element and calling ->isa.
 #
-# TODO: 'can' rule extended to accept type => 'invocant' — currently the 'can'
-#   rule croaks with "meaningless can value" for any type other than 'object'.
-#   Params::Util's planned (but unimplemented) _CAN covers the case where an
-#   invocant — either a blessed object or a class-name string — must respond to
-#   a given method.  Implementation: in the 'can' rule handler, add an
-#   elsif($rules->{'type'} eq 'invocant') branch that calls $value->can(...)
-#   on both objects and class-name strings (UNIVERSAL::can works on both).
+# TODO: 'can' rule extended to non-object types — three variants needed,
+#   mirroring _CLASSCAN / _INSTANCECAN / _INVOCANTCAN from Params::Util
+#   1.105_001 (unreleased) / Params::SomeUtil (listed but not yet implemented).
+#   The motivation is to avoid the UNIVERSAL::can pitfall: always call
+#   $value->can($method) as a method (which respects an overridden can()),
+#   never UNIVERSAL::can($value, $method) as a function.  PVS's existing 'can'
+#   rule for type => 'object' already calls ->can correctly.  The remaining
+#   two variants to add are:
+#     - type => 'invocant' + can: value is an object OR class-name string that
+#       can do the method (_INVOCANTCAN).
+#     - type => 'string' (class-name) + classcan: string class-name that can
+#       do the method (_CLASSCAN); symmetric with classisa / classdoes.
 
 use Carp;
 use Exporter qw(import);	# Required for @EXPORT_OK
@@ -79,7 +84,7 @@ Version 0.41
 
 =cut
 
-our $VERSION = '0.42';
+our $VERSION = '0.41';
 
 # Recursion depth counter — localised on every entry so it unwinds automatically.
 # Protects against mutations (or bugs) that turn the pipe-normalisation guard into
@@ -2600,7 +2605,10 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
     ValidationRule ::= SimpleType | ComplexRule | UnionType
 
-    SimpleType ::= string | integer | number | scalar | scalarref | stringref | arrayref | hashref | coderef | object
+    SimpleType ::= string | integer | number | float | boolean | scalar
+               | scalarref | stringref | arrayref | hashref | coderef
+               | object | void | regex | handle
+               | arraylike | hashlike | codelike | invocant
 
     UnionType ::= seq SimpleType    -- at least two members; written as type => ['a', 'b']
 
@@ -2612,13 +2620,25 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
         matches: REGEX;
         regex: REGEX;
         nomatch: REGEX;
-	memberof: seq VALUE;
+        memberof: seq VALUE;
         enum: seq VALUE;
         values: seq VALUE;
         notmemberof: seq VALUE;
         callback: FUNCTION;
         isa: TYPE_NAME;
-        can: METHOD_NAME
+        does: ROLE_NAME;
+        can: METHOD_NAME | seq METHOD_NAME;
+        classisa: TYPE_NAME;
+        subclass: TYPE_NAME;
+        classdoes: ROLE_NAME;
+        driver: TYPE_NAME;
+        semantic: 'unix_timestamp' | 'identifier' | 'class_name';
+        aliases: seq PARAM_NAME;
+        slurp: 𝔹;
+        position: ℕ₀;
+        default: VALUE;
+        transform: FUNCTION;
+        error_msg: STRING
     ]
 
     Schema == PARAM_NAME ⇸ ValidationRule
@@ -2728,7 +2748,11 @@ This is where the ideas for C<aliases>, C<slurp> and C<compile_schema> came from
 
 =item * L<Params::Util>
 
-This is where the idead for C<egex>, C<handle>, C<arraylike>, C<hashlike>, C<codelike>, C<invocant> came from.
+This is where the ideas for C<regex>, C<handle>, C<arraylike>, C<hashlike>, C<codelike>, C<invocant> came from.
+
+=item * L<Params::SomeUtil>
+
+A maintained fork of L<Params::Util> 1.07 with bug fixes.  The same type-predicate ideas apply.
 
 =item * L<Params::Validate>
 
