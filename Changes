@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.41 
+0.41	Sat Oct  3 12:58:28 PM EDT 2026
 	[Enhancements]
 	- New types 'regex', 'handle', 'arraylike', 'hashlike', 'codelike', 'invocant'
 	  inspired by Params::Util.  'regex' validates a compiled qr// object.
