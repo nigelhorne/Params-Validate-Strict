@@ -41,6 +41,24 @@ use warnings;
 #   (true for hashref input, false for arrayref input) to let callers
 #   identify which mode was actually used.
 
+# Remaining TODOs from Params::Util gap analysis (see SEE ALSO):
+#
+# TODO: element_isa => 'ClassName' rule — validates that every element of an
+#   arrayref parameter is a blessed object that passes ->isa('ClassName').
+#   Covers Params::Util's _SET (min => 1) and _SET0 (no min) patterns, which
+#   are not expressible with the existing element_type => 'object' rule alone
+#   (that only checks blessedness, not the inheritance chain).  Implementation:
+#   new 'element_isa' rule key processed inside the arrayref branch of the
+#   rule-dispatch loop, iterating each element and calling ->isa.
+#
+# TODO: 'can' rule extended to accept type => 'invocant' — currently the 'can'
+#   rule croaks with "meaningless can value" for any type other than 'object'.
+#   Params::Util's planned (but unimplemented) _CAN covers the case where an
+#   invocant — either a blessed object or a class-name string — must respond to
+#   a given method.  Implementation: in the 'can' rule handler, add an
+#   elsif($rules->{'type'} eq 'invocant') branch that calls $value->can(...)
+#   on both objects and class-name strings (UNIVERSAL::can works on both).
+
 use Carp;
 use Exporter qw(import);	# Required for @EXPORT_OK
 use Encode qw(decode_utf8);
