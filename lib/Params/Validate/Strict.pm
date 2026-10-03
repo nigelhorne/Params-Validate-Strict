@@ -23,6 +23,23 @@ use warnings;
 #   name — callers should be able to pass a hint (e.g. force_named => 1) to
 #   override.  The return value should include a '_named' key (as Params::Smart
 #   does) so the caller can diagnose which mode was used.
+#
+# TODO: needs => ['param1', 'param2'] per-parameter dependency shorthand —
+#   a convenience alternative to the schema-level 'relationships' system.
+#   Params::Smart uses { name => 'foo', needs => ['bar'] } directly in the
+#   parameter rule.  PVS already has the full dependency system via
+#   relationships => [{ type => 'dependency', ... }], but a per-parameter
+#   'needs' key would be more ergonomic for simple one-to-many dependencies
+#   without requiring a separate top-level 'relationships' entry.  Should be
+#   desugared to an equivalent dependency relationship before validation runs.
+#
+# TODO: '_named' diagnostic key in the return hashref — when auto-detect mode
+#   is active (see above), include a '_named' key in the returned args hashref
+#   that is true when named-parameter calling was inferred and false when
+#   positional calling was inferred.  Mirrors Params::Smart's behaviour.
+#   Even without full auto-detect, this key could be set unconditionally
+#   (true for hashref input, false for arrayref input) to let callers
+#   identify which mode was actually used.
 
 use Carp;
 use Exporter qw(import);	# Required for @EXPORT_OK
