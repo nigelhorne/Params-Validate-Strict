@@ -3,8 +3,6 @@ package Params::Validate::Strict;
 use strict;
 use warnings;
 
-# TODO: test cases - check 1e20 and -1e20 are accepted as integers
-
 # TODOs inspired by Params::Smart (see SEE ALSO):
 #
 # TODO: named_only => 1 rule — marks a parameter as keyword-only; it may not
@@ -614,7 +612,10 @@ The description of the rule
 =item * C<callback>
 
 A code reference to a subroutine that performs custom validation logic.
-The subroutine should accept the parameter value, the argument list and the schema as arguments and return true if the value is valid, false otherwise.
+The subroutine is called with four arguments: the parameter value, the argument list, the schema and the name of the parameter being validated
+(the canonical name, even if the value was supplied under an alias).
+It should return true if the value is valid, false otherwise.
+The name lets one callback be shared between several parameters.
 
 Use this to test more complex examples:
 
@@ -2111,7 +2112,7 @@ sub validate_strict
 					unless (defined &$rule_value) {
 						_error($logger, "$rule_description: callback for $param_label must be a code reference");
 					}
-					my $res = $rule_value->($value, $args, $schema);
+					my $res = $rule_value->($value, $args, $schema, $key);
 					unless ($res) {
 						_rule_error($logger, $rules, "$rule_description: Parameter $param_label failed custom validation");
 						$invalid_args{$key} = 1;

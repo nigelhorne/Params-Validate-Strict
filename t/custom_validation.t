@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::Most tests => 15;
+use Test::Most tests => 17;
 
 use Params::Validate::Strict qw(validate_strict);
 
@@ -194,6 +194,32 @@ use Params::Validate::Strict qw(validate_strict);
         }
     );
     ok(defined($result), 'US express shipping with valid cost');
+}
+
+# callback receives the parameter name as its fourth argument
+{
+    my %seen;
+    my $cb = sub {
+        my ($value, $args, $schema, $name) = @_;
+        $seen{$name} = $value;
+        return 1;
+    };
+    my $schema = {
+        first  => { type => 'integer', callback => $cb },
+        second => { type => 'string', aliases => ['alt'], callback => $cb },
+    };
+
+    validate_strict(schema => $schema, input => { first => 3, alt => 'x' });
+
+    is_deeply(\%seen, { first => 3, second => 'x' },
+        'callback receives canonical parameter name as 4th argument (alias resolved)');
+
+    throws_ok {
+        validate_strict(
+            schema => { age => { type => 'integer', callback => sub { $_[3] ne 'age' } } },
+            input  => { age => 5 },
+        )
+    } qr/age/, 'name argument is usable to decide the result';
 }
 
 done_testing();

@@ -565,7 +565,10 @@ The schema can define the following rules for each parameter:
 - `callback`
 
     A code reference to a subroutine that performs custom validation logic.
-    The subroutine should accept the parameter value, the argument list and the schema as arguments and return true if the value is valid, false otherwise.
+    The subroutine is called with four arguments: the parameter value, the argument list, the schema and the name of the parameter being validated
+    (the canonical name, even if the value was supplied under an alias).
+    It should return true if the value is valid, false otherwise.
+    The name lets one callback be shared between several parameters.
 
     Use this to test more complex examples:
 
