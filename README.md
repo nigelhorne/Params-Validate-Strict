@@ -1029,12 +1029,13 @@ The schema can define the following rules for each parameter:
 - `semantic`
 
     A hint about the semantic meaning of the parameter value.
-    Supported values: `unix_timestamp`, `identifier`, `class_name`.
+    Supported values: `unix_timestamp`, `identifier`, `class_name`, `filename`.
 
     ```perl
     ts     => { type => 'integer', semantic => 'unix_timestamp' }
     func   => { type => 'string',  semantic => 'identifier' }
     module => { type => 'string',  semantic => 'class_name' }
+    file   => { type => 'string',  semantic => 'filename' }
     ```
 
     When `semantic` is `unix_timestamp`, the value must be a non-negative integer no greater than
@@ -1048,6 +1049,12 @@ The schema can define the following rules for each parameter:
     When `semantic` is `class_name`, the value must match
     `/\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/`, a syntactically valid Perl class name such
     as `'Foo'` or `'Foo::Bar::Baz'`.  The class does not need to be loaded.
+
+    When `semantic` is `filename`, the value must be a single path component:
+    non-empty, not `.` or `..`, containing neither `/` nor a NUL byte, and at most 255
+    bytes long when encoded as UTF-8.  Directory parts are rejected, so it is safe against
+    path traversal such as `../../etc/passwd`.  It does not check that the file exists, and
+    it does not reject characters that are only illegal on some platforms (such as `:` on Windows).
 
     Unknown semantic values emit a warning but do not cause an error.
 
@@ -1319,7 +1326,7 @@ ComplexRule == [
     element_isa: TYPE_NAME;
     needs: PARAM_NAME | seq PARAM_NAME;
     driver: TYPE_NAME;
-    semantic: 'unix_timestamp' | 'identifier' | 'class_name';
+    semantic: 'unix_timestamp' | 'identifier' | 'class_name' | 'filename';
     aliases: seq PARAM_NAME;
     slurp: 𝔹;
     position: ℕ₀;

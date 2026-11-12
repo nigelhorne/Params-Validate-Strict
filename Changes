@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.42
+0.42	Thu Nov 12 01:14:48 PM EST 2026
 	[Enhancements]
 	- The 'callback' rule now passes the parameter name as a fourth argument
 	  (after the value, the argument hash and the schema), so one callback can be
