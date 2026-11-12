@@ -37,6 +37,7 @@ t/memberof.t
 t/mutant_killers.t
 t/nested.t
 t/notmemberof.t
+t/params_smart_ideas.t
 t/path.t
 t/pod-cm.t
 t/pod-coverage.t

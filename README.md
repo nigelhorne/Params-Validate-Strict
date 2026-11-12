@@ -237,7 +237,8 @@ The schema can define the following rules for each parameter:
 
 - `can`
 
-    The parameter must be an object that understands the method `can`.
+    The parameter must be an object, or with `type => 'invocant'` an object or a class name,
+    that understands the method `can`.
     `can` can be a simple scalar string of a method name,
     or an arrayref of a list of method names, all of which must be supported by the object.
 
@@ -259,6 +260,38 @@ The schema can define the following rules for each parameter:
 
     ```perl
     handler => { type => 'object', does => 'My::Role::Printable' }
+    ```
+
+- `classcan`
+
+    The parameter must be a string holding a syntactically valid Perl class name
+    whose class understands the given method (or every method in an arrayref).
+    The check is always a `->can` method call, so an overridden `can` is respected.
+    The class must already be loaded.
+    Symmetric with `classisa` and `classdoes`.
+
+    ```perl
+    backend => { type => 'string', classcan => ['connect', 'disconnect'] }
+    ```
+
+- `element_isa`
+
+    Requires `type => 'arrayref'`.
+    Every element must be a blessed object that passes `->isa('Base::Class')`.
+    An empty arrayref is accepted; add `min => 1` to require at least one element.
+    Unlike `element_type => 'object'`, this checks the inheritance chain, not just blessedness.
+
+    ```perl
+    handlers => { type => 'arrayref', min => 1, element_isa => 'My::Handler' }
+    ```
+
+- `needs`
+
+    A parameter name, or an arrayref of names, that must also be given whenever this parameter is.
+    A shorthand for one `dependency` relationship per name (see `relationships`).
+
+    ```perl
+    user => { type => 'string', optional => 1, needs => ['password', 'realm'] }
     ```
 
 - `classisa`
@@ -1286,6 +1319,9 @@ ComplexRule == [
     classisa: TYPE_NAME;
     subclass: TYPE_NAME;
     classdoes: ROLE_NAME;
+    classcan: METHOD_NAME | seq METHOD_NAME;
+    element_isa: TYPE_NAME;
+    needs: PARAM_NAME | seq PARAM_NAME;
     driver: TYPE_NAME;
     semantic: 'unix_timestamp' | 'identifier' | 'class_name';
     aliases: seq PARAM_NAME;

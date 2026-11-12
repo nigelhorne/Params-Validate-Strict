@@ -3,65 +3,6 @@ package Params::Validate::Strict;
 use strict;
 use warnings;
 
-# TODOs inspired by Params::Smart (see SEE ALSO):
-#
-# TODO: named_only => 1 rule — marks a parameter as keyword-only; it may not
-#   be supplied by position even when the schema uses positional mode.  Mirrors
-#   the '+name' sigil in Params::Smart.  Useful for flags that would be
-#   dangerous or ambiguous if accidentally supplied by position (e.g. a boolean
-#   that happens to sit at the same index as a required string on a different
-#   call path).
-#
-# TODO: auto-detect positional vs named calling — allow a single schema to
-#   accept both f(1, 2, 3) and f(a=>1, b=>2, c=>3) by inspecting @_ at
-#   runtime and choosing the appropriate mode.  Params::Smart's heuristic
-#   checks whether the first element of @_ is a known parameter name; if so,
-#   named mode is assumed, otherwise positional.  Caveats: the heuristic can
-#   misfire when a positional value happens to be a string matching a param
-#   name — callers should be able to pass a hint (e.g. force_named => 1) to
-#   override.  The return value should include a '_named' key (as Params::Smart
-#   does) so the caller can diagnose which mode was used.
-#
-# TODO: needs => ['param1', 'param2'] per-parameter dependency shorthand —
-#   a convenience alternative to the schema-level 'relationships' system.
-#   Params::Smart uses { name => 'foo', needs => ['bar'] } directly in the
-#   parameter rule.  PVS already has the full dependency system via
-#   relationships => [{ type => 'dependency', ... }], but a per-parameter
-#   'needs' key would be more ergonomic for simple one-to-many dependencies
-#   without requiring a separate top-level 'relationships' entry.  Should be
-#   desugared to an equivalent dependency relationship before validation runs.
-#
-# TODO: '_named' diagnostic key in the return hashref — when auto-detect mode
-#   is active (see above), include a '_named' key in the returned args hashref
-#   that is true when named-parameter calling was inferred and false when
-#   positional calling was inferred.  Mirrors Params::Smart's behaviour.
-#   Even without full auto-detect, this key could be set unconditionally
-#   (true for hashref input, false for arrayref input) to let callers
-#   identify which mode was actually used.
-
-# Remaining TODOs from Params::Util gap analysis (see SEE ALSO):
-#
-# TODO: element_isa => 'ClassName' rule — validates that every element of an
-#   arrayref parameter is a blessed object that passes ->isa('ClassName').
-#   Covers Params::Util's _SET (min => 1) and _SET0 (no min) patterns, which
-#   are not expressible with the existing element_type => 'object' rule alone
-#   (that only checks blessedness, not the inheritance chain).  Implementation:
-#   new 'element_isa' rule key processed inside the arrayref branch of the
-#   rule-dispatch loop, iterating each element and calling ->isa.
-#
-# TODO: 'can' rule extended to non-object types — three variants needed,
-#   mirroring _CLASSCAN / _INSTANCECAN / _INVOCANTCAN from Params::Util
-#   1.105_001 (unreleased) / Params::SomeUtil (listed but not yet implemented).
-#   The motivation is to avoid the UNIVERSAL::can pitfall: always call
-#   $value->can($method) as a method (which respects an overridden can()),
-#   never UNIVERSAL::can($value, $method) as a function.  PVS's existing 'can'
-#   rule for type => 'object' already calls ->can correctly.  The remaining
-#   two variants to add are:
-#     - type => 'invocant' + can: value is an object OR class-name string that
-#       can do the method (_INVOCANTCAN).
-#     - type => 'string' (class-name) + classcan: string class-name that can
-#       do the method (_CLASSCAN); symmetric with classisa / classdoes.
-
 use Carp;
 use Exporter qw(import);	# Required for @EXPORT_OK
 use Encode qw(decode_utf8);
@@ -320,7 +261,8 @@ listing the union members.
 
 =item * C<can>
 
-The parameter must be an object that understands the method C<can>.
+The parameter must be an object, or with C<type =E<gt> 'invocant'> an object or a class name,
+that understands the method C<can>.
 C<can> can be a simple scalar string of a method name,
 or an arrayref of a list of method names, all of which must be supported by the object.
 
@@ -339,6 +281,32 @@ The parameter must be a blessed object that satisfies the role via C<-E<gt>DOES>
 Requires C<type =E<gt> 'object'>.
 
   handler => { type => 'object', does => 'My::Role::Printable' }
+
+=item * C<classcan>
+
+The parameter must be a string holding a syntactically valid Perl class name
+whose class understands the given method (or every method in an arrayref).
+The check is always a C<-E<gt>can> method call, so an overridden C<can> is respected.
+The class must already be loaded.
+Symmetric with C<classisa> and C<classdoes>.
+
+  backend => { type => 'string', classcan => ['connect', 'disconnect'] }
+
+=item * C<element_isa>
+
+Requires C<type =E<gt> 'arrayref'>.
+Every element must be a blessed object that passes C<-E<gt>isa('Base::Class')>.
+An empty arrayref is accepted; add C<min =E<gt> 1> to require at least one element.
+Unlike C<element_type =E<gt> 'object'>, this checks the inheritance chain, not just blessedness.
+
+  handlers => { type => 'arrayref', min => 1, element_isa => 'My::Handler' }
+
+=item * C<needs>
+
+A parameter name, or an arrayref of names, that must also be given whenever this parameter is.
+A shorthand for one C<dependency> relationship per name (see C<relationships>).
+
+  user => { type => 'string', optional => 1, needs => ['password', 'realm'] }
 
 =item * C<classisa>
 
@@ -1900,7 +1868,7 @@ sub validate_strict
 					if(!defined($value)) {
 						next;	# Skip if object not given
 					}
-					if($rules->{'type'} eq 'object') {
+					if(($rules->{'type'} eq 'object') || ($rules->{'type'} eq 'invocant')) {
 						if(ref($rule_value) eq 'ARRAY') {
 							# List of methods
 							foreach my $method(@{$rule_value}) {
@@ -1919,6 +1887,25 @@ sub validate_strict
 						}
 					} else {
 						_error($logger, "$rule_description: Parameter $param_label has meaningless can value '$rule_value' for parameter type $rules->{type}");
+					}
+				} elsif($rule_name eq 'classcan') {
+					if(!defined($value)) {
+						next;
+					}
+					if(ref($rule_value) && ref($rule_value) ne 'ARRAY') {
+						_error($logger, "$rule_description: 'classcan' rule for Parameter $param_label must be either a scalar or an arrayref");
+					}
+					unless(!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/) {
+						_error($logger, "$rule_description: Parameter $param_label must be a valid class name");
+						$invalid_args{$key} = 1;
+						next;
+					}
+					foreach my $method (ref($rule_value) ? @{$rule_value} : ($rule_value)) {
+						# Always a method call, so an overridden can() is respected
+						unless($value->can($method)) {
+							_error($logger, "$rule_description: Parameter $param_label ($value) must be a class that understands the $method method");
+							$invalid_args{$key} = 1;
+						}
 					}
 				} elsif($rule_name eq 'does') {
 					if(!defined($value)) {
@@ -2021,6 +2008,20 @@ sub validate_strict
 					} else {
 						_error($logger, "$rule_description: Parameter $param_label has meaningless element_type value $rule_value");
 					}
+				} elsif($rule_name eq 'element_isa') {
+					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
+						foreach my $member (@{$value}) {
+							unless(Scalar::Util::blessed($member) && $member->isa($rule_value)) {
+								_rule_error($logger, $rules, "$rule_description: Parameter $param_label can only contain '$rule_value' objects");
+								$invalid_args{$key} = 1;
+								last;
+							}
+						}
+					} else {
+						_error($logger, "$rule_description: Parameter $param_label has meaningless element_isa value $rule_value");
+					}
+				} elsif($rule_name eq 'needs') {
+					# Desugared into dependency relationships before validation finishes
 				} elsif($rule_name eq 'optional') {
 					# Already handled at the beginning of the loop
 				} elsif($rule_name eq 'nullable') {
@@ -2177,8 +2178,23 @@ sub validate_strict
 	}
 
 	# Validate parameter relationships
-	if (my $relationships = $params->{'relationships'}) {
-		_validate_relationships(\%validated_args, $relationships, $logger, $schema_description);
+	my @relationships = ref($params->{'relationships'}) eq 'ARRAY' ? @{$params->{'relationships'}} : ();
+
+	# Desugar per-parameter 'needs' into dependency relationships
+	foreach my $name (sort keys %{$schema}) {
+		my $rules = $schema->{$name};
+		next unless(ref($rules) eq 'HASH' && defined($rules->{'needs'}));
+		my $needs = $rules->{'needs'};
+		if(ref($needs) && ref($needs) ne 'ARRAY') {
+			_error($logger, "$schema_description: 'needs' for parameter '$name' must be a string or an arrayref");
+		}
+		foreach my $required (ref($needs) ? @{$needs} : ($needs)) {
+			push @relationships, { type => 'dependency', param => $name, requires => $required };
+		}
+	}
+
+	if(@relationships) {
+		_validate_relationships(\%validated_args, \@relationships, $logger, $schema_description);
 	}
 
 	if(my $cross_validation = $params->{'cross_validation'}) {
@@ -2632,6 +2648,9 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
         classisa: TYPE_NAME;
         subclass: TYPE_NAME;
         classdoes: ROLE_NAME;
+        classcan: METHOD_NAME | seq METHOD_NAME;
+        element_isa: TYPE_NAME;
+        needs: PARAM_NAME | seq PARAM_NAME;
         driver: TYPE_NAME;
         semantic: 'unix_timestamp' | 'identifier' | 'class_name';
         aliases: seq PARAM_NAME;
