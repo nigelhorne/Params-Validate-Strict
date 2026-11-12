@@ -46,6 +46,7 @@ t/pod-synopsis.t
 t/pod.t
 t/positional.t
 t/prereq.t
+t/semantic_filename.t
 t/strict.t
 t/string.t
 t/t_union_type.t

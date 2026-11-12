@@ -13,6 +13,8 @@ Revision history for Params-Validate-Strict
 	  object that passes ->isa of the given class.
 	- New 'classcan' rule key: a class-name string must be a class that
 	  understands the given method(s); symmetric with 'classisa'/'classdoes'.
+	- New semantic value 'filename': validates a single path component (non-empty,
+	  not '.' or '..', no '/' or NUL, at most 255 bytes), rejecting path traversal.
 	- The 'can' rule now also accepts type => 'invocant' (object or class name).
 
 0.41	Sat Oct  3 12:58:28 PM EDT 2026
