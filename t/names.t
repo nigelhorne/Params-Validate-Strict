@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 
-# Tests for rules added after the Params::Smart / Params::Util gap analysis:
-# needs, element_isa, can for invocant, and classcan.
+# Tests needs, element_isa, can for invocant, and classcan.
 
 use strict;
 use warnings;

@@ -35,9 +35,9 @@ t/lib/TestLogger.pm
 t/logic_reducer.t
 t/memberof.t
 t/mutant_killers.t
+t/names.t
 t/nested.t
 t/notmemberof.t
-t/params_smart_ideas.t
 t/path.t
 t/pod-cm.t
 t/pod-coverage.t

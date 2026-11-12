@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.42	Thu Nov 12 12:49:24 PM EST 2026
+0.42
 	[Enhancements]
 	- The 'callback' rule now passes the parameter name as a fourth argument
 	  (after the value, the argument hash and the schema), so one callback can be
@@ -16,6 +16,18 @@ Revision history for Params-Validate-Strict
 	- New semantic value 'filename': validates a single path component (non-empty,
 	  not '.' or '..', no '/' or NUL, at most 255 bytes), rejecting path traversal.
 	- The 'can' rule now also accepts type => 'invocant' (object or class name).
+
+	[Dependencies]
+	- Declared IO::Handle (used by type => 'handle') and overload (used by the
+	  arraylike/hashlike/codelike types) as runtime prerequisites.  Both are core
+	  modules; they were already in use but not listed.
+
+	[Documentation]
+	- Removed a stray, unimplemented 'schematic' placeholder from the POD
+	  ('semantic' is the implemented rule) and moved its orphaned sentence,
+	  "All cross-validations must pass", into the cross_validation section.
+	- Documented that the callback receives the parameter name, and the new
+	  'needs', 'element_isa', 'classcan' and 'filename' rules.
 
 0.41	Sat Oct  3 12:58:28 PM EDT 2026
 	[Enhancements]
