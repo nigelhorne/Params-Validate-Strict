@@ -1,0 +1,76 @@
+---
+# Run the test suite on Perls built with a non-default floating-point type.
+# Two CPAN Testers failures on 0.34 (long double and quadmath builds) came from
+# assuming that "1e309" overflows to Inf, which is only true for plain doubles.
+# Building perl takes a few minutes, so the result is cached.
+name: Floating-point Perl builds
+
+'on':
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PERL_VERSION: '5.40.0'
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: long double (-Duselongdouble)
+            slug: longdouble
+            flags: -Duselongdouble
+          - name: quadmath (-Dusequadmath)
+            slug: quadmath
+            flags: -Dusequadmath
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Cache the perl build
+        id: perl-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/perl-${{ matrix.slug }}
+          key: perl-${{ env.PERL_VERSION }}-${{ matrix.slug }}-v1
+
+      - name: Build perl ${{ env.PERL_VERSION }} ${{ matrix.flags }}
+        if: steps.perl-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL "https://www.cpan.org/src/5.0/perl-${PERL_VERSION}.tar.gz" | tar xz -C "$RUNNER_TEMP"
+          cd "$RUNNER_TEMP/perl-${PERL_VERSION}"
+          ./Configure -des -Dprefix="$HOME/perl-${{ matrix.slug }}" ${{ matrix.flags }} -Dusethreads -Dman1dir=none -Dman3dir=none
+          make -j"$(nproc)"
+          make install
+
+      - name: Show the floating-point configuration
+        run: |
+          PERL="$HOME/perl-${{ matrix.slug }}/bin/perl"
+          "$PERL" -V:archname -V:nvsize -V:nvtype -V:uselongdouble -V:usequadmath
+
+      - name: Install dependencies
+        run: |
+          PERL="$HOME/perl-${{ matrix.slug }}/bin/perl"
+          curl -fsSL https://cpanmin.us | "$PERL" - --notest --installdeps .
+
+      - name: Run the tests
+        run: |
+          PERL="$HOME/perl-${{ matrix.slug }}/bin/perl"
+          PATH="$HOME/perl-${{ matrix.slug }}/bin:$PATH" prove -l -j4 t/

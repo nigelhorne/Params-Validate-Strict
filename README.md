@@ -4,7 +4,7 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 ## Version
 
-Version 0.41
+Version 0.42
 
 ## Synopsis
 
@@ -1167,6 +1167,37 @@ The schema can define the following rules for each parameter:
 
     The `description` field is optional but recommended for clearer error messages.
 
+#### Api Specification
+
+##### Input
+
+```perl
+{
+    schema                    => { type => ['hashref', 'arrayref'] },   # or members
+    input                     => { type => ['hashref', 'arrayref'] },   # or args
+    description               => { type => 'string',  optional => 1 },
+    custom_types              => { type => 'hashref', optional => 1 },
+    unknown_parameter_handler => { type => 'string',  optional => 1,
+                                   memberof => ['die', 'warn', 'ignore'] },
+    logger                    => { type => 'object',  optional => 1, can => ['error', 'warn'] },
+    relationships             => { type => 'arrayref', optional => 1 },
+    cross_validation          => { type => 'hashref', optional => 1 },
+}
+```
+
+The arguments may be passed as a list of key/value pairs or as a single hashref.
+A hashref `input` is validated as named parameters; an arrayref `input` is validated as
+positional parameters, in which case every parameter in the schema needs a `position`.
+
+##### Output
+
+```perl
+{ type => 'hashref' }
+```
+
+A new hashref of the validated and coerced parameters, keyed by canonical parameter name.
+It croaks (or calls `$logger->error` and then croaks) on the first validation failure.
+
 ### Example Usage
 
 ```perl
@@ -1285,6 +1316,26 @@ same schema is applied repeatedly in a hot path.
 
 A code reference `sub ($input) -> \%validated`.
 
+#### Api Specification
+
+##### Input
+
+```perl
+{
+    schema => { type => ['hashref', 'arrayref'] },
+    opts   => { type => 'hashref', optional => 1 },   # passed as trailing key/value pairs
+}
+```
+
+##### Output
+
+```perl
+{ type => 'coderef' }
+```
+
+The returned coderef has the signature `sub ($input) -> \%validated`,
+and croaks in the same way as `validate_strict`.
+
 ## Author
 
 Nigel Horne, `<njh at nigelhorne.com>`
@@ -1396,6 +1447,17 @@ where_am_i({ latitude => 3.14, longitude => -155 });
 ```
 
 ## Bugs
+
+Known limitations:
+
+- `semantic => 'filename'` checks for a single path component only.
+It does not reject characters that are illegal only on some platforms,
+such as `:` or `\` on Windows, and does not check that the file exists.
+- `classisa`, `subclass`, `classdoes` and `classcan` require the class to be loaded already;
+use `driver` to load it first.
+- Grammars passed to `bnf` are cached for the life of the process and never evicted.
+
+Please report any other bugs as described in ["SUPPORT"](#support).
 
 ## Security
 

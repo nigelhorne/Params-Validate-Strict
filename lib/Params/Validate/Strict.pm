@@ -3,7 +3,7 @@ package Params::Validate::Strict;
 use strict;
 use warnings;
 
-use Carp;
+use Carp ();
 use Exporter qw(import);	# Required for @EXPORT_OK
 use Encode qw(decode_utf8);
 use List::Util 1.33 qw(all any);	# Required for memberof/matches validation
@@ -19,13 +19,13 @@ Params::Validate::Strict - Validates a set of parameters against a schema
 
 =head1 VERSION
 
-Version 0.41
+Version 0.42
 
 =cut
 
-our $VERSION = '0.41';
+our $VERSION = '0.42';
 
-# Recursion depth counter — localised on every entry so it unwinds automatically.
+# Recursion depth counter - localised on every entry so it unwinds automatically.
 # Protects against mutations (or bugs) that turn the pipe-normalisation guard into
 # an infinite loop through the union-type ARRAY handler.
 our $_depth = 0;
@@ -1107,6 +1107,33 @@ The C<description> field is optional but recommended for clearer error messages.
 
 =back
 
+=head3 API SPECIFICATION
+
+=head4 Input
+
+  {
+      schema                    => { type => ['hashref', 'arrayref'] },   # or members
+      input                     => { type => ['hashref', 'arrayref'] },   # or args
+      description               => { type => 'string',  optional => 1 },
+      custom_types              => { type => 'hashref', optional => 1 },
+      unknown_parameter_handler => { type => 'string',  optional => 1,
+                                     memberof => ['die', 'warn', 'ignore'] },
+      logger                    => { type => 'object',  optional => 1, can => ['error', 'warn'] },
+      relationships             => { type => 'arrayref', optional => 1 },
+      cross_validation          => { type => 'hashref', optional => 1 },
+  }
+
+The arguments may be passed as a list of key/value pairs or as a single hashref.
+A hashref C<input> is validated as named parameters; an arrayref C<input> is validated as
+positional parameters, in which case every parameter in the schema needs a C<position>.
+
+=head4 Output
+
+  { type => 'hashref' }
+
+A new hashref of the validated and coerced parameters, keyed by canonical parameter name.
+It croaks (or calls C<< $logger->error >> and then croaks) on the first validation failure.
+
 =head2 Example Usage
 
   my $schema = {
@@ -1181,7 +1208,7 @@ The C<description> field is optional but recommended for clearer error messages.
 sub validate_strict
 {
 	local $_depth = $_depth + 1;
-	Carp::croak('validate_strict: maximum call depth exceeded — possible infinite recursion in union-type schema')
+	Carp::croak('validate_strict: maximum call depth exceeded - possible infinite recursion in union-type schema')
 		if $_depth > 20;
 
 	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
@@ -1394,7 +1421,7 @@ sub validate_strict
 					if(scalar(@{$args}) < $rules->{'position'}) {
 						# arg array is too short, so it must be missing
 						_error($logger, "$rule_description: Required parameter $param_label is missing");
-						next;
+						next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
 					}
 				}
 				if(exists($rules->{'default'})) {
@@ -1707,7 +1734,7 @@ sub validate_strict
 							}
 						} else {
 							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must be a number");
-							next;
+							next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
 						}
 					} else {
 						_error($logger, "$rule_description: Parameter $param_label of type '$type' has meaningless min value $rule_value");
@@ -1770,7 +1797,7 @@ sub validate_strict
 							}
 						} else {
 							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must be a number");
-							next;
+							next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
 						}
 					} else {
 						_error($logger, "$rule_description: Parameter $param_label of type '$type' has meaningless max value $rule_value");
@@ -1901,7 +1928,7 @@ sub validate_strict
 					unless(!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/) {
 						_error($logger, "$rule_description: Parameter $param_label must be a valid class name");
 						$invalid_args{$key} = 1;
-						next;
+						next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
 					}
 					foreach my $method (ref($rule_value) ? @{$rule_value} : ($rule_value)) {
 						# Always a method call, so an overridden can() is respected
@@ -1954,7 +1981,7 @@ sub validate_strict
 					unless(!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/) {
 						_error($logger, "$rule_description: Parameter $param_label must be a valid class name");
 						$invalid_args{$key} = 1;
-						next;
+						next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
 					}
 					(my $file = $value) =~ s{::}{/}g;
 					$file .= '.pm';
@@ -1962,7 +1989,7 @@ sub validate_strict
 					if($@) {
 						_error($logger, "$rule_description: Parameter $param_label ($value) could not be loaded: $@");
 						$invalid_args{$key} = 1;
-						next;
+						next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
 					}
 					unless($value->isa($rule_value)) {
 						_error($logger, "$rule_description: Parameter $param_label ($value) must be a class that isa '$rule_value'");
@@ -2017,7 +2044,7 @@ sub validate_strict
 							unless(Scalar::Util::blessed($member) && $member->isa($rule_value)) {
 								_rule_error($logger, $rules, "$rule_description: Parameter $param_label can only contain '$rule_value' objects");
 								$invalid_args{$key} = 1;
-								last;
+								last;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
 							}
 						}
 					} else {
@@ -2073,9 +2100,9 @@ sub validate_strict
 						if(ref($value) eq 'ARRAY') {
 							foreach my $member(@{$value}) {
 								# Distinguish two schema forms:
-								# (a) Rule hash   — has a top-level 'type' key, e.g. { type=>'string', matches=>qr/.../ }
+								# (a) Rule hash   - has a top-level 'type' key, e.g. { type=>'string', matches=>qr/.../ }
 								#     => validate each element against that rule directly.
-								# (b) Field-schema hash — keys are field names whose values are rule hashes,
+								# (b) Field-schema hash - keys are field names whose values are rule hashes,
 								#     e.g. { name=>{type=>'string'}, age=>{type=>'integer'} }
 								#     => validate each hashref element against the field schema directly.
 								my $is_field_schema = (ref($rule_value) eq 'HASH') && !exists($rule_value->{'type'});
@@ -2132,6 +2159,7 @@ sub validate_strict
 						$invalid_args{$key} = 1;
 					}
 				} elsif($rule_name eq 'position') {
+					# TODO: Unreachable code detected during path analysis. Investigate for removal.
 					if($rule_value < 0) {
 						_error($logger, "$rule_description: Parameter $param_label: 'position' must be a positive integer, not $value");
 					}
@@ -2215,7 +2243,7 @@ sub validate_strict
 			my $validator = $cross_validation->{$validator_name};
 			if((!ref($validator)) || (ref($validator) ne 'CODE')) {
 				_error($logger, "$schema_description: cross_validation $validator is not a code snippet");
-				next;
+				next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
 			}
 			if(my $error = &{$validator}(\%validated_args, $validator)) {
 				_error($logger, $error);
@@ -2291,6 +2319,22 @@ C<cross_validation>, etc.
 =head3 Returns
 
 A code reference C<sub ($input) -E<gt> \%validated>.
+
+=head3 API SPECIFICATION
+
+=head4 Input
+
+  {
+      schema => { type => ['hashref', 'arrayref'] },
+      opts   => { type => 'hashref', optional => 1 },   # passed as trailing key/value pairs
+  }
+
+=head4 Output
+
+  { type => 'coderef' }
+
+The returned coderef has the signature C<sub ($input) -E<gt> \%validated>,
+and croaks in the same way as C<validate_strict>.
 
 =cut
 
@@ -2556,7 +2600,7 @@ sub _value_in_list
 	my $entry = $_pvs_memberof_cache{$ckey};
 
 	# Stale check: if the weak ref is dead the list was freed and its address
-	# may have been reused by a different list — discard the cached hash.
+	# may have been reused by a different list - discard the cached hash.
 	if(defined($entry) && !defined($entry->[0])) {
 		delete $_pvs_memberof_cache{$ckey};
 		$entry = undef;
@@ -2572,7 +2616,7 @@ sub _value_in_list
 		} else {
 			$lookup = { map { $_ => 1 } @{$list} };
 		}
-		# Store [weak_ref_to_list, lookup_hash] — weak ref does not prevent GC.
+		# Store [weak_ref_to_list, lookup_hash] - weak ref does not prevent GC.
 		my $weak = $list;
 		Scalar::Util::weaken($weak);
 		$_pvs_memberof_cache{$ckey} = [$weak, $lookup];
@@ -2605,7 +2649,7 @@ sub _error
 	if($logger) {
 		$logger->error(__PACKAGE__, ' line ', $call_details[2], ": $message");
 	}
-	croak(__PACKAGE__, ' line ', $call_details[2], ": $message");
+	Carp::croak(__PACKAGE__, ' line ', $call_details[2], ": $message");
 }
 
 # Helper to log warning or carp
@@ -2619,7 +2663,7 @@ sub _warn
 	if($logger) {
 		$logger->warn(__PACKAGE__, ": $message");
 	} else {
-		carp(__PACKAGE__, ": $message");
+		Carp::carp(__PACKAGE__, ": $message");
 	}
 }
 
@@ -2732,6 +2776,23 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
     where_am_i({ latitude => 3.14, longitude => -155 });
 
 =head1 BUGS
+
+Known limitations:
+
+=over 4
+
+=item * C<semantic =E<gt> 'filename'> checks for a single path component only.
+It does not reject characters that are illegal only on some platforms,
+such as C<:> or C<\> on Windows, and does not check that the file exists.
+
+=item * C<classisa>, C<subclass>, C<classdoes> and C<classcan> require the class to be loaded already;
+use C<driver> to load it first.
+
+=item * Grammars passed to C<bnf> are cached for the life of the process and never evicted.
+
+=back
+
+Please report any other bugs as described in L</SUPPORT>.
 
 =head1 SECURITY
 
