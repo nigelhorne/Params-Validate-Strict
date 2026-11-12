@@ -343,11 +343,11 @@ Approximate LCSAJ segments: 25<br>
 </span><span class="">    2: 
 </span><span class="">    3: use strict;
 </span><span class="">    4: use warnings;
-</span><span class="">    5: use Carp qw(croak);
+</span><span class="">    5: use Carp ();
 </span><span class="">    6: use Exporter qw(import);
 </span><span class="">    7: use Params::Validate::Strict qw(validate_strict);
 </span><span class="">    8: 
-</span><span class="">    9: our $VERSION = &#39;0.41&#39;;
+</span><span class="">    9: our $VERSION = &#39;0.42&#39;;
 </span><span class="">   10: our @EXPORT_OK = qw(bnf_to_matcher);
 </span><span class="">   11: 
 </span><span class="">   12: my %_cache;
@@ -553,7 +553,7 @@ Approximate LCSAJ segments: 25<br>
 </span><span class="">  212: 	}
 </span><span class="">  213: 	$flush-&gt;();
 </span><span class="">  214: 
-</span><span class="">  215: 	croak &#39;bnf_to_matcher: no rules found in grammar&#39; unless @rule_order;
+</span><span class="">  215: 	Carp::croak &#39;bnf_to_matcher: no rules found in grammar&#39; unless @rule_order;
 </span><span class="">  216: 
 </span><span class="">  217: 	my $start    = $rule_order[0];
 </span><span class="">  218: 	my $regex_str = _rule_to_regex($start, \%rules, {});
@@ -585,9 +585,9 @@ Approximate LCSAJ segments: 25<br>
 </span><span class="">  244: 
 </span><span class="">  245: sub _rule_to_regex {
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">246 → 255 → 267</span></span>  246: 	my ($rule_name, $rules, $seen) = @_;
-</span><span class="">  247: 	croak &quot;bnf_to_matcher: undefined rule &#39;$rule_name&#39; referenced in grammar&quot;
+</span><span class="">  247: 	Carp::croak &quot;bnf_to_matcher: undefined rule &#39;$rule_name&#39; referenced in grammar&quot;
 </span><span class="">  248: 		unless exists $rules-&gt;{$rule_name};
-</span><span class="">  249: 	croak &quot;bnf_to_matcher: recursive rule &#39;$rule_name&#39; is not supported&quot;
+</span><span class="">  249: 	Carp::croak &quot;bnf_to_matcher: recursive rule &#39;$rule_name&#39; is not supported&quot;
 </span><span class="">  250: 		if $seen-&gt;{$rule_name};
 </span><span class="">  251: 
 </span><span class="">  252: 	local $seen-&gt;{$rule_name} = 1;
