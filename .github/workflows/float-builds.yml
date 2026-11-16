@@ -46,7 +46,7 @@ jobs:
 
       - name: Cache the perl build
         id: perl-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/perl-${{ matrix.slug }}
           key: perl-${{ env.PERL_VERSION }}-${{ matrix.slug }}-v1
