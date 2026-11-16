@@ -1,6 +1,6 @@
 Revision history for Params-Validate-Strict
 
-0.43
+0.43	Mon Nov 16 11:38:06 AM EST 2026
 	[Enhancements]
 	- compile_schema now does real work.  The schema is analysed once, when it is
 	  compiled, and fields that use a built-in type with the common rules (min,
