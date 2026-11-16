@@ -51,7 +51,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L1329">1329</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rules eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"><a id="L1330">1330</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;slurp&#39;} and not defined $rules-&gt;{&#39;position&#39;})</td></tr>
 <tr><td class="h"><a id="L1333">1333</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $rules-&gt;{&#39;position&#39;})</td></tr>
-<tr><td class="h"><a id="L1334">1334</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($are_positional_args == 1)</td></tr>
+<tr><td class="h"><a id="L1334">1334</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($are_positional_args == 1)</td></tr>
 <tr><td class="h"><a id="L1360">1360</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fields and my $f = $fields-&gt;{$key})</td></tr>
 <tr><td class="h"><a id="L1363">1363</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (exists $args-&gt;{$key})</td></tr>
 <tr><td class="h"><a id="L1364">1364</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($f-&gt;{&#39;opt&#39;})</td></tr>
@@ -360,7 +360,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L2208">2208</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($@)</td></tr>
 <tr><td class="h"><a id="L2213">2213</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($value-&gt;isa($rule_value))</td></tr>
 <tr><td class="h"><a id="L2218">2218</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;type&#39;} eq &#39;arrayref&#39; or $rules-&gt;{&#39;type&#39;} eq &#39;ArrayRef&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2221">2221</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($custom_type and $custom_type-&gt;{&#39;type&#39;})</td></tr>
+<tr><td class="h"><a id="L2221">2221</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($custom_type and $custom_type-&gt;{&#39;type&#39;})</td></tr>
 <tr><td class="h"><a id="L2225">2225</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($custom_type and $custom_type-&gt;{&#39;transform&#39;})</td></tr>
 <tr><td class="h"><a id="L2227">2227</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $custom_type-&gt;{&#39;transform&#39;} eq &#39;CODE&#39;) { }</td></tr>
 <tr><td class="h"><a id="L2233">2233</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($type eq &#39;string&#39; or $type eq &#39;Str&#39;) { }</td></tr>
