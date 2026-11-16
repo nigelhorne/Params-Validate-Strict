@@ -1640,7 +1640,7 @@ sub validate_strict
 					if(scalar(@{$args}) < $rules->{'position'}) {
 						# arg array is too short, so it must be missing
 						_error($logger, "$rule_description: Required parameter $param_label is missing");
-						next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
+						_unreachable($logger);	# Defensive: _error always croaks, so this is never reached.
 					}
 				}
 				if(exists($rules->{'default'})) {
@@ -1953,7 +1953,7 @@ sub validate_strict
 							}
 						} else {
 							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must be a number");
-							next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
+							_unreachable($logger);	# Defensive: _error always croaks, so this is never reached.
 						}
 					} else {
 						_error($logger, "$rule_description: Parameter $param_label of type '$type' has meaningless min value $rule_value");
@@ -2016,7 +2016,7 @@ sub validate_strict
 							}
 						} else {
 							_rule_error($logger, $rules, "$rule_description: Parameter $param_label ($value) must be a number");
-							next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
+							_unreachable($logger);	# Defensive: _error always croaks, so this is never reached.
 						}
 					} else {
 						_error($logger, "$rule_description: Parameter $param_label of type '$type' has meaningless max value $rule_value");
@@ -2145,9 +2145,9 @@ sub validate_strict
 						_error($logger, "$rule_description: 'classcan' rule for Parameter $param_label must be either a scalar or an arrayref");
 					}
 					unless(!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/) {
-						_error($logger, "$rule_description: Parameter $param_label must be a valid class name");
 						$invalid_args{$key} = 1;
-						next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
+						_error($logger, "$rule_description: Parameter $param_label must be a valid class name");
+						_unreachable($logger);	# Defensive: _error always croaks, so this is never reached.
 					}
 					foreach my $method (ref($rule_value) ? @{$rule_value} : ($rule_value)) {
 						# Always a method call, so an overridden can() is respected
@@ -2198,17 +2198,17 @@ sub validate_strict
 						next;
 					}
 					unless(!ref($value) && $value =~ /\A[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*\z/) {
-						_error($logger, "$rule_description: Parameter $param_label must be a valid class name");
 						$invalid_args{$key} = 1;
-						next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
+						_error($logger, "$rule_description: Parameter $param_label must be a valid class name");
+						_unreachable($logger);	# Defensive: _error always croaks, so this is never reached.
 					}
 					(my $file = $value) =~ s{::}{/}g;
 					$file .= '.pm';
 					eval { require $file };
 					if($@) {
-						_error($logger, "$rule_description: Parameter $param_label ($value) could not be loaded: $@");
 						$invalid_args{$key} = 1;
-						next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
+						_error($logger, "$rule_description: Parameter $param_label ($value) could not be loaded: $@");
+						_unreachable($logger);	# Defensive: _error always croaks, so this is never reached.
 					}
 					unless($value->isa($rule_value)) {
 						_error($logger, "$rule_description: Parameter $param_label ($value) must be a class that isa '$rule_value'");
@@ -2261,9 +2261,9 @@ sub validate_strict
 					if(($rules->{'type'} eq 'arrayref') || ($rules->{'type'} eq 'ArrayRef')) {
 						foreach my $member (@{$value}) {
 							unless(Scalar::Util::blessed($member) && $member->isa($rule_value)) {
-								_rule_error($logger, $rules, "$rule_description: Parameter $param_label can only contain '$rule_value' objects");
 								$invalid_args{$key} = 1;
-								last;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
+								_rule_error($logger, $rules, "$rule_description: Parameter $param_label can only contain '$rule_value' objects");
+								_unreachable($logger);	# Defensive: _error always croaks, so this is never reached.
 							}
 						}
 					} else {
@@ -2378,9 +2378,10 @@ sub validate_strict
 						$invalid_args{$key} = 1;
 					}
 				} elsif($rule_name eq 'position') {
-					# TODO: Unreachable code detected during path analysis. Investigate for removal.
 					if($rule_value < 0) {
-						_error($logger, "$rule_description: Parameter $param_label: 'position' must be a positive integer, not $value");
+						# A negative number always contains a non-digit ('-'), so the
+						# /\D/ check below (and the positional detection) catch it first.
+						_unreachable($logger);
 					}
 					if($rule_value =~ /\D/) {
 						_error($logger, "$rule_description: Parameter $param_label: 'position' must be a positive integer");
@@ -2464,7 +2465,7 @@ sub validate_strict
 			my $validator = $cross_validation->{$validator_name};
 			if((!ref($validator)) || (ref($validator) ne 'CODE')) {
 				_error($logger, "$schema_description: cross_validation $validator is not a code snippet");
-				next;	# TODO: Unreachable code detected during path analysis. Investigate for removal.
+				_unreachable($logger);	# Defensive: _error always croaks, so this is never reached.
 			}
 			if(my $error = &{$validator}(\%validated_args, $validator)) {
 				_error($logger, $error);
@@ -3045,6 +3046,20 @@ sub _param_defined
 {
 	my ($args, $param) = @_;
 	return exists($args->{$param}) && defined($args->{$param});
+}
+
+# Called from code paths that path analysis shows can never run.  If one ever
+# does, fail loudly rather than carry on with undefined behaviour.
+sub _unreachable
+{
+	my $logger = shift;
+	my @call_details = caller(0);
+	my $message = 'BUG: this code should not be reachable.  Please report it to the maintainer';
+
+	if($logger) {
+		$logger->error(__PACKAGE__, ' line ', $call_details[2], ": $message");
+	}
+	Carp::croak(__PACKAGE__, ' line ', $call_details[2], ": $message");
 }
 
 # Helper to log error or croak
