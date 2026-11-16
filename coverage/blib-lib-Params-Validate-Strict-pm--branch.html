@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Params/Validate/Strict.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c2">92.6%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c2">92.5%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -51,7 +51,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L1329">1329</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rules eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"><a id="L1330">1330</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rules-&gt;{&#39;slurp&#39;} and not defined $rules-&gt;{&#39;position&#39;})</td></tr>
 <tr><td class="h"><a id="L1333">1333</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $rules-&gt;{&#39;position&#39;})</td></tr>
-<tr><td class="h"><a id="L1334">1334</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($are_positional_args == 1)</td></tr>
+<tr><td class="h"><a id="L1334">1334</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($are_positional_args == 1)</td></tr>
 <tr><td class="h"><a id="L1360">1360</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fields and my $f = $fields-&gt;{$key})</td></tr>
 <tr><td class="h"><a id="L1363">1363</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (exists $args-&gt;{$key})</td></tr>
 <tr><td class="h"><a id="L1364">1364</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($f-&gt;{&#39;opt&#39;})</td></tr>
@@ -395,128 +395,129 @@ https://pjcj.net
 <tr><td class="h"><a id="L2362">2362</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $error = &amp;{$rule_value;}($args))</td></tr>
 <tr><td class="h"><a id="L2372">2372</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined &amp;$rule_value)</td></tr>
 <tr><td class="h"><a id="L2376">2376</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($res)</td></tr>
-<tr><td class="h"><a id="L2382">2382</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rule_value &lt; 0)</td></tr>
-<tr><td class="h"><a id="L2385">2385</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rule_value =~ /\D/)</td></tr>
-<tr><td class="h"><a id="L2389">2389</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rule_value and $are_positional_args != 1)</td></tr>
-<tr><td class="h"><a id="L2400">2400</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar @{$rules;}) { }</td></tr>
-<tr><td class="h"><a id="L2407">2407</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rule ne &quot;HASH&quot;)</td></tr>
-<tr><td class="h"><a id="L2410">2410</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (defined $rule-&gt;{&#39;type&#39;})</td></tr>
-<tr><td class="h"><a id="L2418">2418</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($@)</td></tr>
-<tr><td class="h"><a id="L2421">2421</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if defined $result</td></tr>
-<tr><td class="h"><a id="L2426">2426</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($rc)</td></tr>
-<tr><td class="h"><a id="L2441">2441</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $params-&gt;{&#39;relationships&#39;} eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L2446">2446</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$has_needs ? :</td></tr>
-<tr><td class="h"><a id="L2448">2448</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $rules eq &quot;HASH&quot; and defined $rules-&gt;{&#39;needs&#39;}</td></tr>
-<tr><td class="h"><a id="L2450">2450</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $needs and ref $needs ne &quot;ARRAY&quot;)</td></tr>
-<tr><td class="h"><a id="L2453">2453</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $needs ? :</td></tr>
-<tr><td class="h"><a id="L2458">2458</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@relationships)</td></tr>
-<tr><td class="h"><a id="L2462">2462</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $cross_validation = $params-&gt;{&#39;cross_validation&#39;})</td></tr>
-<tr><td class="h"><a id="L2465">2465</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not ref $validator or ref $validator ne &quot;CODE&quot;)</td></tr>
-<tr><td class="h"><a id="L2469">2469</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $error = &amp;{$validator;}(\%validated_args, $validator))</td></tr>
-<tr><td class="h"><a id="L2481">2481</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($are_positional_args == 1)</td></tr>
-<tr><td class="h"><a id="L2487">2487</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $validated_args{$key})</td></tr>
-<tr><td class="h"><a id="L2490">2490</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $rc[$position])</td></tr>
-<tr><td class="h"><a id="L2583">2583</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (ref $schema eq &quot;HASH&quot; or ref $schema eq &quot;ARRAY&quot;)</td></tr>
-<tr><td class="h"><a id="L2589">2589</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (grep {exists $opts{$_};} &quot;schema&quot;, &quot;input&quot;, &quot;args&quot;, &quot;_compiled&quot;)</td></tr>
-<tr><td class="h"><a id="L2598">2598</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $schema eq &quot;ARRAY&quot;)</td></tr>
-<tr><td class="h"><a id="L2600">2600</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $normalised</td></tr>
-<tr><td class="h"><a id="L2605">2605</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $compiled</td></tr>
-<tr><td class="h"><a id="L2632">2632</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $schema eq &quot;HASH&quot;</td></tr>
-<tr><td class="h"><a id="L2633">2633</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $schema-&gt;{&#39;members&#39;}</td></tr>
-<tr><td class="h"><a id="L2656">2656</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $rules</td></tr>
-<tr><td class="h"><a id="L2658">2658</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rules eq &#39;HASH&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2381">2381</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rule_value &lt; 0)</td></tr>
+<tr><td class="h"><a id="L2386">2386</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rule_value =~ /\D/)</td></tr>
+<tr><td class="h"><a id="L2390">2390</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($rule_value and $are_positional_args != 1)</td></tr>
+<tr><td class="h"><a id="L2401">2401</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar @{$rules;}) { }</td></tr>
+<tr><td class="h"><a id="L2408">2408</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rule ne &quot;HASH&quot;)</td></tr>
+<tr><td class="h"><a id="L2411">2411</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (defined $rule-&gt;{&#39;type&#39;})</td></tr>
+<tr><td class="h"><a id="L2419">2419</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($@)</td></tr>
+<tr><td class="h"><a id="L2422">2422</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if defined $result</td></tr>
+<tr><td class="h"><a id="L2427">2427</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($rc)</td></tr>
+<tr><td class="h"><a id="L2442">2442</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $params-&gt;{&#39;relationships&#39;} eq &#39;ARRAY&#39; ? :</td></tr>
+<tr><td class="h"><a id="L2447">2447</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$has_needs ? :</td></tr>
+<tr><td class="h"><a id="L2449">2449</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $rules eq &quot;HASH&quot; and defined $rules-&gt;{&#39;needs&#39;}</td></tr>
+<tr><td class="h"><a id="L2451">2451</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $needs and ref $needs ne &quot;ARRAY&quot;)</td></tr>
+<tr><td class="h"><a id="L2454">2454</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $needs ? :</td></tr>
+<tr><td class="h"><a id="L2459">2459</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@relationships)</td></tr>
+<tr><td class="h"><a id="L2463">2463</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $cross_validation = $params-&gt;{&#39;cross_validation&#39;})</td></tr>
+<tr><td class="h"><a id="L2466">2466</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not ref $validator or ref $validator ne &quot;CODE&quot;)</td></tr>
+<tr><td class="h"><a id="L2470">2470</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $error = &amp;{$validator;}(\%validated_args, $validator))</td></tr>
+<tr><td class="h"><a id="L2482">2482</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($are_positional_args == 1)</td></tr>
+<tr><td class="h"><a id="L2488">2488</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $validated_args{$key})</td></tr>
+<tr><td class="h"><a id="L2491">2491</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $rc[$position])</td></tr>
+<tr><td class="h"><a id="L2584">2584</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (ref $schema eq &quot;HASH&quot; or ref $schema eq &quot;ARRAY&quot;)</td></tr>
+<tr><td class="h"><a id="L2590">2590</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (grep {exists $opts{$_};} &quot;schema&quot;, &quot;input&quot;, &quot;args&quot;, &quot;_compiled&quot;)</td></tr>
+<tr><td class="h"><a id="L2599">2599</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $schema eq &quot;ARRAY&quot;)</td></tr>
+<tr><td class="h"><a id="L2601">2601</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $normalised</td></tr>
+<tr><td class="h"><a id="L2606">2606</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $compiled</td></tr>
+<tr><td class="h"><a id="L2633">2633</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $schema eq &quot;HASH&quot;</td></tr>
+<tr><td class="h"><a id="L2634">2634</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $schema-&gt;{&#39;members&#39;}</td></tr>
+<tr><td class="h"><a id="L2657">2657</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $rules</td></tr>
+<tr><td class="h"><a id="L2659">2659</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rules eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (ref $rules eq &#39;&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2661">2661</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $rules-&gt;{&#39;position&#39;} or exists $rules-&gt;{&#39;slurp&#39;}</td></tr>
-<tr><td class="h"><a id="L2662">2662</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ref $rules-&gt;{&#39;aliases&#39;} eq &quot;ARRAY&quot;</td></tr>
-<tr><td class="h"><a id="L2663">2663</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $rules-&gt;{&#39;needs&#39;}</td></tr>
-<tr><td class="h"><a id="L2671">2671</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $f</td></tr>
-<tr><td class="h"><a id="L2679">2679</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">%{$schema;} ? :</td></tr>
-<tr><td class="h"><a id="L2691">2691</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if grep {not $allowed-&gt;{$_};} keys %{$rules;}</td></tr>
-<tr><td class="h"><a id="L2695">2695</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $name eq &quot;default&quot;</td></tr>
-<tr><td class="h"><a id="L2697">2697</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $v)</td></tr>
-<tr><td class="h"><a id="L2698">2698</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $name eq &quot;matches&quot; and ref $v eq &quot;Regexp&quot;</td></tr>
-<tr><td class="h"><a id="L2699">2699</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $name eq &#39;memberof&#39; || $name eq &#39;enum&#39; || $name eq &#39;values&#39; and ref $v eq &quot;ARRAY&quot;</td></tr>
-<tr><td class="h"><a id="L2705">2705</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $type and not ref $type</td></tr>
-<tr><td class="h"><a id="L2706">2706</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $info = $$type_info{lc $type}</td></tr>
-<tr><td class="h"><a id="L2707">2707</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ref $custom_types eq &quot;HASH&quot; and exists $$custom_types{lc $type}</td></tr>
-<tr><td class="h"><a id="L2710">2710</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $rules-&gt;{&#39;description&#39;})</td></tr>
-<tr><td class="h"><a id="L2711">2711</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $rules-&gt;{&#39;description&#39;}</td></tr>
-<tr><td class="h"><a id="L2724">2724</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">exists $rules-&gt;{&#39;default&#39;} ? :</td></tr>
-<tr><td class="h"><a id="L2728">2728</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $rules-&gt;{&#39;optional&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L2662">2662</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $rules-&gt;{&#39;position&#39;} or exists $rules-&gt;{&#39;slurp&#39;}</td></tr>
+<tr><td class="h"><a id="L2663">2663</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ref $rules-&gt;{&#39;aliases&#39;} eq &quot;ARRAY&quot;</td></tr>
+<tr><td class="h"><a id="L2664">2664</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $rules-&gt;{&#39;needs&#39;}</td></tr>
+<tr><td class="h"><a id="L2672">2672</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $f</td></tr>
+<tr><td class="h"><a id="L2680">2680</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">%{$schema;} ? :</td></tr>
+<tr><td class="h"><a id="L2692">2692</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if grep {not $allowed-&gt;{$_};} keys %{$rules;}</td></tr>
+<tr><td class="h"><a id="L2696">2696</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $name eq &quot;default&quot;</td></tr>
+<tr><td class="h"><a id="L2698">2698</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $v)</td></tr>
+<tr><td class="h"><a id="L2699">2699</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $name eq &quot;matches&quot; and ref $v eq &quot;Regexp&quot;</td></tr>
+<tr><td class="h"><a id="L2700">2700</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $name eq &#39;memberof&#39; || $name eq &#39;enum&#39; || $name eq &#39;values&#39; and ref $v eq &quot;ARRAY&quot;</td></tr>
+<tr><td class="h"><a id="L2706">2706</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $type and not ref $type</td></tr>
+<tr><td class="h"><a id="L2707">2707</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $info = $$type_info{lc $type}</td></tr>
+<tr><td class="h"><a id="L2708">2708</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ref $custom_types eq &quot;HASH&quot; and exists $$custom_types{lc $type}</td></tr>
+<tr><td class="h"><a id="L2711">2711</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $rules-&gt;{&#39;description&#39;})</td></tr>
+<tr><td class="h"><a id="L2712">2712</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $rules-&gt;{&#39;description&#39;}</td></tr>
+<tr><td class="h"><a id="L2725">2725</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">exists $rules-&gt;{&#39;default&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L2729">2729</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $rules-&gt;{&#39;optional&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($rules-&gt;{&#39;nullable&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2729">2729</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$rules-&gt;{&#39;optional&#39;} ? :</td></tr>
-<tr><td class="h"><a id="L2735">2735</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $rules-&gt;{$bound}</td></tr>
-<tr><td class="h"><a id="L2737">2737</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $v and $info-&gt;[1] and &amp;Scalar::Util::looks_like_number($v)</td></tr>
-<tr><td class="h"><a id="L2738">2738</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $bound eq &quot;min&quot; and $info-&gt;[1] eq &quot;s&quot; and $v &lt; 0</td></tr>
-<tr><td class="h"><a id="L2741">2741</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $f{&#39;min&#39;} and defined $f{&#39;max&#39;} and $f{&#39;min&#39;} &gt; $f{&#39;max&#39;}</td></tr>
-<tr><td class="h"><a id="L2743">2743</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $rules-&gt;{&#39;matches&#39;})</td></tr>
-<tr><td class="h"><a id="L2744">2744</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$scalar_like{lc $type}</td></tr>
-<tr><td class="h"><a id="L2746">2746</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $m</td></tr>
-<tr><td class="h"><a id="L2747">2747</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $m eq &#39;Regexp&#39; ? :</td></tr>
-<tr><td class="h"><a id="L2752">2752</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@list_names) { }</td></tr>
+<tr><td class="h"><a id="L2730">2730</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$rules-&gt;{&#39;optional&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L2736">2736</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $rules-&gt;{$bound}</td></tr>
+<tr><td class="h"><a id="L2738">2738</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $v and $info-&gt;[1] and &amp;Scalar::Util::looks_like_number($v)</td></tr>
+<tr><td class="h"><a id="L2739">2739</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $bound eq &quot;min&quot; and $info-&gt;[1] eq &quot;s&quot; and $v &lt; 0</td></tr>
+<tr><td class="h"><a id="L2742">2742</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $f{&#39;min&#39;} and defined $f{&#39;max&#39;} and $f{&#39;min&#39;} &gt; $f{&#39;max&#39;}</td></tr>
+<tr><td class="h"><a id="L2744">2744</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $rules-&gt;{&#39;matches&#39;})</td></tr>
+<tr><td class="h"><a id="L2745">2745</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$scalar_like{lc $type}</td></tr>
+<tr><td class="h"><a id="L2747">2747</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $m</td></tr>
+<tr><td class="h"><a id="L2748">2748</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $m eq &#39;Regexp&#39; ? :</td></tr>
+<tr><td class="h"><a id="L2753">2753</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@list_names) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (exists $rules-&gt;{&#39;case_sensitive&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2754">2754</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @list_names &gt; 1 or exists $rules-&gt;{&#39;min&#39;} or exists $rules-&gt;{&#39;max&#39;}</td></tr>
-<tr><td class="h"><a id="L2755">2755</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $$rules{$list_names[0]} eq &quot;ARRAY&quot;</td></tr>
-<tr><td class="h"><a id="L2780">2780</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $spec eq &quot;HASH&quot;</td></tr>
-<tr><td class="h"><a id="L2783">2783</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $spec-&gt;{&#39;name&#39;}</td></tr>
-<tr><td class="h"><a id="L2787">2787</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $schema{$name}</td></tr>
-<tr><td class="h"><a id="L2799">2799</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $value</td></tr>
-<tr><td class="h"><a id="L2801">2801</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($value =~ /[^[:ascii:]]/)</td></tr>
-<tr><td class="h"><a id="L2805">2805</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless utf8::is_utf8($value)</td></tr>
-<tr><td class="h"><a id="L2821">2821</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rules eq &quot;HASH&quot; and exists $rules-&gt;{&#39;default&#39;} and not exists $result{$key})</td></tr>
-<tr><td class="h"><a id="L2826">2826</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rules eq &quot;HASH&quot; and $rules-&gt;{&#39;schema&#39;} and ref $result{$key} eq &quot;HASH&quot;)</td></tr>
-<tr><td class="h"><a id="L2837">2837</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless ref $relationships eq &quot;ARRAY&quot;</td></tr>
-<tr><td class="h"><a id="L2840">2840</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $type = $rel-&gt;{&#39;type&#39;}</td></tr>
-<tr><td class="h"><a id="L2842">2842</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($type eq &#39;mutually_exclusive&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2755">2755</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @list_names &gt; 1 or exists $rules-&gt;{&#39;min&#39;} or exists $rules-&gt;{&#39;max&#39;}</td></tr>
+<tr><td class="h"><a id="L2756">2756</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $$rules{$list_names[0]} eq &quot;ARRAY&quot;</td></tr>
+<tr><td class="h"><a id="L2781">2781</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $spec eq &quot;HASH&quot;</td></tr>
+<tr><td class="h"><a id="L2784">2784</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $spec-&gt;{&#39;name&#39;}</td></tr>
+<tr><td class="h"><a id="L2788">2788</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $schema{$name}</td></tr>
+<tr><td class="h"><a id="L2800">2800</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $value</td></tr>
+<tr><td class="h"><a id="L2802">2802</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($value =~ /[^[:ascii:]]/)</td></tr>
+<tr><td class="h"><a id="L2806">2806</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless utf8::is_utf8($value)</td></tr>
+<tr><td class="h"><a id="L2822">2822</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rules eq &quot;HASH&quot; and exists $rules-&gt;{&#39;default&#39;} and not exists $result{$key})</td></tr>
+<tr><td class="h"><a id="L2827">2827</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $rules eq &quot;HASH&quot; and $rules-&gt;{&#39;schema&#39;} and ref $result{$key} eq &quot;HASH&quot;)</td></tr>
+<tr><td class="h"><a id="L2838">2838</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless ref $relationships eq &quot;ARRAY&quot;</td></tr>
+<tr><td class="h"><a id="L2841">2841</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $type = $rel-&gt;{&#39;type&#39;}</td></tr>
+<tr><td class="h"><a id="L2843">2843</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($type eq &#39;mutually_exclusive&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;required_group&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;conditional_requirement&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;dependency&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;value_constraint&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($type eq &#39;value_conditional&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2863">2863</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $rel-&gt;{&#39;params&#39;}</td></tr>
-<tr><td class="h"><a id="L2864">2864</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless @params &gt;= 2</td></tr>
-<tr><td class="h"><a id="L2868">2868</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@present &gt; 1)</td></tr>
-<tr><td class="h"><a id="L2877">2877</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $rel-&gt;{&#39;params&#39;}</td></tr>
-<tr><td class="h"><a id="L2878">2878</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless @params &gt;= 2</td></tr>
-<tr><td class="h"><a id="L2882">2882</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@present == 0)</td></tr>
-<tr><td class="h"><a id="L2892">2892</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $if_param = $rel-&gt;{&#39;if&#39;}</td></tr>
-<tr><td class="h"><a id="L2893">2893</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $then_param = $rel-&gt;{&#39;then_required&#39;}</td></tr>
-<tr><td class="h"><a id="L2896">2896</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (_param_defined($args, $if_param))</td></tr>
-<tr><td class="h"><a id="L2898">2898</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($args-&gt;{$if_param})</td></tr>
-<tr><td class="h"><a id="L2900">2900</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (_param_defined($args, $then_param))</td></tr>
-<tr><td class="h"><a id="L2911">2911</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $param = $rel-&gt;{&#39;param&#39;}</td></tr>
-<tr><td class="h"><a id="L2912">2912</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $requires = $rel-&gt;{&#39;requires&#39;}</td></tr>
-<tr><td class="h"><a id="L2915">2915</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (_param_defined($args, $param))</td></tr>
-<tr><td class="h"><a id="L2916">2916</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (_param_defined($args, $requires))</td></tr>
-<tr><td class="h"><a id="L2926">2926</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $if_param = $rel-&gt;{&#39;if&#39;}</td></tr>
-<tr><td class="h"><a id="L2927">2927</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $then_param = $rel-&gt;{&#39;then&#39;}</td></tr>
-<tr><td class="h"><a id="L2928">2928</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $operator = $rel-&gt;{&#39;operator&#39;}</td></tr>
-<tr><td class="h"><a id="L2930">2930</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $value</td></tr>
-<tr><td class="h"><a id="L2933">2933</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (_param_defined($args, $if_param) and $args-&gt;{$if_param})</td></tr>
-<tr><td class="h"><a id="L2935">2935</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (_param_defined($args, $then_param))</td></tr>
-<tr><td class="h"><a id="L2939">2939</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($operator eq &#39;==&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2864">2864</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $rel-&gt;{&#39;params&#39;}</td></tr>
+<tr><td class="h"><a id="L2865">2865</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless @params &gt;= 2</td></tr>
+<tr><td class="h"><a id="L2869">2869</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@present &gt; 1)</td></tr>
+<tr><td class="h"><a id="L2878">2878</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $rel-&gt;{&#39;params&#39;}</td></tr>
+<tr><td class="h"><a id="L2879">2879</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless @params &gt;= 2</td></tr>
+<tr><td class="h"><a id="L2883">2883</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@present == 0)</td></tr>
+<tr><td class="h"><a id="L2893">2893</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $if_param = $rel-&gt;{&#39;if&#39;}</td></tr>
+<tr><td class="h"><a id="L2894">2894</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $then_param = $rel-&gt;{&#39;then_required&#39;}</td></tr>
+<tr><td class="h"><a id="L2897">2897</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (_param_defined($args, $if_param))</td></tr>
+<tr><td class="h"><a id="L2899">2899</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($args-&gt;{$if_param})</td></tr>
+<tr><td class="h"><a id="L2901">2901</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (_param_defined($args, $then_param))</td></tr>
+<tr><td class="h"><a id="L2912">2912</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $param = $rel-&gt;{&#39;param&#39;}</td></tr>
+<tr><td class="h"><a id="L2913">2913</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $requires = $rel-&gt;{&#39;requires&#39;}</td></tr>
+<tr><td class="h"><a id="L2916">2916</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (_param_defined($args, $param))</td></tr>
+<tr><td class="h"><a id="L2917">2917</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (_param_defined($args, $requires))</td></tr>
+<tr><td class="h"><a id="L2927">2927</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $if_param = $rel-&gt;{&#39;if&#39;}</td></tr>
+<tr><td class="h"><a id="L2928">2928</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $then_param = $rel-&gt;{&#39;then&#39;}</td></tr>
+<tr><td class="h"><a id="L2929">2929</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $operator = $rel-&gt;{&#39;operator&#39;}</td></tr>
+<tr><td class="h"><a id="L2931">2931</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $value</td></tr>
+<tr><td class="h"><a id="L2934">2934</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (_param_defined($args, $if_param) and $args-&gt;{$if_param})</td></tr>
+<tr><td class="h"><a id="L2936">2936</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (_param_defined($args, $then_param))</td></tr>
+<tr><td class="h"><a id="L2940">2940</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($operator eq &#39;==&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($operator eq &#39;!=&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($operator eq &#39;&lt;&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($operator eq &#39;&lt;=&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($operator eq &#39;&gt;&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($operator eq &#39;&gt;=&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2953">2953</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($valid)</td></tr>
-<tr><td class="h"><a id="L2964">2964</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $if_param = $rel-&gt;{&#39;if&#39;}</td></tr>
-<tr><td class="h"><a id="L2966">2966</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $then_param = $rel-&gt;{&#39;then_required&#39;}</td></tr>
-<tr><td class="h"><a id="L2967">2967</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $equals</td></tr>
-<tr><td class="h"><a id="L2970">2970</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (_param_defined($args, $if_param))</td></tr>
-<tr><td class="h"><a id="L2971">2971</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($args-&gt;{$if_param} eq $equals)</td></tr>
-<tr><td class="h"><a id="L2973">2973</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (_param_defined($args, $then_param))</td></tr>
-<tr><td class="h"><a id="L3010">3010</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$is_icase ? :</td></tr>
+<tr><td class="h"><a id="L2954">2954</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($valid)</td></tr>
+<tr><td class="h"><a id="L2965">2965</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $if_param = $rel-&gt;{&#39;if&#39;}</td></tr>
+<tr><td class="h"><a id="L2967">2967</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $then_param = $rel-&gt;{&#39;then_required&#39;}</td></tr>
+<tr><td class="h"><a id="L2968">2968</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $equals</td></tr>
+<tr><td class="h"><a id="L2971">2971</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (_param_defined($args, $if_param))</td></tr>
+<tr><td class="h"><a id="L2972">2972</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($args-&gt;{$if_param} eq $equals)</td></tr>
+<tr><td class="h"><a id="L2974">2974</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (_param_defined($args, $then_param))</td></tr>
+<tr><td class="h"><a id="L3011">3011</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$is_icase ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$is_numeric ? :</td></tr>
-<tr><td class="h"><a id="L3015">3015</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $entry and not defined $entry-&gt;[0])</td></tr>
-<tr><td class="h"><a id="L3020">3020</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $entry)</td></tr>
-<tr><td class="h"><a id="L3022">3022</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($is_numeric) { }</td></tr>
+<tr><td class="h"><a id="L3016">3016</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $entry and not defined $entry-&gt;[0])</td></tr>
+<tr><td class="h"><a id="L3021">3021</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $entry)</td></tr>
+<tr><td class="h"><a id="L3023">3023</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($is_numeric) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($is_icase) { }</td></tr>
-<tr><td class="h"><a id="L3040">3040</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$is_icase ? :</td></tr>
+<tr><td class="h"><a id="L3041">3041</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$is_icase ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$is_numeric ? :</td></tr>
-<tr><td class="h"><a id="L3060">3060</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($logger)</td></tr>
-<tr><td class="h"><a id="L3074">3074</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($logger) { }</td></tr>
+<tr><td class="h"><a id="L3059">3059</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($logger)</td></tr>
+<tr><td class="h"><a id="L3075">3075</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($logger)</td></tr>
+<tr><td class="h"><a id="L3089">3089</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($logger) { }</td></tr>
 </table>
 </body>
 </html>
