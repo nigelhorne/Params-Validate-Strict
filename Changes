@@ -18,6 +18,8 @@ Revision history for Params-Validate-Strict
 
 	[Dependencies]
 	- Added 'constant' (core) at runtime and Data::Dumper (core) for the tests.
+	[ Bug Fixes ]
+	- Fix https://github.com/nigelhorne/Params-Validate-Strict/issues/11
 
 0.42	Thu Nov 12 01:14:48 PM EST 2026
 	[Enhancements]
